@@ -1,6 +1,6 @@
 export default function Footer() {
   return (
-    <footer className="mt-5 border-t border-white/10">
+    <footer className="mt-1 border-t border-white/10">
       <div className="mx-auto w-full max-w-[1400px] px-6 py-8 text-sm text-white/50">
             <p className="mb-6 text-center text-lg text-white/100">
                 Be good. Be kind. Be Stooopid
