@@ -5,18 +5,18 @@ export default function Home() {
     <>
       <Header />
 
-      <main className="pt-24">
+      <main className="pt-10">
         <section className="mx-auto w-full max-w-[1400px] px-6 text-center">
         <h1 className="text-3xl md:text-4xl font-bold tracking-tight">
           Stooopid Calendar
         </h1>
 
-        <p className="mx-auto mt-4 max-w-xl text-lg md:text-lg text-white/100">
-          When we are being stooopid!
+        <p className="mx-auto mt-2 max-w-xl text-xl md:text-lg text-white/70">
+          All the times when we are being stooopid!
         </p>
       </section>
 
-      <section className="mx-auto mt-16 w-full max-w-[1400px] px-6">
+      <section className="mx-auto mt-10 w-full max-w-[1400px] px-6">
         <div className="relative overflow-hidden rounded-2xl border border-white/10 bg-white/5 p-4 md:p-6
   shadow-[inset_0_0_0_2px_rgba(93,220,191,0.55),inset_0_0_48px_rgba(93,220,191,0.35)]
 ,0_0_40px_-10px_rgba(168,85,247,0.45)]">
