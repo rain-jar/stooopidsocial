@@ -8,7 +8,7 @@ export default function Home() {
       <main className="pt-10">
         <section className="mx-auto w-full max-w-[1400px] px-6 text-center">
         <h1 className="text-3xl md:text-4xl font-bold tracking-tight">
-          Stooopid Calendar
+          Sto🙄opid Calendar
         </h1>
 
         <p className="mx-auto mt-2 max-w-xl text-xl md:text-lg text-white/70">
