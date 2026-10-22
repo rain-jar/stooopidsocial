@@ -62,7 +62,7 @@ async function createGoogleAuthClient() {
       service_account_impersonation_url: `https://iamcredentials.googleapis.com/v1/projects/-/serviceAccounts/${encodeURIComponent(serviceAccountEmail)}:generateAccessToken`,
       scopes: GOOGLE_SCOPES,
       subject_token_supplier: {
-        getSubjectToken: getVercelOidcToken,
+        getSubjectToken: () => getVercelOidcToken(),
       },
     });
 
