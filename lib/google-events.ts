@@ -302,11 +302,24 @@ function publicEvent(event: GoogleEvent): CommunityEvent {
   return safeEvent;
 }
 
+function sanitizedGoogleError(error: unknown) {
+  if (!(error instanceof Error)) {
+    return "unknown error";
+  }
+
+  return `${error.name}: ${error.message}`
+    .replace(/[A-Za-z0-9_-]{80,}/g, "[redacted]")
+    .slice(0, 500);
+}
+
 export async function getEvents(): Promise<CommunityEvent[]> {
   try {
     return (await getConfiguredGoogleEvents()).map(publicEvent);
-  } catch {
-    console.error("Google event sync failed; using the local fallback dataset");
+  } catch (error) {
+    console.error(
+      "Google event sync failed; using the local fallback dataset:",
+      sanitizedGoogleError(error),
+    );
     return fallbackEvents;
   }
 }
