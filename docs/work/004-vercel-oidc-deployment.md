@@ -1,6 +1,6 @@
 # Vercel OIDC and Deployment
 
-- Status: In progress
+- Status: Complete
 - Date: 2026-10-22
 - Source requirements: Prepare and deploy the approved event website to the existing Vercel project while replacing the long-lived Google service-account key with Vercel OIDC and Google Workload Identity Federation.
 - Approval: Approved by the user on 2026-10-22. Deleting the existing JSON key requires a final confirmation after the OIDC deployment has been verified.
@@ -179,4 +179,24 @@ Approval of this phase authorizes adding `@vercel/oidc`, changing the server aut
 - `git diff --check`: passed.
 - `.env.local` remains ignored, and a tracked-file scan found no private-key material.
 
-Preview deployment, federated runtime verification, production promotion, and JSON-key revocation remain outstanding.
+### Final deployment evidence
+
+- Pushed the implementation to `deploy/vercel-oidc` and created a protected Vercel preview.
+- The first preview exposed an OIDC audience mismatch. Updated the token supplier to preserve Vercel's team audience; the corrected preview then loaded five published Sheet events without using the local fallback.
+- Verified Standard Deployment Protection redirects unauthenticated preview requests and permits authenticated project checks.
+- Verified a restricted Drive image returned HTTP 200 with `image/png`, `nosniff`, and bounded cache headers; an invalid image route returned HTTP 404.
+- Verified `/run` returned HTTP 200 and rendered output contained no private key, OIDC token, Google access token, service-account email, direct Drive URL, or Google API hostname.
+- Promoted the verified preview to production and confirmed the public production domain returned HTTP 200 with the same five Sheet-backed image routes.
+- The user deleted the Google service-account JSON key and removed `GOOGLE_SERVICE_ACCOUNT_PRIVATE_KEY` from `.env.local`.
+- After revocation, production continued to return the live Sheet-backed event set and an independently requested restricted Drive image returned HTTP 200, confirming production access uses federation.
+
+## Checks Not Performed
+
+- The Google Cloud configuration was user-entered and was not independently inspected through the user's browser.
+- No automated cross-browser suite is configured. Relevant responsive, focus, modal, and browser behavior was verified during the preceding event-card phase rather than repeated after this server-only authentication change.
+
+## Residual Risk and Follow-up
+
+- Local development no longer has Google credentials and therefore uses the static fallback dataset. Development federation can be added later with a separately approved, exact development principal if live Google data is needed locally.
+- Publicly displayed event images remain downloadable by visitors, as explicitly accepted for the public production site.
+- Renaming the Vercel team or project changes OIDC claims and requires updating the Google provider or IAM principals.

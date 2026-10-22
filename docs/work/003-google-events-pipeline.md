@@ -228,7 +228,7 @@ Restore `app/page.tsx` to import the local event array, remove the server reposi
 
 ## Residual Risk and Follow-up
 
-- The current JSON service-account key is long-lived. Before deployment, replace it with Vercel OIDC/Google Workload Identity Federation where practical, then disable and delete the JSON key.
+- The long-lived JSON service-account key was replaced with Vercel OIDC/Google Workload Identity Federation and deleted during the completed deployment phase documented in `docs/work/004-vercel-oidc-deployment.md`.
 - The full development audit reports five high-severity entries through `eslint-config-next → @next/eslint-plugin-next → fast-glob → micromatch → braces`. The production audit is clean, the affected chain is lint-time only, and npm's proposed automatic remediation is an incompatible downgrade to `eslint-config-next` 14.2.35. No out-of-scope downgrade or override was applied.
 - Publicly rendered event images can be saved by site visitors even though their Google Drive originals remain restricted.
 - Google availability is now an operational dependency, mitigated by five-minute caching and the local fallback dataset.
