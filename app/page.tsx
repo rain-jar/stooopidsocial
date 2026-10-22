@@ -1,8 +1,13 @@
+import { Suspense } from "react";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
+import EventGrid, { EventGridSkeleton } from "@/components/events/EventGrid";
+import { getEvents } from "@/lib/google-events";
 
+export const revalidate = 300;
 
-export default function Home() {
+export default async function Home() {
+  const events = await getEvents();
   return (
     <>
       <Header />
@@ -19,19 +24,16 @@ export default function Home() {
       </section>
 
       <section className="mx-auto mt-10 w-full max-w-[1400px] px-6">
-        <div className="relative overflow-hidden rounded-2xl border border-white/10 bg-white/5 p-4 md:p-6
-  shadow-[inset_0_0_0_2px_rgba(93,220,191,0.55),inset_0_0_48px_rgba(93,220,191,0.35)]
-,0_0_40px_-10px_rgba(168,85,247,0.45)]">
-          <div className="flex h-[400px] items-center justify-center text-sm text-white/50">
-            <div className="h-[400px] w-full overflow-hidden rounded-xl">
-              <iframe
-                src="https://calendar.google.com/calendar/embed?src=62274281b101e29632d38347c35680c899b395a6f07712ff9d33239c2dcda0da%40group.calendar.google.com&ctz=America%2FToronto"
-                className="h-full w-full border-0"
-                loading="lazy"
-              />
-            </div>
+        <div className="mb-5 flex items-end justify-between gap-4">
+          <div>
+            <h2 className="mt-1 text-2xl font-bold tracking-tight md:text-3xl">
+              Upcoming stooopidities
+            </h2>
           </div>
         </div>
+        <Suspense fallback={<EventGridSkeleton />}>
+          <EventGrid events={events} renderedAt={new Date().toISOString()} />
+        </Suspense>
       </section>
 
       </main>

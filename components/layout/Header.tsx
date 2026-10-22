@@ -9,7 +9,7 @@ export default function Header() {
     <header className="sticky top-0 z-50 w-full border-b border-white/10 bg-bg/80 backdrop-blur">
       <div className="mx-auto flex w-full max-w-[1400px] items-center justify-between px-6 py-4">
         <span className="text-lg font-semibold tracking-tight">
-          Montreal Social Hub
+          Les Stooopids
         </span>
 
         {/* Desktop menu */}

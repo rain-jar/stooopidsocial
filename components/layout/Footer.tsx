@@ -6,7 +6,7 @@ export default function Footer() {
                 Be good. Be kind. Be Stooopid
             </p>
         <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-          <span>© {new Date().getFullYear()} Montreal Social Hub</span>
+          <span>© {new Date().getFullYear()} Les Stooopids </span>
 {/*
           <div className="flex gap-6">
             <a href="#" className="hover:text-white">About</a>
