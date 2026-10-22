@@ -14,11 +14,11 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: "Les Stooopids",
-  description: "Community events and activities in Montreal.",
+  description: "Home of the Stooopid Community ",
   applicationName: "Les Stooopids",
   openGraph: {
     title: "Les Stooopids",
-    description: "Community events and activities in Montreal.",
+    description: "Home of the Stooopid Community",
     siteName: "Les Stooopids",
     type: "website",
     locale: "en_CA",
