@@ -13,6 +13,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://stooopidsocial.vercel.app"),
   title: "Les Stooopids",
   description: "Home of the Stooopid Community ",
   applicationName: "Les Stooopids",
