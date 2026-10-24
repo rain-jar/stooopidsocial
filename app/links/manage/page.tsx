@@ -1,4 +1,7 @@
 import type { Metadata } from "next";
+import type { ReactNode } from "react";
+import Footer from "@/components/layout/Footer";
+import Header from "@/components/layout/Header";
 import { getAdminSession, csrfToken } from "@/lib/links/auth";
 import { getAllLinkContent } from "@/lib/links/repository";
 import LoginForm from "./LoginForm";
@@ -10,20 +13,24 @@ type SearchParams = Promise<{ error?: string; success?: string }>;
 const inputClass = "w-full rounded-lg border border-white/15 bg-white/5 px-3 py-2 text-sm text-white outline-none focus:border-orange-400";
 const buttonClass = "min-h-10 rounded-lg border border-white/15 px-3 py-2 text-sm font-semibold hover:bg-white/10 focus-visible:outline-2 focus-visible:outline-orange-400";
 
+function ManageShell({ children }: { children: ReactNode }) {
+  return <><Header />{children}<Footer /></>;
+}
+
 export default async function ManageLinksPage({ searchParams }: { searchParams: SearchParams }) {
   const params = await searchParams;
   const session = await getAdminSession();
   if (!session) {
-    return <main className="min-h-dvh bg-slate-950 px-5 py-16 text-white"><div className="mx-auto max-w-md rounded-2xl border border-white/10 bg-white/5 p-7"><p className="text-sm font-bold uppercase tracking-[0.2em] text-orange-400">Les Stooopids</p><h1 className="mt-2 text-3xl font-bold">Manage links</h1><p className="mt-2 text-white/65">Enter the shared administrator passcode.</p><LoginForm error={params.error === "invalid" ? "The passcode is incorrect." : params.error === "limited" ? "Too many attempts. Try again later." : undefined} /></div></main>;
+    return <ManageShell><main className="min-h-dvh bg-slate-950 px-5 py-16 text-white"><div className="mx-auto max-w-md rounded-2xl border border-white/10 bg-white/5 p-7"><p className="text-sm font-bold uppercase tracking-[0.2em] text-orange-400">Les Stooopids</p><h1 className="mt-2 text-3xl font-bold">Manage links</h1><p className="mt-2 text-white/65">Enter the shared administrator passcode.</p><LoginForm error={params.error === "invalid" ? "The passcode is incorrect." : params.error === "limited" ? "Too many attempts. Try again later." : undefined} /></div></main></ManageShell>;
   }
 
   let content;
   try { content = await getAllLinkContent(); }
-  catch { return <main className="min-h-dvh bg-slate-950 px-5 py-16 text-white"><div className="mx-auto max-w-2xl"><h1 className="text-3xl font-bold">Manage links</h1><p className="mt-5 rounded-xl border border-red-400/30 bg-red-400/10 p-4">Management data is temporarily unavailable.</p></div></main>; }
+  catch { return <ManageShell><main className="min-h-dvh bg-slate-950 px-5 py-16 text-white"><div className="mx-auto max-w-2xl"><h1 className="text-3xl font-bold">Manage links</h1><p className="mt-5 rounded-xl border border-red-400/30 bg-red-400/10 p-4">Management data is temporarily unavailable.</p></div></main></ManageShell>; }
   const csrf = csrfToken(session);
 
   return (
-    <main className="min-h-dvh bg-slate-950 px-4 py-10 text-white sm:px-6">
+    <ManageShell><main className="min-h-dvh bg-slate-950 px-4 py-10 text-white sm:px-6">
       <div className="mx-auto max-w-4xl">
         <header className="flex flex-wrap items-start justify-between gap-4">
           <div><p className="text-sm font-bold uppercase tracking-[0.2em] text-orange-400">Les Stooopids</p><h1 className="mt-1 text-3xl font-bold">Manage links</h1><a href="/links" target="_blank" rel="noopener noreferrer" className="mt-2 inline-block text-sm text-white/60 underline hover:text-white">View public page ↗</a></div>
@@ -76,6 +83,6 @@ export default async function ManageLinksPage({ searchParams }: { searchParams: 
           })}
         </div>
       </div>
-    </main>
+    </main></ManageShell>
   );
 }

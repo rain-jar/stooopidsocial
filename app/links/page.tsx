@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import Image from "next/image";
 import LinkIcon from "@/components/links/LinkIcon";
+import Footer from "@/components/layout/Footer";
+import Header from "@/components/layout/Header";
 import { getPublicLinkCategories } from "@/lib/links/repository";
 
 export const dynamic = "force-dynamic";
@@ -19,7 +21,9 @@ export default async function LinksPage() {
   }
 
   return (
-    <main className="min-h-dvh bg-[#1B3F72] px-5 py-10 text-[#EF9F27] sm:py-14">
+    <>
+      <Header />
+      <main className="min-h-dvh bg-[#1B3F72] px-5 py-10 text-[#EF9F27] sm:py-14">
       <div className="mx-auto flex w-full max-w-[580px] flex-col items-center">
         <Image src="/links/stooopid-crew.jpeg" alt="Stooopid Run Crew" width={104} height={104} priority className="h-24 w-24 rounded-full border-2 border-[#EF9F27]/35 object-cover shadow-lg sm:h-[104px] sm:w-[104px]" />
         <h1 className="mt-5 text-center text-2xl font-bold tracking-tight">Stooopid Run Crew</h1>
@@ -63,6 +67,8 @@ export default async function LinksPage() {
           </div>
         )}
       </div>
-    </main>
+      </main>
+      <Footer />
+    </>
   );
 }
