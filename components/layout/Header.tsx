@@ -19,6 +19,7 @@ export default function Header() {
           <a href="#" className="hover:text-white">Skate</a>
           <a href="#" className="hover:text-white">Hike</a>
           <a href="#" className="hover:text-white">Dance</a>
+          <a href="/links" className="hover:text-white">Linktree</a>
         </nav>
 
         {/* Mobile button */}
@@ -40,6 +41,7 @@ export default function Header() {
             <a href="#" onClick={() => setOpen(false)}>Skate</a>
             <a href="#" onClick={() => setOpen(false)}>Hike</a>
             <a href="#" onClick={() => setOpen(false)}>Dance</a>
+            <a href="/links" onClick={() => setOpen(false)}>Linktree</a>
           </nav>
         </div>
       )}

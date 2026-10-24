@@ -3,7 +3,7 @@
 - Status: In progress — protected preview verified; awaiting user preview approval and production promotion
 - Date: 2026-10-24
 - Source requirements: Replace the external `linktr.ee/stooopidruncrew` page with a faithful self-hosted `/links` page and a passcode-protected `/links/manage` interface backed by Supabase PostgreSQL.
-- Approval: Approved by the user on 2026-10-24, including the Supabase dependency, isolated architecture, schema/RLS/functions, server-only authentication controls, reference asset download, and restrained rounded-button treatment.
+- Approval: Approved by the user on 2026-10-24, including the Supabase dependency, isolated architecture, schema/RLS/functions, server-only authentication controls, reference asset download, restrained rounded-button treatment, and a later scope addition to expose `/links` as “Linktree” in the existing desktop and mobile navigation.
 
 ## Objective
 
@@ -248,6 +248,7 @@ If the shared passcode is disclosed, an attacker could modify public links, pote
 ## Implemented Changes
 
 - Added the dynamic, server-rendered `/links` page with the approved profile, locally stored avatar, social shortcuts, grouped database links, accessible interaction states, empty state, and safe unavailable state.
+- Added a “Linktree” destination to the existing desktop and mobile header navigation without changing other navigation behavior.
 - Added `/links/manage` with passcode login, logout, category and link create/edit/delete, publish controls, category assignment, and up/down ordering.
 - Added server-only Supabase clients, repositories, strict form validation, protocol validation, signed sessions, CSRF protection, exact-origin checks, bounded request sizes, and persistent database-backed login throttling.
 - Added the isolated migration with schema constraints, RLS, visible-read-only anonymous policies, private rate-limit storage, atomic reorder functions, triggers, grants, and the verified seed content.
