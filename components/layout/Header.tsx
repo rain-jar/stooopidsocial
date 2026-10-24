@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useState } from "react";
 
 export default function Header() {
@@ -8,9 +9,9 @@ export default function Header() {
   return (
     <header className="sticky top-0 z-50 w-full border-b border-white/10 bg-bg/80 backdrop-blur">
       <div className="mx-auto flex w-full max-w-[1400px] items-center justify-between px-6 py-4">
-        <span className="text-lg font-semibold tracking-tight">
+        <Link href="/" className="text-lg font-semibold tracking-tight hover:text-white/80 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white">
           Les Stooopids
-        </span>
+        </Link>
 
         {/* Desktop menu */}
         <nav className="hidden md:flex gap-6 text-sm text-white/70">
