@@ -1,6 +1,6 @@
 # SEC-2026-001: Dependency Vulnerabilities
 
-- Status: Remediated for production; development-tooling risk accepted pending upstream fix
+- Status: Original findings remediated; new Vercel OIDC transitive advisory under review
 - Date: 2026-10-21
 - Disclosure status: Internal repository record; no external disclosure performed
 
@@ -32,8 +32,14 @@ The alternative of retaining the old versions was rejected because it preserved 
 
 ## Residual Risk
 
-Five high-severity audit findings remain in the development-only ESLint dependency chain. They are not part of the deployed production dependency tree and currently have no compatible upstream remediation. Limit linting to trusted repository input, monitor upstream releases, and apply a compatible patch when available.
+The five development-only ESLint findings recorded on 2026-10-21 were no longer reported by the 2026-10-24 audit. The production OIDC finding below is the current known dependency risk.
+
+### 2026-10-24 advisory update
+
+During verification for the links-hub phase, `npm audit --omit=dev` reported GHSA-mrhx-c7xc-m3w5 in Zod versions below 4.6.6. The affected Zod copy is transitive through the production dependencies `@vercel/oidc@4.0.3` and `@vercel/cli-config`. The upstream rating is high (availability impact through memory exhaustion when validating oversized constrained collections). In this application the package is used to consume Vercel-provided OIDC/configuration data rather than public user submissions, so realistic external exposure appears limited, but it has not been proven unreachable.
+
+npm currently offers only a major-version downgrade to `@vercel/oidc@3.5.0`; no in-family patched update is offered. That downgrade was not applied during the unrelated links feature because it could alter the production Google Workload Identity authentication path. A focused compatibility review and protected-preview verification are required before remediation. Until then, keep Vercel environment/configuration input trusted and bounded, monitor `@vercel/oidc` releases, and rerun the production audit. No exploit evidence was observed, no disclosure was made, and no credentials or exploit details are recorded here.
 
 ## Rollout, Monitoring, and Rollback
 
-No deployment was performed. CI or deployment should repeat a clean install, production audit, lint, and build. Continue automated or periodic advisory monitoring. Reverting the lockfile would reintroduce known runtime vulnerabilities and is not an acceptable long-term rollback; prefer a newer compatible patch if regression handling is required.
+No deployment was performed for the original remediation. CI or deployment should repeat a clean install, production audit, lint, and build. Continue automated or periodic advisory monitoring. Reverting the original lockfile would reintroduce the remediated framework vulnerabilities and is not an acceptable long-term rollback; prefer a newer compatible patch if regression handling is required. For the 2026-10-24 OIDC finding, rollback is not applicable because no dependency change was made.

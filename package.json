@@ -6,9 +6,11 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "hash:links-passcode": "node scripts/hash-links-passcode.mjs"
   },
   "dependencies": {
+    "@supabase/supabase-js": "^2.118.0",
     "@vercel/oidc": "^4.0.3",
     "google-auth-library": "^11.3.1",
     "next": "16.4.2",
