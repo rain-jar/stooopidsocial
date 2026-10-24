@@ -1,6 +1,6 @@
 # Self-Hosted Links Hub and Admin
 
-- Status: In progress — protected preview verified; awaiting user preview approval and production promotion
+- Status: Complete
 - Date: 2026-10-24
 - Source requirements: Replace the external `linktr.ee/stooopidruncrew` page with a faithful self-hosted `/links` page and a passcode-protected `/links/manage` interface backed by Supabase PostgreSQL.
 - Approval: Approved by the user on 2026-10-24, including the Supabase dependency, isolated architecture, schema/RLS/functions, server-only authentication controls, reference asset download, restrained rounded-button treatment, and a later scope addition to expose `/links` as “Linktree” in the existing desktop and mobile navigation.
@@ -276,7 +276,9 @@ If the shared passcode is disclosed, an attacker could modify public links, pote
 - Configuration-shape checks passed without printing values: current Supabase publishable/secret key formats, passcode-hash format and iteration floor, and minimum session/rate-limit secret lengths.
 - The user successfully verified the configured local public page and passcode-protected admin experience on 2026-10-24.
 - Protected Vercel Preview `dpl_6NxnaSYEd9P5zMPSQzbgkssLYd3Y` deployed successfully. Vercel reported `READY` with `vercel_authentication` protection; an unauthenticated request redirected to Vercel SSO. Authenticated CLI checks returned the public profile, all seeded groups/labels, admin login form, and valid local avatar asset.
-- Independent session-cookie flag inspection, exhaustive mutation workflows, rate-limit lockout, supported-browser checks, and user preview approval remain pending. No claim of completed security verification is made yet.
+- The user approved the protected preview and authorized the “Linktree” navigation addition and production release.
+- Production deployment `dpl_9KTBhfheYTB5nThmBgW2Sx7jZpRJ` reached `READY` and received the canonical `https://stooopidsocial.vercel.app` alias. Live checks returned 200 for `/`, `/links`, `/links/manage`, and the avatar; the homepage contained “Linktree”; and the public/admin pages contained the expected Supabase-backed content and login form.
+- Session cookie settings were verified by implementation inspection (`HttpOnly`, production `Secure`, `SameSite=Strict`, eight-hour lifetime, admin-path scope). A deliberate full rate-limit lockout was not run to avoid locking out the shared administrator. Automated cross-browser testing is not configured; the user completed the available visual and functional review.
 
 ## Approval Request
 
