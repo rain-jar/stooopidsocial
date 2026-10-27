@@ -9,6 +9,7 @@ import {
   formatVisitorDateTime,
   isEventPast,
 } from "@/lib/event-date";
+import { googleCalendarUrl } from "@/lib/google-calendar";
 
 type EventDetailsProps = {
   event: CommunityEvent;
@@ -48,6 +49,7 @@ export default function EventDetails({ event }: EventDetailsProps) {
   const cancelled = event.status === "cancelled";
   const postponed = event.status === "postponed";
   const rsvpUrl = safeExternalUrl(event.rsvpUrl);
+  const calendarUrl = useMemo(() => googleCalendarUrl(event), [event]);
 
   useEffect(() => {
     const dialog = imageDialogRef.current;
@@ -221,6 +223,16 @@ export default function EventDetails({ event }: EventDetailsProps) {
         ) : null}
 
         <div className="flex flex-col gap-3 sm:flex-row">
+          {!cancelled && !postponed ? (
+            <a
+              href={calendarUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex min-h-11 flex-1 items-center justify-center rounded-xl border border-white/15 bg-white/5 px-4 text-center font-semibold text-white transition hover:bg-white/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#ff8065]"
+            >
+              Add to Google Calendar ↗
+            </a>
+          ) : null}
           {mapUrl ? (
             <a
               href={mapUrl}
