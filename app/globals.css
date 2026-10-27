@@ -71,6 +71,24 @@ dialog.event-dialog::backdrop {
   backdrop-filter: blur(7px);
 }
 
+dialog.event-image-dialog {
+  inset: 0;
+  width: 100vw;
+  max-width: none;
+  height: 100dvh;
+  max-height: none;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  border: 0;
+  background: rgb(0 0 0 / 96%);
+  color: white;
+}
+
+dialog.event-image-dialog::backdrop {
+  background: rgb(0 0 0 / 88%);
+}
+
 .event-modal-panel {
   max-height: min(90dvh, 900px);
   overflow-y: auto;

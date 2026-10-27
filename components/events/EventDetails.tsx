@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { useMemo, useState, useSyncExternalStore } from "react";
+import { useEffect, useMemo, useRef, useState, useSyncExternalStore } from "react";
 import type { CommunityEvent } from "@/data/events";
 import {
   formatEventDate,
@@ -39,12 +39,27 @@ function safeExternalUrl(value?: string) {
 
 export default function EventDetails({ event }: EventDetailsProps) {
   const [imageFailed, setImageFailed] = useState(false);
+  const [imageExpanded, setImageExpanded] = useState(false);
+  const imageDialogRef = useRef<HTMLDialogElement>(null);
+  const imageTriggerRef = useRef<HTMLButtonElement>(null);
   const visitorTimezone = useVisitorTimezone();
   const [shareMessage, setShareMessage] = useState("");
   const past = isEventPast(event, new Date());
   const cancelled = event.status === "cancelled";
   const postponed = event.status === "postponed";
   const rsvpUrl = safeExternalUrl(event.rsvpUrl);
+
+  useEffect(() => {
+    const dialog = imageDialogRef.current;
+    if (!dialog) return;
+
+    if (imageExpanded && !dialog.open) {
+      dialog.showModal();
+    } else if (!imageExpanded && dialog.open) {
+      dialog.close();
+      window.setTimeout(() => imageTriggerRef.current?.focus(), 0);
+    }
+  }, [imageExpanded]);
 
   const mapUrl = useMemo(() => {
     if (!event.address) return null;
@@ -89,14 +104,67 @@ export default function EventDetails({ event }: EventDetailsProps) {
           />
         ) : null}
         <div className="absolute inset-0 bg-gradient-to-t from-black/65 via-transparent to-black/10" />
+        {event.image && !imageFailed ? (
+          <button
+            ref={imageTriggerRef}
+            type="button"
+            onClick={() => setImageExpanded(true)}
+            aria-label={`View full-size image for ${event.name}`}
+            className="group absolute inset-0 z-10 cursor-zoom-in focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-white"
+          >
+            <span className="absolute bottom-4 right-4 rounded-full border border-white/20 bg-black/65 px-3 py-1.5 text-xs font-semibold text-white opacity-90 backdrop-blur transition group-hover:bg-black/80">
+              Expand image
+            </span>
+          </button>
+        ) : null}
         {cancelled || postponed || past ? (
           <span
-            className={`absolute bottom-4 left-5 rounded-full px-3 py-1.5 text-sm font-semibold ${cancelled ? "bg-red-600 text-white" : postponed ? "bg-amber-500 text-neutral-950" : "bg-black/75 text-white"}`}
+            className={`absolute bottom-4 left-5 z-20 rounded-full px-3 py-1.5 text-sm font-semibold ${cancelled ? "bg-red-600 text-white" : postponed ? "bg-amber-500 text-neutral-950" : "bg-black/75 text-white"}`}
           >
             {cancelled ? "Cancelled" : postponed ? "Postponed" : "Past event"}
           </span>
         ) : null}
       </div>
+
+      {event.image && !imageFailed ? (
+        <dialog
+          ref={imageDialogRef}
+          className="event-image-dialog"
+          aria-label={`${event.name} full-size image`}
+          onCancel={(cancelEvent) => {
+            cancelEvent.preventDefault();
+            setImageExpanded(false);
+          }}
+          onClick={(clickEvent) => {
+            if (clickEvent.target === clickEvent.currentTarget) {
+              setImageExpanded(false);
+            }
+          }}
+        >
+          <div className="relative mx-auto my-4 h-[calc(100dvh-2rem)] w-[calc(100%-2rem)] sm:my-8 sm:h-[calc(100dvh-4rem)] sm:w-[calc(100%-4rem)]">
+            <Image
+              src={event.image.src}
+              alt={event.image.alt}
+              fill
+              sizes="100vw"
+              className="object-contain"
+              onError={() => {
+                setImageExpanded(false);
+                setImageFailed(true);
+              }}
+              priority
+            />
+            <button
+              type="button"
+              onClick={() => setImageExpanded(false)}
+              aria-label="Close full-size image"
+              className="absolute right-4 top-4 z-10 grid size-11 place-items-center rounded-full border border-white/20 bg-black/70 text-2xl text-white backdrop-blur transition hover:bg-black/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white sm:right-6 sm:top-6"
+            >
+              ×
+            </button>
+          </div>
+        </dialog>
+      ) : null}
 
       <div className="space-y-6 p-5 pb-8 md:p-8">
         <div>
