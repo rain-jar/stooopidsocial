@@ -178,27 +178,39 @@ export default function EventDetails({ event }: EventDetailsProps) {
           </h2>
         </div>
 
-        <dl className="grid gap-4 rounded-2xl border border-white/10 bg-white/5 p-4 text-sm">
-          <div className="grid gap-1 sm:grid-cols-[7rem_1fr] sm:gap-4">
-            <dt className="text-white/55">Date</dt>
-            <dd className="font-medium text-white">{formatEventDate(event)}</dd>
-          </div>
-          <div className="grid gap-1 sm:grid-cols-[7rem_1fr] sm:gap-4">
-            <dt className="text-white/55">Time</dt>
-            <dd className="font-medium text-white">
-              {formatEventTime(event)} Eastern Time
-              {visitorTimezone && visitorTimezone !== event.timezone ? (
-                <span className="mt-1 block font-normal text-white/55">
-                  Your time: {formatVisitorDateTime(event, visitorTimezone)}
-                </span>
-              ) : null}
-            </dd>
-          </div>
-          <div className="grid gap-1 sm:grid-cols-[7rem_1fr] sm:gap-4">
-            <dt className="text-white/55">Place</dt>
-            <dd className="font-medium text-white">{event.venue}</dd>
-          </div>
-        </dl>
+        <div className="grid gap-4 rounded-2xl border border-white/10 bg-white/5 p-4 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-center">
+          <dl className="grid gap-4 text-sm">
+            <div className="grid gap-1 sm:grid-cols-[7rem_1fr] sm:gap-4">
+              <dt className="text-white/55">Date</dt>
+              <dd className="font-medium text-white">{formatEventDate(event)}</dd>
+            </div>
+            <div className="grid gap-1 sm:grid-cols-[7rem_1fr] sm:gap-4">
+              <dt className="text-white/55">Time</dt>
+              <dd className="font-medium text-white">
+                {formatEventTime(event)} Eastern Time
+                {visitorTimezone && visitorTimezone !== event.timezone ? (
+                  <span className="mt-1 block font-normal text-white/55">
+                    Your time: {formatVisitorDateTime(event, visitorTimezone)}
+                  </span>
+                ) : null}
+              </dd>
+            </div>
+            <div className="grid gap-1 sm:grid-cols-[7rem_1fr] sm:gap-4">
+              <dt className="text-white/55">Place</dt>
+              <dd className="font-medium text-white">{event.venue}</dd>
+            </div>
+          </dl>
+          {!cancelled && !postponed ? (
+            <a
+              href={calendarUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex min-h-11 w-full items-center justify-center rounded-xl border border-[#ff8065]/45 bg-[#ff8065]/10 px-4 text-center text-sm font-semibold text-[#ffad9b] transition hover:bg-[#ff8065]/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#ff8065] sm:w-auto sm:max-w-48"
+            >
+              + Add to Google Calendar
+            </a>
+          ) : null}
+        </div>
 
         <div>
           <h3 className="text-lg font-semibold text-white">About this event</h3>
@@ -223,16 +235,6 @@ export default function EventDetails({ event }: EventDetailsProps) {
         ) : null}
 
         <div className="flex flex-col gap-3 sm:flex-row">
-          {!cancelled && !postponed ? (
-            <a
-              href={calendarUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex min-h-11 flex-1 items-center justify-center rounded-xl border border-white/15 bg-white/5 px-4 text-center font-semibold text-white transition hover:bg-white/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#ff8065]"
-            >
-              Add to Google Calendar ↗
-            </a>
-          ) : null}
           {mapUrl ? (
             <a
               href={mapUrl}

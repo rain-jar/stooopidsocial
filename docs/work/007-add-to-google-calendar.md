@@ -4,6 +4,7 @@
 - Date: 2026-10-27
 - Source requirement: Add a button to each event-details modal that opens Google Calendar with the event information prefilled for the visitor to review and save.
 - Approval: Approved by the user on 2026-10-27.
+- Layout refinement: Approved by the user on 2026-10-27 to place the calendar action inside the date/time/place panel, right-aligned on wider screens and stacked on mobile.
 
 ## Objective
 
@@ -63,6 +64,8 @@ Add a lightweight Google Calendar handoff to the existing event modal without in
 - Prefilled the title, description, location, timezone, and UTC-normalized start/end timestamps.
 - Applied a one-hour default duration when the source event has no end time.
 - Kept the action as a safe new-tab handoff with no authentication, API writes, backend work, dependencies, or data-contract changes.
+- Moved the calendar action into the date/time/place panel as approved: right-aligned on wider screens and stacked full-width beneath the details on mobile.
+- Gave the compact prompt a restrained coral treatment while preserving the existing information hierarchy and secondary map/share actions.
 
 ## Verification Evidence
 
@@ -72,6 +75,7 @@ Add a lightweight Google Calendar handoff to the existing event modal without in
 - `npx tsc --noEmit`: passed.
 - `npm run build -- --webpack`: passed, including framework TypeScript validation. The build used the expected local static-data fallback because production Google credentials are not stored locally.
 - `git diff --check`: passed.
+- Layout-refinement verification: lint, TypeScript validation, production build, and diff checks passed after the calendar action moved into the information panel.
 
 ## Checks Not Performed
 
