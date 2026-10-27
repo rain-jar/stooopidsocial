@@ -34,7 +34,7 @@ export default async function Home() {
             type="button"
             className="shrink-0 rounded-full bg-white px-4 py-2 text-sm font-semibold text-black transition-colors hover:bg-white/85 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
           >
-            Add My Event
+            Add Your Event
           </button>
         </div>
         <Suspense fallback={<EventGridSkeleton />}>
