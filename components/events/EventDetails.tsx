@@ -205,7 +205,7 @@ export default function EventDetails({ event }: EventDetailsProps) {
               href={calendarUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex min-h-11 w-full items-center justify-center rounded-xl border border-[#ff8065]/45 bg-[#ff8065]/10 px-4 text-center text-sm font-semibold text-[#ffad9b] transition hover:bg-[#ff8065]/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#ff8065] sm:w-auto sm:max-w-48"
+              className="inline-flex min-h-11 w-full items-center justify-center rounded-xl bg-white px-5 text-center text-sm font-semibold text-neutral-950 shadow-sm transition hover:bg-neutral-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#ff8065] focus-visible:ring-offset-2 focus-visible:ring-offset-neutral-900 sm:w-auto sm:whitespace-nowrap"
             >
               + Add to Google Calendar
             </a>
