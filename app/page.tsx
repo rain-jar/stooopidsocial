@@ -14,7 +14,7 @@ export default async function Home() {
     <>
       <Header />
 
-      <main className="pt-10">
+      <main className="home-canvas-background py-10">
         <section className="mx-auto w-full max-w-[1400px] px-6 text-center">
         <h1 className="text-3xl md:text-4xl font-bold tracking-tight">
           Sto🙄opid Calendar

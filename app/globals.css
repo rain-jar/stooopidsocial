@@ -25,6 +25,26 @@ body {
   font-family: Arial, Helvetica, sans-serif;
 }
 
+.linktree-textured-background {
+  background-color: #1B3F72;
+  background-image:
+    linear-gradient(rgb(27 63 114 / 8%) 1px, transparent 1px),
+    linear-gradient(90deg, rgb(27 63 114 / 8%) 1px, transparent 1px),
+    radial-gradient(ellipse 85% 30% at 50% 42%, rgb(239 159 39 / 82%) 0%, rgb(239 159 39 / 48%) 2%, transparent 74%),
+    linear-gradient(180deg, #F5F0E8 0%, #F5F0E8 24%, #EF9F27 51%, #1B3F72 82%, #1B3F72 100%);
+  background-size: 16px 16px, 16px 16px, 100% 100%, 100% 100%;
+  background-attachment: local;
+}
+
+.home-canvas-background {
+  background-color: #0B0C0E;
+  background-image:
+    radial-gradient(circle at center, rgb(255 255 255 / 17%) 0 1px, transparent 1.4px),
+    radial-gradient(ellipse 75% 45% at 50% 8%, rgb(255 255 255 / 4%) 0%, transparent 72%);
+  background-position: 0 0, center top;
+  background-size: 22px 22px, 100% 100%;
+}
+
 .event-art-photo {
   background:
     radial-gradient(circle at 78% 22%, #ffd366 0 7%, transparent 8%),

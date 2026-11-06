@@ -1,51 +1,19 @@
-"use client";
-
 import Link from "next/link";
-import { useState } from "react";
 
 export default function Header() {
-  const [open, setOpen] = useState(false);
-
   return (
-    <header className="sticky top-0 z-50 w-full border-b border-white/10 bg-bg/80 backdrop-blur">
+    <header className="sticky top-0 z-50 w-full border-b border-white/10 bg-[#0B0B0B]/90 backdrop-blur">
       <div className="mx-auto flex w-full max-w-[1400px] items-center justify-between px-6 py-4">
         <Link href="/" className="text-lg font-semibold tracking-tight hover:text-white/80 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white">
           Les Stooopids
         </Link>
 
-        {/* Desktop menu */}
-        <nav className="hidden md:flex gap-6 text-sm text-white/70">
-          <a href="#" className="hover:text-white">About</a>
-          <a href="#" className="hover:text-white">Run</a>
-          <a href="#" className="hover:text-white">Skate</a>
-          <a href="#" className="hover:text-white">Hike</a>
-          <a href="#" className="hover:text-white">Dance</a>
-          <a href="/links" className="hover:text-white">Linktree</a>
+        <nav aria-label="Primary navigation" className="flex text-sm text-white/70">
+          <Link href="/links" className="hover:text-white focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white">
+            Linktree
+          </Link>
         </nav>
-
-        {/* Mobile button */}
-        <button
-          className="md:hidden text-white/80"
-          onClick={() => setOpen(!open)}
-          aria-label="Open menu"
-        >
-          ☰
-        </button>
       </div>
-
-      {/* Mobile menu */}
-      {open && (
-        <div className="md:hidden border-t border-white/10 bg-bg/95 animate-in slide-in-from-top-2 duration-200">
-          <nav className="flex flex-col gap-4 px-6 py-4 text-white/80">
-            <a href="#" onClick={() => setOpen(false)}>About</a>
-            <a href="#" onClick={() => setOpen(false)}>Run</a>
-            <a href="#" onClick={() => setOpen(false)}>Skate</a>
-            <a href="#" onClick={() => setOpen(false)}>Hike</a>
-            <a href="#" onClick={() => setOpen(false)}>Dance</a>
-            <a href="/links" onClick={() => setOpen(false)}>Linktree</a>
-          </nav>
-        </div>
-      )}
     </header>
   );
 }
