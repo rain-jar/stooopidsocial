@@ -1,7 +1,7 @@
 import { revalidatePath } from "next/cache";
 import { NextResponse } from "next/server";
 import { getAdminSession, verifyCsrf, verifySameOrigin } from "@/lib/links/auth";
-import { getAdminLinksClient } from "@/lib/links/supabase";
+import { getAdminSupabaseClient } from "@/lib/supabase";
 import { isChecked, optionalText, requiredText, validHttpUrl, validSlug, validUuid } from "@/lib/links/validation";
 
 type Direction = "up" | "down";
@@ -10,7 +10,7 @@ function redirect(request: Request, result: "success" | "error") {
   return NextResponse.redirect(new URL(`/links/manage?${result}=1`, request.url), 303);
 }
 async function nextSortOrder(table: "links" | "link_categories", categoryId?: string) {
-  let query = getAdminLinksClient().from(table).select("sort_order").order("sort_order", { ascending: false }).limit(1);
+  let query = getAdminSupabaseClient().from(table).select("sort_order").order("sort_order", { ascending: false }).limit(1);
   if (table === "links" && categoryId) query = query.eq("category_id", categoryId);
   const { data, error } = await query;
   if (error) throw new Error("Unable to determine order.");
@@ -27,7 +27,7 @@ export async function POST(request: Request) {
     return new NextResponse("Forbidden", { status: 403 });
   }
 
-  const client = getAdminLinksClient();
+  const client = getAdminSupabaseClient();
   const action = formData.get("action");
   let error: unknown;
 

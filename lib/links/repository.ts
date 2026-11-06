@@ -1,10 +1,10 @@
 import "server-only";
 
-import { getAdminLinksClient, getPublicLinksClient } from "./supabase";
+import { getAdminSupabaseClient, getPublicSupabaseClient } from "@/lib/supabase";
 import type { LinkCategory, ManagedLink, PublicLinkCategory } from "./types";
 
 export async function getPublicLinkCategories(): Promise<PublicLinkCategory[]> {
-  const client = getPublicLinksClient();
+  const client = getPublicSupabaseClient();
   const [{ data: categories, error: categoryError }, { data: links, error: linksError }] = await Promise.all([
     client.from("link_categories").select("id,name,slug,sort_order,is_visible").order("sort_order").order("created_at"),
     client.from("links").select("id,title,url,icon,category_id,sort_order,is_visible").order("sort_order").order("created_at"),
@@ -18,7 +18,7 @@ export async function getPublicLinkCategories(): Promise<PublicLinkCategory[]> {
   }));
 }
 export async function getAllLinkContent() {
-  const client = getAdminLinksClient();
+  const client = getAdminSupabaseClient();
   const [{ data: categories, error: categoryError }, { data: links, error: linksError }] = await Promise.all([
     client.from("link_categories").select("id,name,slug,sort_order,is_visible").order("sort_order").order("created_at"),
     client.from("links").select("id,title,url,icon,category_id,sort_order,is_visible").order("sort_order").order("created_at"),

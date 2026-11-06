@@ -103,7 +103,7 @@ export default function EventGrid({ events, renderedAt }: EventGridProps) {
         <div className="rounded-2xl border border-white/10 bg-white/5 px-6 py-16 text-center">
           <h2 className="text-2xl font-semibold">No upcoming events yet</h2>
           <p className="mt-2 text-white/65">
-            Check back soon. A community event suggestion option is coming later.
+            Check back soon for the next community event.
           </p>
         </div>
       )}

@@ -1,5 +1,8 @@
 import { getGoogleConfiguration, googleFetch } from "@/lib/google-auth";
 import { getPublishedEventImage } from "@/lib/google-events";
+import { downloadEventImage } from "@/lib/events/images";
+import { getApprovedSupabaseImage } from "@/lib/events/repository";
+import { eventSource } from "@/lib/events/source";
 
 export const runtime = "nodejs";
 
@@ -41,6 +44,21 @@ export async function GET(
       !/^[a-f0-9]{12}$/.test(version)
     ) {
       return unavailable();
+    }
+
+    if (eventSource() === "supabase") {
+      const source = await getApprovedSupabaseImage(slug);
+      if (!source || source.version !== version) return unavailable();
+      const image = await downloadEventImage(source.path);
+      if (!image) return unavailable();
+      return new Response(image.content, {
+        headers: {
+          "Cache-Control": "public, max-age=300, s-maxage=3600, stale-while-revalidate=86400",
+          "Content-Length": String(image.content.byteLength),
+          "Content-Type": image.contentType,
+          "X-Content-Type-Options": "nosniff",
+        },
+      });
     }
 
     const source = await getPublishedEventImage(slug);

@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { createSessionValue, loginIdentifier, setAdminSession, verifyPasscode, verifySameOrigin } from "@/lib/links/auth";
-import { getAdminLinksClient } from "@/lib/links/supabase";
+import { getAdminSupabaseClient } from "@/lib/supabase";
 
 function destination(request: Request, value: string) {
   return new URL(`/links/manage${value}`, request.url);
@@ -13,7 +13,7 @@ export async function POST(request: Request) {
   const formData = await request.formData();
   const passcode = typeof formData.get("passcode") === "string" ? String(formData.get("passcode")).slice(0, 256) : "";
   const identifier = await loginIdentifier();
-  const client = getAdminLinksClient();
+  const client = getAdminSupabaseClient();
 
   const { data: limits, error: limitError } = await client.rpc("links_admin_check_login_limit", { p_identifier_hash: identifier });
   if (limitError || !limits?.[0]?.allowed) {

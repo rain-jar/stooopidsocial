@@ -33,7 +33,7 @@ export default async function ManageLinksPage({ searchParams }: { searchParams: 
     <ManageShell><main className="min-h-dvh bg-slate-950 px-4 py-10 text-white sm:px-6">
       <div className="mx-auto max-w-4xl">
         <header className="flex flex-wrap items-start justify-between gap-4">
-          <div><p className="text-sm font-bold uppercase tracking-[0.2em] text-orange-400">Les Stooopids</p><h1 className="mt-1 text-3xl font-bold">Manage links</h1><a href="/links" target="_blank" rel="noopener noreferrer" className="mt-2 inline-block text-sm text-white/60 underline hover:text-white">View public page ↗</a></div>
+          <div><p className="text-sm font-bold uppercase tracking-[0.2em] text-orange-400">Les Stooopids</p><h1 className="mt-1 text-3xl font-bold">Manage links</h1><div className="mt-2 flex flex-wrap gap-4 text-sm text-white/60"><a href="/links" target="_blank" rel="noopener noreferrer" className="underline hover:text-white">View public page ↗</a><a href="/links/manage/events" className="underline hover:text-white">Manage events</a></div></div>
           <form action="/links/manage/logout" method="post"><input type="hidden" name="csrf" value={csrf}/><button className={buttonClass}>Log out</button></form>
         </header>
         {params.success && <p role="status" className="mt-6 rounded-xl border border-emerald-400/30 bg-emerald-400/10 p-3 text-sm text-emerald-100">Changes saved.</p>}
