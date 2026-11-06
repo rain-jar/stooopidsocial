@@ -68,4 +68,4 @@ Simplify the global header to the two requested destinations, give the existing 
 
 ## Deployment
 
-Production deployment was explicitly approved on 2026-11-06. Commit, push, deployment, and public smoke-test evidence will be recorded after release.
+Production deployment was explicitly approved on 2026-11-06. Commit `7099868` was pushed to `origin/main`; Vercel production deployment `dpl_z8v56dPXSt9Qc642uijhAC6aaQyK` reached `READY`. Public smoke checks returned HTTP 200 for `/` and `/links`, found the new homepage and Linktree texture classes, and confirmed the header exposes Linktree without the removed placeholder navigation labels.
