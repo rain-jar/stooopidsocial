@@ -1,6 +1,6 @@
 # Supabase Event Platform and Public Submissions
 
-- Status: In progress — schema, import, and protected preview verified; production deployment pending
+- Status: Complete — production released; temporary Google rollback remains available
 - Date: 2026-11-06
 - Source requirement: Replace the Google Sheets/Drive event pipeline with a Supabase-backed event platform that lets any visitor submit an event through the website while preserving moderation, usability, efficiency, and strong security.
 - Approval: Approved by the user on 2026-11-06, excluding collection of a contact email.
@@ -279,10 +279,10 @@ The database migration and source cutover are breaking operational changes but n
 
 - The optional image-upload branch was validated structurally and the six migrated images were served privately, but a new public submission containing an image was not created during the final manual preview test.
 - Automated cross-browser coverage is not configured; verification used the supported Chrome browser at the available desktop viewport plus the earlier user-reviewed local responsive UI.
-- Production has not yet been deployed or smoke-tested. Google runtime credentials remain configured for the rollback window and have not been decommissioned.
+- A new production submission containing an image was not created during release verification; the upload path remains covered by validation, private signed upload constraints, migrated-image delivery, and the user-reviewed UI.
 
 ## Remaining Gates and Residual Risk
 
-- Commit and push the verified revision, deploy with the already configured production Supabase/Turnstile variables, and repeat public event/image and submission availability smoke checks.
-- Keep `EVENTS_GOOGLE_FALLBACK=true` during a short rollback window. Google cleanup remains a separate destructive action requiring explicit approval.
-- The phase remains incomplete until production cutover verification and the rollback-window observation are recorded.
+- Commit `918435e` was pushed to `origin/main`. Vercel production deployment `dpl_CnBs4RN8U5wV2xMKRt541DKQ55C7` reached `READY` and received the canonical `https://stooopidsocial.vercel.app` alias.
+- Production smoke verification found all six Supabase events in the public response, all six protected image routes returned HTTP 200 with image MIME types, and the production Turnstile challenge rendered and completed successfully without submitting a test record.
+- Keep `EVENTS_GOOGLE_FALLBACK=true` during the rollback window. Google cleanup remains a separate destructive action requiring explicit approval and is not part of this completed release.
