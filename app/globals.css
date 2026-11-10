@@ -167,3 +167,310 @@ dialog.event-image-dialog::backdrop {
     transition: none;
   }
 }
+
+/* Run crew page. Widths here stay in step with travelWidth() in components/run/RunDuck.tsx. */
+.run-scrollport {
+  position: fixed;
+  inset: 0;
+  overflow-x: hidden;
+  overflow-y: auto;
+  background-color: #fffdf8;
+  color: #1b3f72;
+  font-family: var(--font-run-mono), ui-monospace, monospace;
+  -webkit-overflow-scrolling: touch;
+}
+
+.run-page {
+  background-color: #fffdf8;
+  background-image:
+    linear-gradient(rgb(27 63 114 / 8%) 1px, transparent 1px),
+    linear-gradient(90deg, rgb(27 63 114 / 8%) 1px, transparent 1px);
+  background-size: 10px 10px;
+  color: #1b3f72;
+}
+
+.run-header,
+.run-footer {
+  border-color: #2c2c2a;
+}
+
+.run-copy {
+  margin: 0 1.15rem 0 8.35rem;
+}
+
+.run-hero-copy {
+  margin: 0 1.15rem;
+}
+
+.run-hero-stage {
+  display: grid;
+  align-items: end;
+  justify-items: center;
+  min-height: 14rem;
+  padding: 2.75rem 1rem 1.25rem;
+}
+
+.run-duck-static-start {
+  display: block;
+  width: min(16.25rem, 68vw);
+  height: auto;
+  aspect-ratio: 1057 / 742;
+}
+
+.run-duck-static-rest {
+  display: none;
+  width: min(16.25rem, 68vw);
+  height: auto;
+}
+
+.run-content.run-motion .run-duck-static-start {
+  visibility: hidden;
+}
+
+.run-header a[aria-current="page"] {
+  text-decoration: underline;
+  text-decoration-thickness: 3px;
+  text-underline-offset: 4px;
+}
+
+.run-press {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  min-height: 3.25rem;
+  border: 3px solid #2c2c2a;
+  border-radius: 22px;
+  background: #ef9f27;
+  color: #2c2c2a;
+  box-shadow: 4px 4px 0 #2c2c2a;
+  padding: 0.7rem 1.2rem;
+  font-weight: 700;
+  line-height: 1.2;
+  text-align: center;
+  transition: transform 120ms ease, box-shadow 120ms ease;
+}
+
+.run-press:hover {
+  transform: translate(-1px, -1px);
+  box-shadow: 5px 5px 0 #2c2c2a;
+}
+
+.run-press:active {
+  transform: translate(4px, 4px);
+  box-shadow: 0 0 0 #2c2c2a;
+}
+
+.run-card {
+  border: 3px solid #2c2c2a;
+  border-radius: 22px;
+  background: #fffdf8;
+  box-shadow: 4px 4px 0 #2c2c2a;
+}
+
+.run-copy .run-press {
+  width: 100%;
+}
+
+.run-faq summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  min-height: 3.25rem;
+  padding: 0.8rem 1rem;
+  cursor: pointer;
+  list-style: none;
+  font-weight: 700;
+}
+
+.run-faq summary::-webkit-details-marker {
+  display: none;
+}
+
+.run-faq-icon::before {
+  content: "+";
+  font-weight: 700;
+}
+
+.run-faq[open] .run-faq-icon::before {
+  content: "–";
+}
+
+.run-faq p {
+  margin: 0;
+  padding: 0 1rem 1rem;
+}
+
+.run-page :focus-visible {
+  outline: 3px solid #1b3f72;
+  outline-offset: 3px;
+}
+
+.run-press:focus-visible {
+  outline-color: #2c2c2a;
+}
+
+.run-duck-mover {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 15;
+  pointer-events: none;
+  user-select: none;
+}
+
+.run-duck-mover img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.run-duck-mover.is-dropping .run-duck-sprite {
+  animation: run-duck-drop 700ms cubic-bezier(0.18, 0.8, 0.2, 1) both;
+}
+
+.run-duck-mover.is-running .run-duck-sprite {
+  animation: run-duck-bob 320ms ease-in-out infinite;
+}
+
+@keyframes run-duck-drop {
+  0% {
+    transform: translateY(-34px);
+  }
+  62% {
+    transform: translateY(0);
+  }
+  78% {
+    transform: translateY(5px) scaleY(0.96);
+  }
+  100% {
+    transform: translateY(0) scaleY(1);
+  }
+}
+
+@keyframes run-duck-bob {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-6px);
+  }
+}
+
+.run-rolodex-stage {
+  position: relative;
+  padding-bottom: 1.35rem;
+  touch-action: pan-y;
+  border-radius: 22px;
+}
+
+.run-rolodex-stack {
+  position: relative;
+  aspect-ratio: 4 / 5;
+  transform-style: preserve-3d;
+  perspective: 1200px;
+}
+
+.run-rolodex-card {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  border: 3px solid #2c2c2a;
+  border-radius: 22px;
+  background: #fffdf8;
+  box-shadow: 4px 4px 0 #2c2c2a;
+  transform-origin: center top;
+}
+
+.run-rolodex-card img {
+  pointer-events: none;
+  user-select: none;
+}
+
+.run-indicator {
+  width: 4.5rem;
+  height: auto;
+}
+
+@media (max-width: 799px) {
+  .run-scrollport {
+    scroll-snap-type: y proximity;
+    scroll-padding-top: 4.5rem;
+  }
+
+  .run-section {
+    scroll-snap-align: start;
+    min-height: calc(100dvh - 4.5rem);
+  }
+
+  .run-section-hero {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .run-hero-stage {
+    flex: 1;
+  }
+}
+
+@media (min-width: 800px) {
+  .run-copy,
+  .run-hero-copy {
+    width: min(34rem, calc(100% - 18rem));
+    margin-right: auto;
+    margin-left: auto;
+  }
+
+  .run-copy .run-press {
+    width: auto;
+  }
+
+  /* The landing stage is only needed while the duck is in the hero. */
+  .run-content.run-departed .run-hero-stage {
+    display: none;
+  }
+}
+
+@media (min-width: 1100px) {
+  .run-copy,
+  .run-hero-copy {
+    width: min(40rem, calc(100% - 24rem));
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .run-scrollport {
+    scroll-snap-type: none;
+  }
+
+  .run-press,
+  .run-press:hover,
+  .run-press:active {
+    transform: none;
+    transition: none;
+    box-shadow: 4px 4px 0 #2c2c2a;
+  }
+
+  .run-rolodex-card {
+    transition: none !important;
+  }
+
+  .run-duck-static-start {
+    display: none !important;
+  }
+
+  .run-duck-static-rest {
+    display: block !important;
+  }
+
+  .run-duck-mover {
+    display: none !important;
+  }
+
+  .run-duck-mover.is-dropping .run-duck-sprite,
+  .run-duck-mover.is-running .run-duck-sprite {
+    animation: none;
+  }
+}
