@@ -4,7 +4,7 @@
 - Repository branch / commit / uncommitted changes: `cursor/run-crew-page-v1-ea82` at `b55e3faba2a4400399d4129048be427fe36b74f5`, plus this status SHA note. Not merged. No production deploy.
 - Current milestone: Run crew page v1 implemented on the branch. Awaiting Raj's review. Merge and production deploy are not approved.
 - Active work record / approved scope: `docs/work/010-run-crew-page.md`. Approved 2026-11-10 (America/Toronto), including the Rolodex amendment.
-- Next action: Raj reviews the PR and the Vercel preview. Do not merge or deploy to production without a separate approval.
+- Next action: Raj reviews the PR and the Vercel preview (`https://stooopidsocial-git-cursor-run-crew-pa-7113dc-raj-nairs-projects.vercel.app`, Ready, behind Vercel SSO). Do not merge or deploy to production without a separate approval.
 
 ## Stage Coverage
 

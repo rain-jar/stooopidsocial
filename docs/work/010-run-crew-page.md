@@ -78,4 +78,4 @@ Instagram embed or Graph API, race tracker, analytics, admin UI, invented crew f
 
 Implementation commit: `b55e3faba2a4400399d4129048be427fe36b74f5` on `cursor/run-crew-page-v1-ea82`.
 
-Not deployed to production. A Vercel preview from this branch is expected and is not a production release.
+Not deployed to production. Vercel preview for this branch is Ready: `https://stooopidsocial-git-cursor-run-crew-pa-7113dc-raj-nairs-projects.vercel.app` (deployment protection redirects anonymous requests to Vercel SSO). That preview is not a production release.
