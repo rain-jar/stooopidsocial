@@ -192,32 +192,48 @@ dialog.event-image-dialog::backdrop {
   inset: 0;
   overflow-x: hidden;
   overflow-y: auto;
+  background-color: var(--linktree-cream);
   color: var(--linktree-navy);
   font-family: var(--font-run-mono), ui-monospace, monospace;
+  scroll-padding-top: 4.5rem;
   -webkit-overflow-scrolling: touch;
 }
 
-/* Same palette as /links, held to the window so a long page still shows the poster.
-   Grid stays at the run page's 10px graph-paper pitch. */
-.run-page.linktree-textured-background {
-  background-size: 10px 10px, 10px 10px, 100% 100%, 100% 100%;
-  background-attachment: fixed;
+/* /links colors, split into two solid-enough zones so text never sits on the
+   gold-to-navy blend (that blend fails WCAG AA for both navy and cream type).
+   The gradient scrolls with the page. Grid stays at 10px. */
+.run-tone-light {
   color: var(--linktree-navy);
+  background-color: var(--linktree-cream);
+  background-image:
+    linear-gradient(color-mix(in srgb, var(--linktree-navy) 8%, transparent) 1px, transparent 1px),
+    linear-gradient(90deg, color-mix(in srgb, var(--linktree-navy) 8%, transparent) 1px, transparent 1px),
+    radial-gradient(
+      ellipse 90% 42% at 50% 28%,
+      color-mix(in srgb, var(--linktree-gold) 78%, transparent) 0%,
+      color-mix(in srgb, var(--linktree-gold) 42%, transparent) 8%,
+      transparent 70%
+    ),
+    linear-gradient(180deg, var(--linktree-cream) 0%, var(--linktree-cream) 22%, var(--linktree-gold) 100%);
+  background-size: 10px 10px, 10px 10px, 100% 100%, 100% 100%;
+  background-attachment: local;
 }
 
-/* Navy type fails on the gold-to-navy half of the links gradient.
-   The scrim is clear on the cream half and cream on the dark half. */
-.run-page :is(.run-hero-copy, .run-copy) > :is(h1, h2, p),
-.run-page .run-copy > ul:not(.run-stack) > li {
-  background-image: linear-gradient(
-    to bottom,
-    transparent 0%,
-    transparent 60%,
-    color-mix(in srgb, var(--linktree-cream) 92%, transparent) 74%,
-    color-mix(in srgb, var(--linktree-cream) 92%, transparent) 100%
-  );
-  background-attachment: fixed;
-  background-repeat: no-repeat;
+.run-tone-dark {
+  color: var(--linktree-cream);
+  background-color: var(--linktree-navy);
+  background-image:
+    linear-gradient(color-mix(in srgb, var(--linktree-cream) 16%, transparent) 1px, transparent 1px),
+    linear-gradient(90deg, color-mix(in srgb, var(--linktree-cream) 16%, transparent) 1px, transparent 1px);
+  background-size: 10px 10px;
+  background-attachment: local;
+}
+
+.run-tone-light .run-card,
+.run-tone-light .run-rolodex-card,
+.run-tone-dark .run-card,
+.run-tone-dark .run-rolodex-card {
+  color: var(--linktree-navy);
 }
 
 .run-header,
@@ -225,6 +241,12 @@ dialog.event-image-dialog::backdrop {
   border-color: #2c2c2a;
   background-color: var(--linktree-cream);
   color: var(--linktree-navy);
+}
+
+.run-footer.run-tone-dark {
+  border-color: var(--linktree-cream);
+  background-color: var(--linktree-navy);
+  color: var(--linktree-cream);
 }
 
 .run-copy {
@@ -245,8 +267,7 @@ dialog.event-image-dialog::backdrop {
   font-weight: 700;
   letter-spacing: 0.2em;
   text-transform: uppercase;
-  color: #1b3f72;
-  opacity: 0.55;
+  color: var(--linktree-navy);
 }
 
 .run-hero-copy {
@@ -354,7 +375,7 @@ dialog.event-image-dialog::backdrop {
 }
 
 .run-page :focus-visible {
-  outline: 3px solid #1b3f72;
+  outline: 3px solid currentColor;
   outline-offset: 3px;
 }
 
@@ -366,7 +387,7 @@ dialog.event-image-dialog::backdrop {
   position: absolute;
   top: 0;
   left: 0;
-  z-index: 30;
+  z-index: 35;
   margin: 0;
   padding: 0;
   border: 0;
@@ -386,6 +407,7 @@ dialog.event-image-dialog::backdrop {
   display: block;
   width: 100%;
   height: auto;
+  filter: drop-shadow(0 0 1px var(--linktree-cream));
 }
 
 .run-duck-mover.is-dropping .run-duck-sprite {
@@ -541,20 +563,29 @@ dialog.event-image-dialog::backdrop {
 
 /* Phone-only layout. Desktop (800px and up) is unchanged. */
 @media (max-width: 767px) {
-  .run-copy {
-    margin-right: 1.15rem;
-    margin-left: 1.15rem;
+  .run-copy,
+  .run-hero-copy {
+    margin-right: 2rem;
+    margin-left: 2rem;
   }
 
   .run-section {
     min-height: 0;
   }
 
+  .run-section :is(h1, h2) {
+    padding-left: 0.7rem;
+  }
+
   .run-section h2 {
     text-decoration: underline;
     text-decoration-thickness: 3px;
     text-underline-offset: 0.28rem;
-    text-decoration-color: #2c2c2a;
+    text-decoration-color: currentColor;
+  }
+
+  .run-faq summary {
+    padding-left: 1.35rem;
   }
 
   .run-section-hero {
@@ -613,22 +644,18 @@ dialog.event-image-dialog::backdrop {
   }
 
   .run-duck-mover[data-clip="corner"] img {
-    width: auto;
-    height: 70px;
+    width: 100%;
+    height: auto;
     max-width: none;
     transform: none;
   }
 
-  .run-duck-mover[data-clip="corner"]::before {
-    content: "";
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    left: 66.67%;
-    width: 3px;
-    background: #2c2c2a;
-    box-shadow: 3px 3px 0 #2c2c2a;
-    pointer-events: none;
+  .run-tone-dark .run-rolodex-dots span {
+    border-color: var(--linktree-cream);
+  }
+
+  .run-tone-dark .run-rolodex-dots span.is-current {
+    background: var(--linktree-cream);
   }
 }
 

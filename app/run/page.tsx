@@ -19,6 +19,7 @@ export default function RunPage() {
     <div className="run-content relative">
       <RunHeader />
       <main>
+        <div className="run-tone-light">
         <section className="run-section run-section-hero" data-run-section="0" aria-labelledby="run-hero-title">
           <div className="run-hero-copy pt-8 pb-2">
             <h1 id="run-hero-title" className="text-4xl font-bold tracking-tight">
@@ -90,7 +91,9 @@ export default function RunPage() {
             </ul>
           </div>
         </section>
+        </div>
 
+        <div className="run-tone-dark">
         <section className="run-section py-8" data-run-section="3" id={pacing.id} aria-labelledby="run-pacing-title">
           <div className="run-copy">
             <h2 id="run-pacing-title" className="text-3xl font-bold tracking-tight">
@@ -116,6 +119,7 @@ export default function RunPage() {
             </div>
           </div>
         </section>
+        </div>
       </main>
       <RunFooter />
       <RunDuck />
