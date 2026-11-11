@@ -466,7 +466,7 @@ dialog.event-image-dialog::backdrop {
 
 .run-rolodex-stack {
   position: relative;
-  aspect-ratio: 4 / 5;
+  aspect-ratio: 3 / 2;
   transform-style: preserve-3d;
   perspective: 1200px;
 }

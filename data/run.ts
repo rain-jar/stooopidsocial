@@ -22,6 +22,10 @@ export type DuckPose = "start" | "run" | "peek" | "rest";
 export type RunPhoto = {
   src: string;
   alt: string;
+  width: number;
+  height: number;
+  /** CSS object-position. Keeps faces inside the 3:2 card. */
+  position?: string;
   caption?: string;
 };
 
@@ -100,7 +104,7 @@ export const runContent = {
   photos: {
     id: "photos",
     title: "Photos",
-    intro: "[Placeholder] Crew photos will replace these cards.",
+    intro: "Photos from the crew.",
     follow: {
       href: "https://www.instagram.com/stooopidcrew/",
       label: "Follow @stooopidcrew",
@@ -112,32 +116,39 @@ export const runContent = {
     nextLabel: "Next photo",
     items: [
       {
-        src: "/run/photos/01.webp",
-        alt: "[Placeholder] Run crew photo 1",
-        caption: "[Placeholder] Caption 1",
+        src: "/run/photos/01-group-sunday.webp",
+        alt: "Stooopid Run Crew group photo after a Sunday run",
+        width: 1530,
+        height: 1246,
+        position: "50% 42%",
       },
       {
-        src: "/run/photos/02.webp",
-        alt: "[Placeholder] Run crew photo 2",
-        caption: "[Placeholder] Caption 2",
+        src: "/run/photos/02-costume-run.webp",
+        alt: "Crew in costumes at Café Tranquille",
+        width: 1442,
+        height: 848,
+        position: "50% 45%",
       },
       {
-        src: "/run/photos/03.webp",
-        alt: "[Placeholder] Run crew photo 3",
+        src: "/run/photos/03-autumn-tree.webp",
+        alt: "Crew in front of a bright red autumn tree",
+        width: 1120,
+        height: 1026,
+        position: "50% 62%",
       },
       {
-        src: "/run/photos/04.webp",
-        alt: "[Placeholder] Run crew photo 4",
-        caption: "[Placeholder] Caption 4",
+        src: "/run/photos/04-lache-pas-la-patate.webp",
+        alt: 'Crew holding a "Lâche pas la patate!" sign with the duck mascot',
+        width: 1212,
+        height: 1088,
+        position: "50% 72%",
       },
       {
-        src: "/run/photos/05.webp",
-        alt: "[Placeholder] Run crew photo 5",
-      },
-      {
-        src: "/run/photos/06.webp",
-        alt: "[Placeholder] Run crew photo 6",
-        caption: "[Placeholder] Caption 6",
+        src: "/run/photos/05-ca-vaut-le-pain.webp",
+        alt: 'Crew holding "Ça vaut le pain" and "Forget legs, run with your heart" signs, with a golden retriever',
+        width: 1212,
+        height: 1088,
+        position: "50% 62%",
       },
     ] satisfies RunPhoto[],
   },

@@ -35,6 +35,7 @@
 - Phone peek and Rolodex follow-up, approved by Raj on 2026-11-10 at about 8:37 PM America/Toronto. Desktop stays as approved. On phones, the static peek is not clipped by its own box: a pole-free asset is tucked so only the left edge of the screen cuts it, about 70px tall, with the eye, headband knot, full beak, and hand visible, plus a thin hard shadow on that edge. The phone Rolodex takes a tap on the right half as next and the left half as previous, keeps horizontal swipe, hides the previous/next buttons visually while leaving them keyboard-reachable, shows progress dots, nudges the top card once when the section first appears, and ends on a Follow @stooopidcrew card that wraps back to the first photo. Reduced motion does not nudge.
 - Spacing, Photos peek, and palette follow-up, approved by Raj on 2026-11-10 at about 9:07 PM America/Toronto. Phones lose the reserved blank bands: FAQ cards use the normal 0.75rem stack gap, and the Sunday and pacing buttons keep their normal margin. The duck does not reserve space. It overlays the left edge, about two-thirds off screen, with a few pixels of overlap into the content margin, beside a heading, a card edge, or a button. Photos on phones uses that same left-edge peek. The over-the-Rolodex peek is gone. Desktop keeps the side peek. `/run` at every width uses the `/links` background class, with the 10px graph paper kept. Header and footer use the same cream token.
 - Visibility and contrast follow-up, approved by Raj on 2026-11-10 at about 9:41 PM America/Toronto after he reviewed a phone screenshot. On phones the peek must show the eye, the headband, and the whole beak, about half of the peek art, always above cards and buttons, and never on top of text or tap targets. It anchors beside the heading, and on a long section it sticks in the left margin. The cream rectangles behind plain text come out. The `/links` gradient scrolls with the page. Text is navy on the cream-to-gold zone and cream on the navy zone.
+- Real photos, approved by Raj on 2026-11-10 at about 10:13 PM America/Toronto. The six placeholder cards are replaced by five crew photos, then the Follow @stooopidcrew card. The photos are no longer placeholders.
 
 ## Results (after implementation)
 
@@ -47,7 +48,7 @@
   - `components/run/*` — header, footer, link, duck, Rolodex.
   - `data/run.ts` — copy, links, photo list, duck frame paths.
   - `public/run/duck/` — start, run-a, run-b, peek, rest. Backgrounds removed by edge flood-fill so the cream body stays. `run-a` and `run-b` share one canvas so the cycle lines up.
-  - `public/run/photos/01.webp`–`06.webp` — labeled placeholders.
+  - `public/run/photos/` — five crew photos as WebP (`01-group-sunday` through `05-ca-vaut-le-pain`), 833,510 bytes together. Long edge under 1600px, no EXIF. The earlier labeled placeholders were removed. The card is 3:2 so the group photos fill the frame without cutting faces. Each photo has an `object-position` in `data/run.ts`. No captions.
   - `docs/run/PROJECT.md`, `docs/run/STATUS.md`, this record.
 - Acceptance criteria results and observed verification evidence:
   - Header Run and the `/links` Run link are present. `/run` does not use the dark site header.

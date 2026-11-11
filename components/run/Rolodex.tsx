@@ -96,6 +96,8 @@ export default function Rolodex() {
   );
   const dragRef = useRef<Drag | null>(null);
   const leavingRef = useRef(false);
+  const flipTimer = useRef(0);
+  const stageRef = useRef<HTMLDivElement>(null);
   const nudged = useRef(false);
 
   useEffect(() => {
@@ -169,6 +171,14 @@ export default function Rolodex() {
     setDragging(false);
     setLeaving(true);
     setDragDeg(-86);
+    window.clearTimeout(flipTimer.current);
+    flipTimer.current = window.setTimeout(() => {
+      if (!leavingRef.current) return;
+      leavingRef.current = false;
+      setLeaving(false);
+      setDragDeg(0);
+      setIndex((current) => (current + 1) % count);
+    }, 520);
   };
 
   const goPrev = () => {
@@ -198,6 +208,7 @@ export default function Rolodex() {
 
   const onTransitionEnd = (event: React.TransitionEvent<HTMLElement>) => {
     if (event.propertyName !== "transform" || !leavingRef.current) return;
+    window.clearTimeout(flipTimer.current);
     leavingRef.current = false;
     setLeaving(false);
     setDragDeg(0);
@@ -230,7 +241,7 @@ export default function Rolodex() {
     setDragDeg(Math.max(-78, Math.min(36, dx * 0.32)));
   };
 
-  const finishDrag = (event: React.PointerEvent<HTMLDivElement>) => {
+  const finishDrag = (event: React.PointerEvent<HTMLDivElement> | PointerEvent) => {
     const drag = dragRef.current;
     if (!drag || event.pointerId !== drag.id) return;
     const dx = event.clientX - drag.x;
@@ -239,7 +250,9 @@ export default function Rolodex() {
     setDragging(false);
     const phoneTap = window.innerWidth <= 767 && Math.abs(dx) < 12 && Math.abs(dy) < 12 && drag.locked !== "y";
     if (phoneTap) {
-      const bounds = event.currentTarget.getBoundingClientRect();
+      const boundsSource = event.currentTarget instanceof HTMLElement ? event.currentTarget : stageRef.current;
+      if (!boundsSource) return;
+      const bounds = boundsSource.getBoundingClientRect();
       if (event.clientX < bounds.left + bounds.width / 2) goPrev();
       else goNext();
       return;
@@ -252,6 +265,24 @@ export default function Rolodex() {
     else if (dx >= 52) goPrev();
     else setDragDeg(0);
   };
+
+  const finishDragRef = useRef(finishDrag);
+
+  useEffect(() => {
+    finishDragRef.current = finishDrag;
+  });
+
+  useEffect(() => {
+    const stage = stageRef.current;
+    if (!stage) return;
+    const onUp = (event: PointerEvent) => finishDragRef.current(event);
+    stage.addEventListener("pointerup", onUp);
+    stage.addEventListener("pointercancel", onUp);
+    return () => {
+      stage.removeEventListener("pointerup", onUp);
+      stage.removeEventListener("pointercancel", onUp);
+    };
+  }, [showFallback]);
 
   const onKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
     if (event.target !== event.currentTarget) return;
@@ -278,6 +309,7 @@ export default function Rolodex() {
     <div className="run-rolodex">
       {loading ? <RunningIndicator /> : null}
       <div
+        ref={stageRef}
         className="run-rolodex-stage"
         tabIndex={0}
         role="group"
@@ -406,9 +438,11 @@ function PhotoCard({
             <Image
               src={card.photo.src}
               alt={card.photo.alt}
-              fill
-              sizes="(max-width: 800px) 70vw, 480px"
-              className="object-cover"
+              width={card.photo.width}
+              height={card.photo.height}
+              sizes="(max-width: 800px) 92vw, 720px"
+              className="h-full w-full object-cover"
+              style={{ objectPosition: card.photo.position ?? "center" }}
             />
           </div>
           {card.photo.caption ? (
