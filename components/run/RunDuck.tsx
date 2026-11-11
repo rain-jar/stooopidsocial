@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import { runContent, type DuckPose } from "@/data/run";
 
-type Clip = "none" | "corner" | "rolodex";
+type Clip = "none" | "corner";
 
 type Motion = {
   x: number;
@@ -85,7 +85,7 @@ export default function RunDuck() {
     if (!content || !scrollport) return;
 
     const frames = runContent.duck.frames;
-    for (const frame of [frames.start, frames.runA, frames.runB, frames.peek, frames.rest]) {
+    for (const frame of [frames.start, frames.runA, frames.runB, frames.peek, frames.peekMobile, frames.rest]) {
       const image = new window.Image();
       image.src = frame.src;
     }
@@ -208,26 +208,11 @@ export default function RunDuck() {
     const viewTop = () => 76;
     const viewBottom = () => window.innerHeight - 12;
 
-    const rolodexPoint = (): Point | null => {
-      const stack = content.querySelector<HTMLElement>(".run-rolodex-stack");
-      if (!stack) return null;
-      const rect = stack.getBoundingClientRect();
-      if (rect.bottom < viewTop() + 36 || rect.top > viewBottom()) return null;
-      const height = 77;
-      const y = Math.min(Math.max(rect.top - height * 0.62, viewTop()), rect.bottom - height);
-      return {
-        x: Math.max(10, rect.left + 6),
-        y: y + scrollport.scrollTop,
-        width: 104,
-        clip: "rolodex",
-      };
-    };
-
     const freeBands = (section: HTMLElement) => {
       const sectionRect = section.getBoundingClientRect();
       const top = Math.max(viewTop(), sectionRect.top);
       const bottom = Math.min(viewBottom(), sectionRect.bottom);
-      if (bottom - top < 48) return [];
+      if (bottom - top < 24) return [];
       const blocks = Array.from(section.querySelectorAll<HTMLElement>("h1, h2, p, li, a, button, summary, .run-card, .run-rolodex"))
         .filter((element) => !element.classList.contains("run-duck-mover"))
         .filter((element) => {
@@ -247,28 +232,46 @@ export default function RunDuck() {
       const gaps: { top: number; height: number }[] = [];
       let cursor = top;
       for (const block of merged) {
-        if (block.top - cursor >= 48) gaps.push({ top: cursor, height: block.top - cursor });
+        if (block.top - cursor >= 12) gaps.push({ top: cursor, height: block.top - cursor });
         cursor = Math.max(cursor, block.bottom);
       }
-      if (bottom - cursor >= 48) gaps.push({ top: cursor, height: bottom - cursor });
-      return gaps.filter((gap) => gap.height >= 48);
+      if (bottom - cursor >= 12) gaps.push({ top: cursor, height: bottom - cursor });
+      return gaps.filter((gap) => gap.height >= 12);
     };
 
     const cornerPoint = (index: number): Point | null => {
-      if (index === 4) {
-        const overCard = rolodexPoint();
-        if (overCard) return overCard;
-      }
       const section = sections()[index];
-      const gaps = section ? freeBands(section).filter((gap) => gap.height >= CORNER_H + 8) : [];
-      if (gaps.length === 0) return null;
-      const mid = window.innerHeight * 0.46;
-      gaps.sort((a, b) => Math.abs(a.top + a.height / 2 - mid) - Math.abs(b.top + b.height / 2 - mid));
-      const roomy = gaps[0];
+      if (!section) return null;
       const frame = runContent.duck.frames.peekMobile;
       const width = Math.round((CORNER_H * frame.width) / frame.height);
-      const y = roomy.top + (roomy.height - CORNER_H) / 2;
-      return { x: Math.round(width * -0.4), y: y + scrollport.scrollTop, width, clip: "corner", boxH: CORNER_H };
+      const x = Math.round(width * (-2 / 3));
+      const viewT = viewTop();
+      const viewB = viewBottom();
+      const mid = window.innerHeight * 0.46;
+      const anchors: { center: number; bias: number }[] = [];
+      const pushBox = (rect: DOMRect, bias: number) => {
+        const top = Math.max(rect.top, viewT);
+        const bottom = Math.min(rect.bottom, viewB);
+        if (bottom - top < 12) return;
+        anchors.push({ center: top + (bottom - top) / 2, bias });
+      };
+      const heading = section.querySelector<HTMLElement>("h1, h2");
+      if (heading) pushBox(heading.getBoundingClientRect(), 140);
+      section.querySelectorAll<HTMLElement>(".run-card, .run-rolodex-stack, .run-cta").forEach((element) => {
+        pushBox(element.getBoundingClientRect(), 36);
+      });
+      for (const gap of freeBands(section)) {
+        const center = gap.top + gap.height / 2;
+        if (center < viewT || center > viewB) continue;
+        anchors.push({ center, bias: 24 });
+      }
+      let center = (viewT + viewB) / 2;
+      if (anchors.length > 0) {
+        anchors.sort((a, b) => Math.abs(a.center - mid) - a.bias - (Math.abs(b.center - mid) - b.bias));
+        center = anchors[0].center;
+      }
+      const top = Math.max(viewT, Math.min(center - CORNER_H / 2, viewB - CORNER_H));
+      return { x, y: top + scrollport.scrollTop, width, clip: "corner", boxH: CORNER_H };
     };
 
     const applyPeek = (index: number, animate: boolean, ms = 280) => {
@@ -611,7 +614,7 @@ export default function RunDuck() {
   const frame =
     motion.pose === "start"
       ? frames.start
-      : motion.pose === "peek" && motion.phone && motion.clip === "corner"
+      :     motion.pose === "peek" && motion.phone
         ? frames.peekMobile
         : motion.pose === "peek"
           ? frames.peek

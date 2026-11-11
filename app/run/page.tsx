@@ -61,7 +61,6 @@ export default function RunPage() {
               ))}
             </ul>
             <p className="mt-4">{sunday.note}</p>
-            <div className="run-pocket" aria-hidden="true" />
             <div className="run-cta mt-6">
               <RunLink href={sunday.cta.href} external>
                 {sunday.cta.label}
@@ -98,7 +97,6 @@ export default function RunPage() {
               {pacing.title}
             </h2>
             <p className="mt-3">{pacing.body}</p>
-            <div className="run-pocket" aria-hidden="true" />
             <div className="run-cta mt-6">
               <RunLink href={pacing.cta.href} external>
                 {pacing.cta.label}
@@ -113,7 +111,6 @@ export default function RunPage() {
               {photos.title}
             </h2>
             <p className="mt-3">{photos.intro}</p>
-            <div className="run-pocket run-pocket-photo" aria-hidden="true" />
             <div className="mt-5">
               <Rolodex />
             </div>

@@ -375,7 +375,7 @@ function PhotoCard({
       onTransitionEnd={onTransitionEnd}
     >
       {card.kind === "follow" ? (
-        <div className="flex h-full flex-col items-start justify-center gap-4 bg-[#fffdf8] px-5 py-8">
+        <div className="flex h-full flex-col items-start justify-center gap-4 bg-white px-5 py-8">
           <p className="text-xl font-bold">{runContent.photos.follow.label}</p>
           <a
             href={runContent.photos.follow.href}

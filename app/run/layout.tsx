@@ -14,7 +14,7 @@ export default function RunLayout({
 }>) {
   return (
     <div
-      className={`${jetbrainsMono.variable} run-page run-scrollport`}
+      className={`${jetbrainsMono.variable} linktree-textured-background run-page run-scrollport`}
     >
       {children}
     </div>

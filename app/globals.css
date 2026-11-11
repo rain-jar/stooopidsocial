@@ -25,13 +25,31 @@ body {
   font-family: Arial, Helvetica, sans-serif;
 }
 
+:root {
+  --linktree-navy: #1b3f72;
+  --linktree-gold: #ef9f27;
+  --linktree-cream: #f5f0e8;
+}
+
 .linktree-textured-background {
-  background-color: #1B3F72;
+  background-color: var(--linktree-navy);
   background-image:
-    linear-gradient(rgb(27 63 114 / 8%) 1px, transparent 1px),
-    linear-gradient(90deg, rgb(27 63 114 / 8%) 1px, transparent 1px),
-    radial-gradient(ellipse 85% 30% at 50% 42%, rgb(239 159 39 / 82%) 0%, rgb(239 159 39 / 48%) 2%, transparent 74%),
-    linear-gradient(180deg, #F5F0E8 0%, #F5F0E8 24%, #EF9F27 51%, #1B3F72 82%, #1B3F72 100%);
+    linear-gradient(color-mix(in srgb, var(--linktree-navy) 8%, transparent) 1px, transparent 1px),
+    linear-gradient(90deg, color-mix(in srgb, var(--linktree-navy) 8%, transparent) 1px, transparent 1px),
+    radial-gradient(
+      ellipse 85% 30% at 50% 42%,
+      color-mix(in srgb, var(--linktree-gold) 82%, transparent) 0%,
+      color-mix(in srgb, var(--linktree-gold) 48%, transparent) 2%,
+      transparent 74%
+    ),
+    linear-gradient(
+      180deg,
+      var(--linktree-cream) 0%,
+      var(--linktree-cream) 24%,
+      var(--linktree-gold) 51%,
+      var(--linktree-navy) 82%,
+      var(--linktree-navy) 100%
+    );
   background-size: 16px 16px, 16px 16px, 100% 100%, 100% 100%;
   background-attachment: local;
 }
@@ -174,33 +192,43 @@ dialog.event-image-dialog::backdrop {
   inset: 0;
   overflow-x: hidden;
   overflow-y: auto;
-  background-color: #fffdf8;
-  color: #1b3f72;
+  color: var(--linktree-navy);
   font-family: var(--font-run-mono), ui-monospace, monospace;
   -webkit-overflow-scrolling: touch;
 }
 
-.run-page {
-  background-color: #fffdf8;
-  background-image:
-    linear-gradient(rgb(27 63 114 / 8%) 1px, transparent 1px),
-    linear-gradient(90deg, rgb(27 63 114 / 8%) 1px, transparent 1px);
-  background-size: 10px 10px;
-  color: #1b3f72;
+/* Same palette as /links, held to the window so a long page still shows the poster.
+   Grid stays at the run page's 10px graph-paper pitch. */
+.run-page.linktree-textured-background {
+  background-size: 10px 10px, 10px 10px, 100% 100%, 100% 100%;
+  background-attachment: fixed;
+  color: var(--linktree-navy);
+}
+
+/* Navy type fails on the gold-to-navy half of the links gradient.
+   The scrim is clear on the cream half and cream on the dark half. */
+.run-page :is(.run-hero-copy, .run-copy) > :is(h1, h2, p),
+.run-page .run-copy > ul:not(.run-stack) > li {
+  background-image: linear-gradient(
+    to bottom,
+    transparent 0%,
+    transparent 60%,
+    color-mix(in srgb, var(--linktree-cream) 92%, transparent) 74%,
+    color-mix(in srgb, var(--linktree-cream) 92%, transparent) 100%
+  );
+  background-attachment: fixed;
+  background-repeat: no-repeat;
 }
 
 .run-header,
 .run-footer {
   border-color: #2c2c2a;
+  background-color: var(--linktree-cream);
+  color: var(--linktree-navy);
 }
 
 .run-copy {
   margin: 0 1.15rem 0 8.35rem;
-}
-
-.run-pocket {
-  height: 0;
-  overflow: hidden;
 }
 
 .run-stack {
@@ -287,7 +315,7 @@ dialog.event-image-dialog::backdrop {
 .run-card {
   border: 3px solid #2c2c2a;
   border-radius: 22px;
-  background: #fffdf8;
+  background: #fff;
   box-shadow: 4px 4px 0 #2c2c2a;
 }
 
@@ -427,7 +455,7 @@ dialog.event-image-dialog::backdrop {
   overflow: hidden;
   border: 3px solid #2c2c2a;
   border-radius: 22px;
-  background: #fffdf8;
+  background: #fff;
   box-shadow: 4px 4px 0 #2c2c2a;
   transform-origin: center top;
 }
@@ -572,22 +600,6 @@ dialog.event-image-dialog::backdrop {
     opacity: 0;
   }
 
-  .run-stack {
-    gap: 7.75rem;
-  }
-
-  .run-pocket {
-    height: 7.75rem;
-  }
-
-  .run-pocket-photo {
-    height: 3.25rem;
-  }
-
-  .run-pocket + .run-cta {
-    margin-top: 0;
-  }
-
   .run-duck-mover {
     pointer-events: auto;
     cursor: pointer;
@@ -612,23 +624,11 @@ dialog.event-image-dialog::backdrop {
     position: absolute;
     top: 0;
     bottom: 0;
-    left: 40%;
+    left: 66.67%;
     width: 3px;
     background: #2c2c2a;
     box-shadow: 3px 3px 0 #2c2c2a;
     pointer-events: none;
-  }
-
-  .run-duck-mover[data-clip="rolodex"] {
-    width: 6.5rem;
-    height: 4.8rem;
-    overflow: hidden;
-  }
-
-  .run-duck-mover[data-clip="rolodex"] img {
-    width: 11rem;
-    max-width: none;
-    transform: translate(-46%, -20%);
   }
 }
 

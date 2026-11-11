@@ -3,7 +3,7 @@ import { runContent } from "@/data/run";
 
 export default function RunHeader() {
   return (
-    <header className="run-header sticky top-0 z-40 border-b-[3px] bg-[#fffdf8]">
+    <header className="run-header sticky top-0 z-40 border-b-[3px]">
       <div className="mx-auto flex w-full max-w-[1400px] items-center justify-between gap-4 px-4 py-3">
         <Link href={runContent.header.homeHref} className="text-base font-bold tracking-tight">
           {runContent.header.homeLabel}

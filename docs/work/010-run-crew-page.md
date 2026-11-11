@@ -33,15 +33,16 @@
 - Material amendments / renewed approval: Rolodex instead of Instagram embeds, recorded above. Putting Run back in the shared header intentionally reverses the part of work record 009 that removed it.
 - Mobile follow-up, approved by Raj on 2026-11-10 at about 7:32 PM America/Toronto, after he reviewed the preview: desktop stays as approved. Phones under 768px only: collapse the hero after the 2 second hold, with a small scroll cue during the hold; the peeking duck stays on screen inside a section and runs only when the next heading enters the upper viewport, along that heading's underline, then tucks into a corner gap; no left gutter, content is full width with equal side padding; the duck is a button that hops when tapped; in Photos it peeks over the Rolodex. Reduced motion stays a static duck with no snap. Scroll-snap on phones stays proximity, not mandatory.
 - Phone peek and Rolodex follow-up, approved by Raj on 2026-11-10 at about 8:37 PM America/Toronto. Desktop stays as approved. On phones, the static peek is not clipped by its own box: a pole-free asset is tucked so only the left edge of the screen cuts it, about 70px tall, with the eye, headband knot, full beak, and hand visible, plus a thin hard shadow on that edge. The phone Rolodex takes a tap on the right half as next and the left half as previous, keeps horizontal swipe, hides the previous/next buttons visually while leaving them keyboard-reachable, shows progress dots, nudges the top card once when the section first appears, and ends on a Follow @stooopidcrew card that wraps back to the first photo. Reduced motion does not nudge.
+- Spacing, Photos peek, and palette follow-up, approved by Raj on 2026-11-10 at about 9:07 PM America/Toronto. Phones lose the reserved blank bands: FAQ cards use the normal 0.75rem stack gap, and the Sunday and pacing buttons keep their normal margin. The duck does not reserve space. It overlays the left edge, about two-thirds off screen, with a few pixels of overlap into the content margin, beside a heading, a card edge, or a button. Photos on phones uses that same left-edge peek. The over-the-Rolodex peek is gone. Desktop keeps the side peek. `/run` at every width uses the `/links` background class, with the 10px graph paper kept. Header and footer use the same cream token.
 
 ## Results (after implementation)
 
 - Actual changes and files:
   - `components/layout/Header.tsx` — Run link beside Linktree.
   - `app/links/page.tsx` — in-page Run link.
-  - `app/run/layout.tsx` — JetBrains Mono and the cream scrollport.
-  - `app/run/page.tsx` — five sections, own header and footer.
-  - `app/globals.css` — run-page tokens, graph paper, press buttons, duck, Rolodex, phone scroll-snap.
+  - `app/run/layout.tsx` — JetBrains Mono and the `/links` background on the run scrollport.
+  - `app/run/page.tsx` — five sections, own header and footer. No reserved duck gaps.
+  - `app/globals.css` — shared linktree color tokens, graph paper, press buttons, duck, Rolodex, phone scroll-snap.
   - `components/run/*` — header, footer, link, duck, Rolodex.
   - `data/run.ts` — copy, links, photo list, duck frame paths.
   - `public/run/duck/` — start, run-a, run-b, peek, rest. Backgrounds removed by edge flood-fill so the cream body stays. `run-a` and `run-b` share one canvas so the cycle lines up.
@@ -64,7 +65,8 @@
 - Deviations / residual risks / follow-ups:
   - Sunday has no timezone label. Assumption D4 in `docs/run/PROJECT.md`.
   - Desktop hides the hero landing stage after the duck leaves so the peek sits beside Sunday. That desktop path was not changed by the 7:32 PM mobile amendment.
-  - Phones under 768px, after the 8:37 PM amendment: the static peek uses `public/run/duck/peek-mobile.webp` (pole removed, trimmed). Its box does not clip the art. About 40% sits past the left edge of the screen. Checked at 375 and 390 in a long FAQ: full beak, no overlap with question text. Phone Rolodex dots, hidden previous/next controls, tap halves, and swipe were checked. Desktop at 1280 still uses `peek.webp`, the side peek, and visible previous/next buttons, with no dots.
+  - Phones under 768px, after the 9:07 PM amendment: no reserved vertical gaps. Measured FAQ card gap is 12px and the Sunday note-to-button gap is 24px at 375px. The static peek uses `peek-mobile.webp`, about 70px tall. At 375 and 390 its box starts at -46px and ends at 23px, while the text column starts at 18px, so about two-thirds is off the left edge and about 5px overlaps the content margin. It sits beside the Sunday button, an FAQ card edge, and the photo card. Question text stays clear of the beak. Photos uses this edge peek, not a peek over the Rolodex. Desktop at 1280 still uses `peek.webp` in the side lane, with visible previous/next buttons and no dots.
+  - `/run` background is `.linktree-textured-background`, held to the window, with the grid at 10px instead of the 16px `/links` pitch. Header and footer are `--linktree-cream`. Cards and the Rolodex fill are white so they stay separate from the cream and readable on the navy. Navy text on the dark half of the poster sits on a 92% cream scrim. Gold buttons keep near-black type. Checked at 375, 390, and 1280.
   - Gallery images that fail one-by-one show the fallback inside that card. If every photo fails, the stack is replaced by one fallback card.
   - Real copy, photos, Graph API feed, race tracker, analytics, and admin editing remain deferred.
 - Canonical documents updated: `docs/run/PROJECT.md`, `docs/run/STATUS.md`, this file. No repo-root `PROJECT.md` or `STATUS.md`.
