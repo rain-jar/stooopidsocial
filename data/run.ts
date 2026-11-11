@@ -154,6 +154,7 @@ export const runContent = {
       runA: { src: "/run/duck/run-a.webp", width: 613, height: 797 },
       runB: { src: "/run/duck/run-b.webp", width: 613, height: 797 },
       peek: { src: "/run/duck/peek.webp", width: 832, height: 1114 },
+      peekMobile: { src: "/run/duck/peek-mobile.webp", width: 819, height: 826 },
       rest: { src: "/run/duck/rest.webp", width: 584, height: 750 },
     } satisfies Record<string, DuckFrame>,
   },

@@ -32,6 +32,7 @@
 - Conditions and separately authorized external actions: Branch commits and a pull request are authorized. Merge, push to `main`, and production deploy are not authorized.
 - Material amendments / renewed approval: Rolodex instead of Instagram embeds, recorded above. Putting Run back in the shared header intentionally reverses the part of work record 009 that removed it.
 - Mobile follow-up, approved by Raj on 2026-11-10 at about 7:32 PM America/Toronto, after he reviewed the preview: desktop stays as approved. Phones under 768px only: collapse the hero after the 2 second hold, with a small scroll cue during the hold; the peeking duck stays on screen inside a section and runs only when the next heading enters the upper viewport, along that heading's underline, then tucks into a corner gap; no left gutter, content is full width with equal side padding; the duck is a button that hops when tapped; in Photos it peeks over the Rolodex. Reduced motion stays a static duck with no snap. Scroll-snap on phones stays proximity, not mandatory.
+- Phone peek and Rolodex follow-up, approved by Raj on 2026-11-10 at about 8:37 PM America/Toronto. Desktop stays as approved. On phones, the static peek is not clipped by its own box: a pole-free asset is tucked so only the left edge of the screen cuts it, about 70px tall, with the eye, headband knot, full beak, and hand visible, plus a thin hard shadow on that edge. The phone Rolodex takes a tap on the right half as next and the left half as previous, keeps horizontal swipe, hides the previous/next buttons visually while leaving them keyboard-reachable, shows progress dots, nudges the top card once when the section first appears, and ends on a Follow @stooopidcrew card that wraps back to the first photo. Reduced motion does not nudge.
 
 ## Results (after implementation)
 
@@ -63,7 +64,7 @@
 - Deviations / residual risks / follow-ups:
   - Sunday has no timezone label. Assumption D4 in `docs/run/PROJECT.md`.
   - Desktop hides the hero landing stage after the duck leaves so the peek sits beside Sunday. That desktop path was not changed by the 7:32 PM mobile amendment.
-  - Phones under 768px: after the hold, the hero stage collapses and Sunday moves up. The duck is a corner peek in the gaps, or over the Rolodex in Photos. Checked at 375 and 390 with no settled overlap on text or buttons. A phone recording shows the hold, collapse, FAQ peek, Photos peek, and a tap.
+  - Phones under 768px, after the 8:37 PM amendment: the static peek uses `public/run/duck/peek-mobile.webp` (pole removed, trimmed). Its box does not clip the art. About 40% sits past the left edge of the screen. Checked at 375 and 390 in a long FAQ: full beak, no overlap with question text. Phone Rolodex dots, hidden previous/next controls, tap halves, and swipe were checked. Desktop at 1280 still uses `peek.webp`, the side peek, and visible previous/next buttons, with no dots.
   - Gallery images that fail one-by-one show the fallback inside that card. If every photo fails, the stack is replaced by one fallback card.
   - Real copy, photos, Graph API feed, race tracker, analytics, and admin editing remain deferred.
 - Canonical documents updated: `docs/run/PROJECT.md`, `docs/run/STATUS.md`, this file. No repo-root `PROJECT.md` or `STATUS.md`.

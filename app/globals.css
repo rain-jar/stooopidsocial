@@ -437,9 +437,56 @@ dialog.event-image-dialog::backdrop {
   user-select: none;
 }
 
-.run-indicator {
-  width: 4.5rem;
-  height: auto;
+@media (max-width: 767px) {
+  .run-rolodex-controls {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    padding: 0;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+  }
+}
+
+@media (max-width: 767px) {
+  .run-rolodex-dots {
+    display: flex;
+    justify-content: center;
+    gap: 0.4rem;
+    margin-top: 0.8rem;
+  }
+
+  .run-rolodex-dots span {
+    width: 0.45rem;
+    height: 0.45rem;
+    border: 2px solid #2c2c2a;
+    border-radius: 999px;
+    background: transparent;
+  }
+
+  .run-rolodex-dots span.is-current {
+    background: #1b3f72;
+  }
+
+  .run-rolodex-card.is-nudging {
+    animation: run-card-nudge 640ms ease;
+  }
+}
+
+@keyframes run-card-nudge {
+  0%,
+  100% {
+    transform: rotateX(0deg);
+  }
+  40% {
+    transform: rotateX(-11deg);
+  }
+  70% {
+    transform: rotateX(5deg);
+  }
 }
 
 @media (max-width: 799px) {
@@ -547,15 +594,29 @@ dialog.event-image-dialog::backdrop {
   }
 
   .run-duck-mover[data-clip="corner"] {
-    width: 7.1rem;
-    height: 6.5rem;
-    overflow: hidden;
+    overflow: visible;
+    width: auto;
+    height: auto;
+    background: transparent;
   }
 
   .run-duck-mover[data-clip="corner"] img {
-    width: 10.5rem;
+    width: auto;
+    height: 70px;
     max-width: none;
-    transform: translate(-20%, -12%);
+    transform: none;
+  }
+
+  .run-duck-mover[data-clip="corner"]::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 40%;
+    width: 3px;
+    background: #2c2c2a;
+    box-shadow: 3px 3px 0 #2c2c2a;
+    pointer-events: none;
   }
 
   .run-duck-mover[data-clip="rolodex"] {
@@ -611,6 +672,7 @@ dialog.event-image-dialog::backdrop {
 
   .run-rolodex-card {
     transition: none !important;
+    animation: none !important;
   }
 
   .run-duck-static-start {

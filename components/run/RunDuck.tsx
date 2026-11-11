@@ -49,7 +49,7 @@ const INITIAL: Motion = {
 const HOLD_MS = 2000;
 const DROP_MS = 700;
 const PHONE_MAX = 767;
-const CORNER_H = 96;
+const CORNER_H = 70;
 
 /**
  * Travel width matches the desktop content column in app/globals.css.
@@ -230,6 +230,10 @@ export default function RunDuck() {
       if (bottom - top < 48) return [];
       const blocks = Array.from(section.querySelectorAll<HTMLElement>("h1, h2, p, li, a, button, summary, .run-card, .run-rolodex"))
         .filter((element) => !element.classList.contains("run-duck-mover"))
+        .filter((element) => {
+          const details = element.closest("details");
+          return !details || details.open || element.tagName === "SUMMARY" || element.tagName === "DETAILS";
+        })
         .map((element) => element.getBoundingClientRect())
         .filter((rect) => rect.width > 8 && rect.height > 8 && rect.bottom > top && rect.top < bottom)
         .map((rect) => ({ top: Math.max(rect.top, top), bottom: Math.min(rect.bottom, bottom) }))
@@ -256,14 +260,15 @@ export default function RunDuck() {
         if (overCard) return overCard;
       }
       const section = sections()[index];
-      const gaps = section ? freeBands(section) : [];
+      const gaps = section ? freeBands(section).filter((gap) => gap.height >= CORNER_H + 8) : [];
       if (gaps.length === 0) return null;
       const mid = window.innerHeight * 0.46;
       gaps.sort((a, b) => Math.abs(a.top + a.height / 2 - mid) - Math.abs(b.top + b.height / 2 - mid));
       const roomy = gaps[0];
-      const boxH = Math.min(CORNER_H, Math.max(64, roomy.height - 10));
-      const y = roomy.top + (roomy.height - boxH) / 2;
-      return { x: 0, y: y + scrollport.scrollTop, width: 78, clip: "corner", boxH };
+      const frame = runContent.duck.frames.peekMobile;
+      const width = Math.round((CORNER_H * frame.width) / frame.height);
+      const y = roomy.top + (roomy.height - CORNER_H) / 2;
+      return { x: Math.round(width * -0.4), y: y + scrollport.scrollTop, width, clip: "corner", boxH: CORNER_H };
     };
 
     const applyPeek = (index: number, animate: boolean, ms = 280) => {
@@ -606,20 +611,21 @@ export default function RunDuck() {
   const frame =
     motion.pose === "start"
       ? frames.start
-      : motion.pose === "peek"
-        ? frames.peek
-        : motion.pose === "rest"
-          ? frames.rest
-          : motion.frame === 0
-            ? frames.runA
-            : frames.runB;
+      : motion.pose === "peek" && motion.phone && motion.clip === "corner"
+        ? frames.peekMobile
+        : motion.pose === "peek"
+          ? frames.peek
+          : motion.pose === "rest"
+            ? frames.rest
+            : motion.frame === 0
+              ? frames.runA
+              : frames.runB;
 
   const className = `run-duck-mover${motion.dropping ? " is-dropping" : ""}${motion.running ? " is-running" : ""}${hopping ? " is-hopping" : ""}`;
   const style = {
     transform: `translate3d(${motion.x}px, ${motion.y}px, 0)`,
     transition: motion.animate ? `transform ${motion.ms}ms linear, width ${motion.ms}ms linear` : "none",
     width: motion.clip === "none" ? motion.width : undefined,
-    height: motion.clip === "corner" && motion.boxH ? motion.boxH : undefined,
   };
 
   const sprite = (

@@ -6,6 +6,8 @@ import { runContent, type RunPhoto } from "@/data/run";
 
 type LoadState = "loading" | "ready" | "error";
 
+type DeckCard = { kind: "photo"; photo: RunPhoto } | { kind: "follow" };
+
 type Drag = {
   id: number;
   x: number;
@@ -87,11 +89,14 @@ export default function Rolodex() {
   const [leaving, setLeaving] = useState(false);
   const [enterFrom, setEnterFrom] = useState(false);
   const [reduced, setReduced] = useState(false);
+  const [phone, setPhone] = useState(false);
+  const [nudge, setNudge] = useState(false);
   const [status, setStatus] = useState<Record<string, LoadState>>(() =>
     Object.fromEntries(photos.map((photo) => [photo.src, "loading"])),
   );
   const dragRef = useRef<Drag | null>(null);
   const leavingRef = useRef(false);
+  const nudged = useRef(false);
 
   useEffect(() => {
     const media = window.matchMedia("(prefers-reduced-motion: reduce)");
@@ -99,6 +104,33 @@ export default function Rolodex() {
     apply();
     media.addEventListener("change", apply);
     return () => media.removeEventListener("change", apply);
+  }, []);
+
+  useEffect(() => {
+    const media = window.matchMedia("(max-width: 767px)");
+    const apply = () => setPhone(media.matches);
+    apply();
+    media.addEventListener("change", apply);
+    return () => media.removeEventListener("change", apply);
+  }, []);
+
+  useEffect(() => {
+    const root = document.querySelector(".run-scrollport");
+    const section = document.getElementById("photos");
+    if (!root || !section) return;
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (!entries.some((entry) => entry.isIntersecting) || nudged.current) return;
+        if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+        if (!window.matchMedia("(max-width: 767px)").matches) return;
+        nudged.current = true;
+        setNudge(true);
+        window.setTimeout(() => setNudge(false), 700);
+      },
+      { root, threshold: 0.45 },
+    );
+    observer.observe(section);
+    return () => observer.disconnect();
   }, []);
 
   useEffect(() => {
@@ -122,7 +154,9 @@ export default function Rolodex() {
   const loading = photos.some((photo) => status[photo.src] === "loading");
   const readyCount = photos.filter((photo) => status[photo.src] !== "error").length;
   const showFallback = photos.length === 0 || (!loading && readyCount === 0);
-  const count = photos.length;
+  const deck: DeckCard[] = photos.map((photo) => ({ kind: "photo", photo }));
+  if (phone) deck.push({ kind: "follow" });
+  const count = deck.length;
 
   const goNext = () => {
     if (count < 2 || leaving) return;
@@ -172,6 +206,7 @@ export default function Rolodex() {
 
   const onPointerDown = (event: React.PointerEvent<HTMLDivElement>) => {
     if (event.button !== 0 || showFallback) return;
+    if ((event.target as HTMLElement).closest("a")) return;
     dragRef.current = { id: event.pointerId, x: event.clientX, y: event.clientY, locked: null, dx: 0 };
   };
 
@@ -198,9 +233,17 @@ export default function Rolodex() {
   const finishDrag = (event: React.PointerEvent<HTMLDivElement>) => {
     const drag = dragRef.current;
     if (!drag || event.pointerId !== drag.id) return;
-    const dx = drag.dx;
+    const dx = event.clientX - drag.x;
+    const dy = event.clientY - drag.y;
     dragRef.current = null;
     setDragging(false);
+    const phoneTap = window.innerWidth <= 767 && Math.abs(dx) < 12 && Math.abs(dy) < 12 && drag.locked !== "y";
+    if (phoneTap) {
+      const bounds = event.currentTarget.getBoundingClientRect();
+      if (event.clientX < bounds.left + bounds.width / 2) goPrev();
+      else goNext();
+      return;
+    }
     if (drag.locked !== "x") {
       setDragDeg(0);
       return;
@@ -225,7 +268,11 @@ export default function Rolodex() {
 
   const rotate = leaving || enterFrom ? -86 : dragDeg;
   const transition = dragging || enterFrom || reduced ? "none" : "transform 480ms cubic-bezier(.2,.65,.2,1)";
-  const caption = photos[index]?.caption;
+  const current = deck[index] ?? deck[0];
+  const caption = current?.kind === "photo" ? current.photo.caption : undefined;
+  const liveLabel = current?.kind === "follow"
+    ? runContent.photos.follow.label
+    : `Photo ${index + 1} of ${count}${caption ? `. ${caption}` : ""}`;
 
   return (
     <div className="run-rolodex">
@@ -243,38 +290,43 @@ export default function Rolodex() {
         onPointerCancel={finishDrag}
       >
         <p className="sr-only" aria-live="polite">
-          Photo {index + 1} of {count}
-          {caption ? `. ${caption}` : ""}
+          {liveLabel}
         </p>
         <div className="run-rolodex-stack">
           {[2, 1, 0].map((offset) => {
             const cardIndex = (index + offset) % count;
-            const photo = photos[cardIndex];
+            const card = deck[cardIndex];
             const front = offset === 0;
             return (
               <PhotoCard
-                key={`${photo.src}-${offset}`}
-                photo={photo}
+                key={`${card.kind === "photo" ? card.photo.src : "follow"}-${offset}`}
+                card={card}
                 offset={offset}
                 front={front}
-                failed={status[photo.src] === "error"}
+                nudge={front && nudge}
+                failed={card.kind === "photo" && status[card.photo.src] === "error"}
                 rotate={front ? rotate : 0}
                 transition={front ? transition : undefined}
                 onTransitionEnd={front ? onTransitionEnd : undefined}
-                positionLabel={`${cardIndex + 1} of ${count}`}
+                positionLabel={card.kind === "follow" ? runContent.photos.follow.label : `${cardIndex + 1} of ${count}`}
               />
             );
           })}
         </div>
       </div>
-      <p className="mt-3 text-center text-sm font-bold" aria-hidden="true">
+      <div className="run-rolodex-dots" aria-hidden="true">
+        {deck.map((card, dot) => (
+          <span key={card.kind === "photo" ? card.photo.src : "follow"} className={dot === index ? "is-current" : ""} />
+        ))}
+      </div>
+      <p className="mt-3 text-center text-sm font-bold max-md:sr-only" aria-hidden="true">
         {index + 1} / {count}
       </p>
-      <div className="mt-4 flex gap-3">
-        <button type="button" className="run-press flex-1" onClick={goPrev}>
+      <div className="run-rolodex-controls mt-4 flex gap-3 max-md:mt-0">
+        <button type="button" className="run-press flex-1 max-md:sr-only" onClick={goPrev}>
           {runContent.photos.previousLabel}
         </button>
-        <button type="button" className="run-press flex-1" onClick={goNext}>
+        <button type="button" className="run-press flex-1 max-md:sr-only" onClick={goNext}>
           {runContent.photos.nextLabel}
         </button>
       </div>
@@ -286,18 +338,20 @@ export default function Rolodex() {
 }
 
 function PhotoCard({
-  photo,
+  card,
   offset,
   front,
+  nudge,
   failed,
   rotate,
   transition,
   onTransitionEnd,
   positionLabel,
 }: {
-  photo: RunPhoto;
+  card: DeckCard;
   offset: number;
   front: boolean;
+  nudge: boolean;
   failed: boolean;
   rotate: number;
   transition?: string;
@@ -310,7 +364,7 @@ function PhotoCard({
 
   return (
     <article
-      className="run-rolodex-card"
+      className={`run-rolodex-card${nudge ? " is-nudging" : ""}`}
       style={{
         transform: stackTransform,
         transition,
@@ -320,7 +374,20 @@ function PhotoCard({
       aria-hidden={front ? undefined : true}
       onTransitionEnd={onTransitionEnd}
     >
-      {failed ? (
+      {card.kind === "follow" ? (
+        <div className="flex h-full flex-col items-start justify-center gap-4 bg-[#fffdf8] px-5 py-8">
+          <p className="text-xl font-bold">{runContent.photos.follow.label}</p>
+          <a
+            href={runContent.photos.follow.href}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="run-press"
+          >
+            {runContent.photos.follow.label}
+            <span className="sr-only"> (opens in a new tab)</span>
+          </a>
+        </div>
+      ) : failed ? (
         <div className="flex h-full flex-col items-start justify-center gap-3 px-4 py-6">
           <p className="font-bold">{runContent.photos.emptyTitle}</p>
           <a
@@ -337,16 +404,16 @@ function PhotoCard({
         <figure className="flex h-full flex-col" aria-label={`Photo ${positionLabel}`}>
           <div className="relative min-h-0 flex-1">
             <Image
-              src={photo.src}
-              alt={photo.alt}
+              src={card.photo.src}
+              alt={card.photo.alt}
               fill
               sizes="(max-width: 800px) 70vw, 480px"
               className="object-cover"
             />
           </div>
-          {photo.caption ? (
+          {card.photo.caption ? (
             <figcaption className="border-t-[3px] border-[#2c2c2a] px-3 py-2 text-sm font-bold">
-              {photo.caption}
+              {card.photo.caption}
             </figcaption>
           ) : null}
         </figure>
