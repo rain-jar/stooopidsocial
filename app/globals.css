@@ -208,14 +208,8 @@ dialog.event-image-dialog::backdrop {
   background-image:
     linear-gradient(color-mix(in srgb, var(--linktree-navy) 8%, transparent) 1px, transparent 1px),
     linear-gradient(90deg, color-mix(in srgb, var(--linktree-navy) 8%, transparent) 1px, transparent 1px),
-    radial-gradient(
-      ellipse 90% 42% at 50% 28%,
-      color-mix(in srgb, var(--linktree-gold) 78%, transparent) 0%,
-      color-mix(in srgb, var(--linktree-gold) 42%, transparent) 8%,
-      transparent 70%
-    ),
     linear-gradient(180deg, var(--linktree-cream) 0%, var(--linktree-cream) 22%, var(--linktree-gold) 100%);
-  background-size: 10px 10px, 10px 10px, 100% 100%, 100% 100%;
+  background-size: 10px 10px, 10px 10px, 100% 100%;
   background-attachment: local;
 }
 

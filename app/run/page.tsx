@@ -52,8 +52,7 @@ export default function RunPage() {
 
         <section className="run-section py-8" data-run-section="1" id={sunday.id} aria-labelledby="run-sunday-title">
           <div className="run-copy">
-            <p className="text-sm font-bold tracking-wide">{sunday.kicker}</p>
-            <h2 id="run-sunday-title" className="mt-2 text-3xl font-bold tracking-tight">
+            <h2 id="run-sunday-title" className="text-3xl font-bold tracking-tight">
               {sunday.title}
             </h2>
             <ul className="mt-4 space-y-2">
@@ -61,7 +60,6 @@ export default function RunPage() {
                 <li key={detail}>{detail}</li>
               ))}
             </ul>
-            <p className="mt-4">{sunday.note}</p>
             <div className="run-cta mt-6">
               <RunLink href={sunday.cta.href} external>
                 {sunday.cta.label}
@@ -84,7 +82,7 @@ export default function RunPage() {
                       <span>{item.question}</span>
                       <span className="run-faq-icon" aria-hidden="true" />
                     </summary>
-                    <p>{item.answer}</p>
+                    <p className="whitespace-pre-line">{item.answer}</p>
                   </details>
                 </li>
               ))}
@@ -99,7 +97,7 @@ export default function RunPage() {
             <h2 id="run-pacing-title" className="text-3xl font-bold tracking-tight">
               {pacing.title}
             </h2>
-            <p className="mt-3">{pacing.body}</p>
+            <p className="mt-3 whitespace-pre-line">{pacing.body}</p>
             <div className="run-cta mt-6">
               <RunLink href={pacing.cta.href} external>
                 {pacing.cta.label}

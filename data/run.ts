@@ -33,10 +33,10 @@ export const runContent = {
   meta: {
     title: "Run | Stooopid Run Crew",
     description:
-      "Stooopid Sunday: every Sunday at 10 AM. Meet at the Café Tranquille entrance, 1442 Rue Clark.",
+      "Stooopid Run Crew: running every Sunday 10 AM from Café Tranquille",
   },
   header: {
-    homeLabel: "Stooopid Run Crew",
+    homeLabel: "Les Stooopids",
     homeHref: "/",
     links: [
       { href: "/run", label: "Run" },
@@ -49,20 +49,18 @@ export const runContent = {
   },
   hero: {
     title: "Stooopid Run Crew",
-    lede: "Every Sunday at 10 AM at Café Tranquille.",
-    note: "[Placeholder] A longer intro for the crew can replace this note.",
+    lede: "Sundays - 10 AM @ Café Tranquille",
+    note: "All paces welcome. No experience needed. Because we believe - Anyone Can Run!",
     scrollCue: "scroll",
   },
   sunday: {
     id: "sunday",
-    kicker: "Stooopid Sunday",
-    title: "Every Sunday, 10 AM",
+    title: "Stooopid Sunday",
     details: [
       "Every Sunday at 10 AM.",
       "Café Tranquille, 1442 Rue Clark.",
-      "Meet at the café entrance.",
+      "Meet at the café entrance. Run starts at 10.15AM.",
     ],
-    note: "[Placeholder] Extra Sunday details can go here.",
     cta: {
       href: "https://anyonecanpacebeta.pages.dev/",
       label: "This week's details",
@@ -71,31 +69,43 @@ export const runContent = {
   faqs: {
     id: "faq",
     title: "FAQs",
-    intro: "[Placeholder] These questions and answers are stand-ins until the crew writes them.",
+    intro: "You got stooopid questions? We got stooopid answers",
     items: [
       {
-        question: "[Placeholder] Who can come?",
-        answer: "[Placeholder] Answer coming from the crew.",
+        question: "What can I expect",
+        answer: "Expect to be funning. 🤣 \n\n For real - the goal is find the fun in running. And fun means having options. \n\n You have two options: \n \n * 6K Run - simple 6-7K run. \n\n * Walk + Run - To help slowly ramp up the running - for newer or injured runners. (see more below).   ",
       },
       {
-        question: "[Placeholder] What should I bring?",
-        answer: "[Placeholder] Answer coming from the crew.",
+        question: "What's the minimum or average pace",
+        answer: "No minimum pace for either of our run group or walk + run group. The goal is to ensure no one is left behind. \n\n Feel free to walk if you have to, even in the run group. There will be a back pacer to guide you.",
       },
       {
-        question: "[Placeholder] How do I find the group?",
+        question: "What if I am new? Can I even do walk+run?",
+        answer: "We all started somewhere. Ofcourse you can too! That's why the Walk+Run is called - Anyone Can Run. \n\n We will make sure to adapt to whatever you are able to do and slowly start from there. ",
+      },
+      {
+        question: "Where exactly do you all meet?",
         answer:
-          "[Placeholder] Meet at the Café Tranquille entrance, 1442 Rue Clark. More detail coming from the crew.",
+          "Entrace to the Café Tranquille at 1442 Rue Clark. Right next to the Skating Rink. If you don't see anyone outside, we're most likely inside near the skating lockers. ",
       },
       {
-        question: "[Placeholder] What if I am new?",
-        answer: "[Placeholder] Answer coming from the crew.",
+        question: "Are there lockers to store things",
+        answer: "Yes. There are lockers at the skating rink which is open to public use. Please do bring a lock. ",
+      },
+      {
+        question: "What about restrooms or water fountains?",
+        answer: "Yes. There are restrooms and water fountains at the café for public use ",
+      },
+      {
+        question: "Is there a post-run hangout?",
+        answer: "Duh 🙄 \n\n Ofcourse there is. That's when all the stooopidities happen. Every week we sit around and chat over some homemade chai. ",
       },
     ],
   },
   pacing: {
     id: "pacing",
-    title: "Pacing app",
-    body: "[Placeholder] Short blurb about the crew pacing app.",
+    title: "Co-Pacing Buddy App",
+    body: "You can be stooopid even on a weekday. This app can helps dress for your run, make your routes and even time your walk/runs \n\n Give it a go!",
     cta: {
       href: "https://anyonecanpacebeta.pages.dev/",
       label: "Open the pacing app",
@@ -103,8 +113,8 @@ export const runContent = {
   },
   photos: {
     id: "photos",
-    title: "Photos",
-    intro: "Photos from the crew.",
+    title: "Photobooth",
+    intro: "Proof of recent stooopidities",
     follow: {
       href: "https://www.instagram.com/stooopidcrew/",
       label: "Follow @stooopidcrew",
