@@ -25,13 +25,31 @@ body {
   font-family: Arial, Helvetica, sans-serif;
 }
 
+:root {
+  --linktree-navy: #1b3f72;
+  --linktree-gold: #ef9f27;
+  --linktree-cream: #f5f0e8;
+}
+
 .linktree-textured-background {
-  background-color: #1B3F72;
+  background-color: var(--linktree-navy);
   background-image:
-    linear-gradient(rgb(27 63 114 / 8%) 1px, transparent 1px),
-    linear-gradient(90deg, rgb(27 63 114 / 8%) 1px, transparent 1px),
-    radial-gradient(ellipse 85% 30% at 50% 42%, rgb(239 159 39 / 82%) 0%, rgb(239 159 39 / 48%) 2%, transparent 74%),
-    linear-gradient(180deg, #F5F0E8 0%, #F5F0E8 24%, #EF9F27 51%, #1B3F72 82%, #1B3F72 100%);
+    linear-gradient(color-mix(in srgb, var(--linktree-navy) 8%, transparent) 1px, transparent 1px),
+    linear-gradient(90deg, color-mix(in srgb, var(--linktree-navy) 8%, transparent) 1px, transparent 1px),
+    radial-gradient(
+      ellipse 85% 30% at 50% 42%,
+      color-mix(in srgb, var(--linktree-gold) 82%, transparent) 0%,
+      color-mix(in srgb, var(--linktree-gold) 48%, transparent) 2%,
+      transparent 74%
+    ),
+    linear-gradient(
+      180deg,
+      var(--linktree-cream) 0%,
+      var(--linktree-cream) 24%,
+      var(--linktree-gold) 51%,
+      var(--linktree-navy) 82%,
+      var(--linktree-navy) 100%
+    );
   background-size: 16px 16px, 16px 16px, 100% 100%, 100% 100%;
   background-attachment: local;
 }
@@ -165,5 +183,544 @@ dialog.event-image-dialog::backdrop {
   .event-modal-panel {
     animation: none;
     transition: none;
+  }
+}
+
+/* Run crew page. Widths here stay in step with travelWidth() in components/run/RunDuck.tsx. */
+.run-scrollport {
+  position: fixed;
+  inset: 0;
+  overflow-x: hidden;
+  overflow-y: auto;
+  background-color: var(--linktree-cream);
+  color: var(--linktree-navy);
+  font-family: var(--font-run-mono), ui-monospace, monospace;
+  scroll-padding-top: 4.5rem;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* /links colors, split into two solid-enough zones so text never sits on the
+   gold-to-navy blend (that blend fails WCAG AA for both navy and cream type).
+   The gradient scrolls with the page. Grid stays at 10px. */
+.run-tone-light {
+  color: var(--linktree-navy);
+  background-color: var(--linktree-cream);
+  background-image:
+    linear-gradient(color-mix(in srgb, var(--linktree-navy) 8%, transparent) 1px, transparent 1px),
+    linear-gradient(90deg, color-mix(in srgb, var(--linktree-navy) 8%, transparent) 1px, transparent 1px),
+    radial-gradient(
+      ellipse 90% 42% at 50% 28%,
+      color-mix(in srgb, var(--linktree-gold) 78%, transparent) 0%,
+      color-mix(in srgb, var(--linktree-gold) 42%, transparent) 8%,
+      transparent 70%
+    ),
+    linear-gradient(180deg, var(--linktree-cream) 0%, var(--linktree-cream) 22%, var(--linktree-gold) 100%);
+  background-size: 10px 10px, 10px 10px, 100% 100%, 100% 100%;
+  background-attachment: local;
+}
+
+.run-tone-dark {
+  color: var(--linktree-cream);
+  background-color: var(--linktree-navy);
+  background-image:
+    linear-gradient(color-mix(in srgb, var(--linktree-cream) 16%, transparent) 1px, transparent 1px),
+    linear-gradient(90deg, color-mix(in srgb, var(--linktree-cream) 16%, transparent) 1px, transparent 1px);
+  background-size: 10px 10px;
+  background-attachment: local;
+}
+
+.run-tone-light .run-card,
+.run-tone-light .run-rolodex-card,
+.run-tone-dark .run-card,
+.run-tone-dark .run-rolodex-card {
+  color: var(--linktree-navy);
+}
+
+.run-header,
+.run-footer {
+  border-color: #2c2c2a;
+  background-color: var(--linktree-cream);
+  color: var(--linktree-navy);
+}
+
+.run-footer.run-tone-dark {
+  border-color: var(--linktree-cream);
+  background-color: var(--linktree-navy);
+  color: var(--linktree-cream);
+}
+
+.run-copy {
+  margin: 0 1.15rem 0 8.35rem;
+}
+
+.run-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.run-scroll-cue {
+  display: none;
+  margin: 0.4rem 0 0;
+  text-align: center;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--linktree-navy);
+}
+
+.run-hero-copy {
+  margin: 0 1.15rem;
+}
+
+.run-hero-stage {
+  display: grid;
+  align-items: end;
+  justify-items: center;
+  min-height: 14rem;
+  padding: 2.75rem 1rem 1.25rem;
+}
+
+.run-duck-static-start {
+  display: block;
+  width: min(16.25rem, 68vw);
+  height: auto;
+  aspect-ratio: 1057 / 742;
+}
+
+.run-duck-static-rest {
+  display: none;
+  width: min(16.25rem, 68vw);
+  height: auto;
+}
+
+.run-content.run-motion .run-duck-static-start {
+  visibility: hidden;
+}
+
+.run-header a[aria-current="page"] {
+  text-decoration: underline;
+  text-decoration-thickness: 3px;
+  text-underline-offset: 4px;
+}
+
+.run-press {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  min-height: 3.25rem;
+  border: 3px solid #2c2c2a;
+  border-radius: 22px;
+  background: #ef9f27;
+  color: #2c2c2a;
+  box-shadow: 4px 4px 0 #2c2c2a;
+  padding: 0.7rem 1.2rem;
+  font-weight: 700;
+  line-height: 1.2;
+  text-align: center;
+  transition: transform 120ms ease, box-shadow 120ms ease;
+}
+
+.run-press:hover {
+  transform: translate(-1px, -1px);
+  box-shadow: 5px 5px 0 #2c2c2a;
+}
+
+.run-press:active {
+  transform: translate(4px, 4px);
+  box-shadow: 0 0 0 #2c2c2a;
+}
+
+.run-card {
+  border: 3px solid #2c2c2a;
+  border-radius: 22px;
+  background: #fff;
+  box-shadow: 4px 4px 0 #2c2c2a;
+}
+
+.run-copy .run-press {
+  width: 100%;
+}
+
+.run-faq summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  min-height: 3.25rem;
+  padding: 0.8rem 1rem;
+  cursor: pointer;
+  list-style: none;
+  font-weight: 700;
+}
+
+.run-faq summary::-webkit-details-marker {
+  display: none;
+}
+
+.run-faq-icon::before {
+  content: "+";
+  font-weight: 700;
+}
+
+.run-faq[open] .run-faq-icon::before {
+  content: "–";
+}
+
+.run-faq p {
+  margin: 0;
+  padding: 0 1rem 1rem;
+}
+
+.run-page :focus-visible {
+  outline: 3px solid currentColor;
+  outline-offset: 3px;
+}
+
+.run-press:focus-visible {
+  outline-color: #2c2c2a;
+}
+
+.run-duck-mover {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 35;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  pointer-events: none;
+  user-select: none;
+  line-height: 0;
+  touch-action: pan-y;
+}
+
+.run-duck-sprite {
+  display: block;
+}
+
+.run-duck-mover img {
+  display: block;
+  width: 100%;
+  height: auto;
+  filter: drop-shadow(0 0 1px var(--linktree-cream));
+}
+
+.run-duck-mover.is-dropping .run-duck-sprite {
+  animation: run-duck-drop 700ms cubic-bezier(0.18, 0.8, 0.2, 1) both;
+}
+
+.run-duck-mover.is-running .run-duck-sprite {
+  animation: run-duck-bob 320ms ease-in-out infinite;
+}
+
+.run-duck-mover.is-hopping .run-duck-sprite {
+  animation: run-duck-hop 420ms ease;
+}
+
+@keyframes run-duck-drop {
+  0% {
+    transform: translateY(-34px);
+  }
+  62% {
+    transform: translateY(0);
+  }
+  78% {
+    transform: translateY(5px) scaleY(0.96);
+  }
+  100% {
+    transform: translateY(0) scaleY(1);
+  }
+}
+
+@keyframes run-duck-bob {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-6px);
+  }
+}
+
+@keyframes run-duck-hop {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  45% {
+    transform: translateY(-18px);
+  }
+}
+
+.run-rolodex-stage {
+  position: relative;
+  padding-bottom: 1.35rem;
+  touch-action: pan-y;
+  border-radius: 22px;
+}
+
+.run-rolodex-stack {
+  position: relative;
+  aspect-ratio: 3 / 2;
+  transform-style: preserve-3d;
+  perspective: 1200px;
+}
+
+.run-rolodex-card {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  border: 3px solid #2c2c2a;
+  border-radius: 22px;
+  background: #fff;
+  box-shadow: 4px 4px 0 #2c2c2a;
+  transform-origin: center top;
+}
+
+.run-rolodex-card img {
+  pointer-events: none;
+  user-select: none;
+}
+
+@media (max-width: 767px) {
+  .run-rolodex-controls {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    padding: 0;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+  }
+}
+
+@media (max-width: 767px) {
+  .run-rolodex-dots {
+    display: flex;
+    justify-content: center;
+    gap: 0.4rem;
+    margin-top: 0.8rem;
+  }
+
+  .run-rolodex-dots span {
+    width: 0.45rem;
+    height: 0.45rem;
+    border: 2px solid #2c2c2a;
+    border-radius: 999px;
+    background: transparent;
+  }
+
+  .run-rolodex-dots span.is-current {
+    background: #1b3f72;
+  }
+
+  .run-rolodex-card.is-nudging {
+    animation: run-card-nudge 640ms ease;
+  }
+}
+
+@keyframes run-card-nudge {
+  0%,
+  100% {
+    transform: rotateX(0deg);
+  }
+  40% {
+    transform: rotateX(-11deg);
+  }
+  70% {
+    transform: rotateX(5deg);
+  }
+}
+
+@media (max-width: 799px) {
+  .run-scrollport {
+    scroll-snap-type: y proximity;
+    scroll-padding-top: 4.5rem;
+  }
+
+  .run-section {
+    scroll-snap-align: start;
+    scroll-snap-stop: normal;
+    min-height: calc(100dvh - 4.5rem);
+  }
+
+  .run-section-hero {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .run-hero-stage {
+    flex: 1;
+  }
+}
+
+/* Phone-only layout. Desktop (800px and up) is unchanged. */
+@media (max-width: 767px) {
+  .run-copy,
+  .run-hero-copy {
+    margin-right: 2rem;
+    margin-left: 2rem;
+  }
+
+  .run-section {
+    min-height: 0;
+  }
+
+  .run-section :is(h1, h2) {
+    padding-left: 0.7rem;
+  }
+
+  .run-section h2 {
+    text-decoration: underline;
+    text-decoration-thickness: 3px;
+    text-underline-offset: 0.28rem;
+    text-decoration-color: currentColor;
+  }
+
+  .run-faq summary {
+    padding-left: 1.35rem;
+  }
+
+  .run-section-hero {
+    min-height: calc(100dvh - 4.5rem);
+    transition: min-height 680ms ease;
+  }
+
+  .run-hero-stage {
+    max-height: 75vh;
+    overflow: visible;
+    transition: max-height 680ms ease, opacity 520ms ease, padding 680ms ease, flex-basis 680ms ease;
+  }
+
+  .run-content.run-holding .run-scroll-cue {
+    display: block;
+    position: relative;
+    z-index: 2;
+    margin-top: 0.35rem;
+  }
+
+  .run-content.run-holding .run-scroll-cue::after {
+    content: "";
+    display: block;
+    width: 0.45rem;
+    height: 0.45rem;
+    margin: 0.28rem auto 0;
+    border-right: 2px solid currentColor;
+    border-bottom: 2px solid currentColor;
+    transform: rotate(45deg);
+  }
+
+  .run-content.run-departed .run-section-hero {
+    min-height: 0;
+  }
+
+  .run-content.run-departed .run-hero-stage {
+    flex: 0 0 0px;
+    max-height: 0;
+    min-height: 0;
+    padding-top: 0;
+    padding-bottom: 0;
+    overflow: hidden;
+    opacity: 0;
+  }
+
+  .run-duck-mover {
+    pointer-events: auto;
+    cursor: pointer;
+  }
+
+  .run-duck-mover[data-clip="corner"] {
+    overflow: visible;
+    width: auto;
+    height: auto;
+    background: transparent;
+  }
+
+  .run-duck-mover[data-clip="corner"] img {
+    width: 100%;
+    height: auto;
+    max-width: none;
+    transform: none;
+  }
+
+  .run-tone-dark .run-rolodex-dots span {
+    border-color: var(--linktree-cream);
+  }
+
+  .run-tone-dark .run-rolodex-dots span.is-current {
+    background: var(--linktree-cream);
+  }
+}
+
+@media (min-width: 800px) {
+  .run-copy,
+  .run-hero-copy {
+    width: min(34rem, calc(100% - 18rem));
+    margin-right: auto;
+    margin-left: auto;
+  }
+
+  .run-copy .run-press {
+    width: auto;
+  }
+
+  /* The landing stage is only needed while the duck is in the hero. */
+  .run-content.run-departed .run-hero-stage {
+    display: none;
+  }
+}
+
+@media (min-width: 1100px) {
+  .run-copy,
+  .run-hero-copy {
+    width: min(40rem, calc(100% - 24rem));
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .run-scrollport {
+    scroll-snap-type: none;
+  }
+
+  .run-press,
+  .run-press:hover,
+  .run-press:active {
+    transform: none;
+    transition: none;
+    box-shadow: 4px 4px 0 #2c2c2a;
+  }
+
+  .run-rolodex-card {
+    transition: none !important;
+    animation: none !important;
+  }
+
+  .run-duck-static-start {
+    display: none !important;
+  }
+
+  .run-duck-static-rest {
+    display: block !important;
+  }
+
+  .run-duck-mover {
+    display: none !important;
+  }
+
+  .run-duck-mover.is-dropping .run-duck-sprite,
+  .run-duck-mover.is-running .run-duck-sprite,
+  .run-duck-mover.is-hopping .run-duck-sprite {
+    animation: none;
+  }
+
+  .run-scroll-cue {
+    display: none !important;
   }
 }

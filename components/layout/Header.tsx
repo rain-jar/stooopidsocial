@@ -8,7 +8,10 @@ export default function Header() {
           Les Stooopids
         </Link>
 
-        <nav aria-label="Primary navigation" className="flex text-sm text-white/70">
+        <nav aria-label="Primary navigation" className="flex items-center gap-5 text-sm text-white/70">
+          <Link href="/run" className="hover:text-white focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white">
+            Run
+          </Link>
           <Link href="/links" className="hover:text-white focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white">
             Linktree
           </Link>

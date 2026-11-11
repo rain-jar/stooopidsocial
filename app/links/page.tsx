@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Image from "next/image";
+import Link from "next/link";
 import LinkIcon from "@/components/links/LinkIcon";
 import Footer from "@/components/layout/Footer";
 import Header from "@/components/layout/Header";
@@ -41,6 +42,12 @@ export default async function LinksPage() {
             <LinkIcon name="mail" className="h-6 w-6" />
           </a>
         </nav>
+
+        <Link href="/run" className="group mt-7 grid min-h-14 w-full grid-cols-[28px_1fr_28px] items-center gap-3 rounded-2xl bg-white px-4 py-3 text-center font-semibold text-[#111827] shadow-sm outline-none transition hover:-translate-y-0.5 hover:shadow-lg focus-visible:ring-4 focus-visible:ring-[#EF9F27]/80">
+          <span />
+          <span className="break-words leading-5">Run</span>
+          <span aria-hidden="true" className="text-lg text-[#1B3F72]/50 transition group-hover:translate-x-0.5">→</span>
+        </Link>
 
         {categories === null ? (
           <div role="status" className="mt-10 w-full rounded-2xl border border-white/20 bg-white/10 px-5 py-6 text-center text-white">
