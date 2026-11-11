@@ -45,6 +45,7 @@ export default function RunPage() {
               unoptimized
               className="run-duck-static-rest"
             />
+            <p className="run-scroll-cue">{hero.scrollCue}</p>
           </div>
         </section>
 
@@ -60,7 +61,8 @@ export default function RunPage() {
               ))}
             </ul>
             <p className="mt-4">{sunday.note}</p>
-            <div className="mt-6">
+            <div className="run-pocket" aria-hidden="true" />
+            <div className="run-cta mt-6">
               <RunLink href={sunday.cta.href} external>
                 {sunday.cta.label}
               </RunLink>
@@ -74,7 +76,7 @@ export default function RunPage() {
               {faqs.title}
             </h2>
             <p className="mt-3">{faqs.intro}</p>
-            <ul className="mt-5 space-y-3">
+            <ul className="run-stack mt-5">
               {faqs.items.map((item) => (
                 <li key={item.question}>
                   <details className="run-card run-faq">
@@ -96,7 +98,8 @@ export default function RunPage() {
               {pacing.title}
             </h2>
             <p className="mt-3">{pacing.body}</p>
-            <div className="mt-6">
+            <div className="run-pocket" aria-hidden="true" />
+            <div className="run-cta mt-6">
               <RunLink href={pacing.cta.href} external>
                 {pacing.cta.label}
               </RunLink>
@@ -110,6 +113,7 @@ export default function RunPage() {
               {photos.title}
             </h2>
             <p className="mt-3">{photos.intro}</p>
+            <div className="run-pocket run-pocket-photo" aria-hidden="true" />
             <div className="mt-5">
               <Rolodex />
             </div>

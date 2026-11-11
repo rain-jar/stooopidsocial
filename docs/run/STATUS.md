@@ -1,10 +1,10 @@
 # Project Status
 
-- Last updated: 2026-11-10
-- Repository branch / commit / uncommitted changes: `cursor/run-crew-page-v1-ea82` at `b55e3faba2a4400399d4129048be427fe36b74f5`, plus this status SHA note. Not merged. No production deploy.
-- Current milestone: Run crew page v1 implemented on the branch. Awaiting Raj's review. Merge and production deploy are not approved.
-- Active work record / approved scope: `docs/work/010-run-crew-page.md`. Approved 2026-11-10 (America/Toronto), including the Rolodex amendment.
-- Next action: Raj reviews the PR and the Vercel preview (`https://stooopidsocial-git-cursor-run-crew-pa-7113dc-raj-nairs-projects.vercel.app`, Ready, behind Vercel SSO). Do not merge or deploy to production without a separate approval.
+- Last updated: 2026-11-11
+- Repository branch / commit / uncommitted changes: `cursor/run-crew-page-v1-ea82`. Mobile follow-up is in the working tree on top of `b55e3faba2a4400399d4129048be427fe36b74f5`. Not merged. No production deploy.
+- Current milestone: Run crew page v1, with Raj's mobile-only amendment from 2026-11-10 about 7:32 PM America/Toronto. Desktop stays as he approved it. Merge and production deploy are not approved.
+- Active work record / approved scope: `docs/work/010-run-crew-page.md`. Original approval plus the Rolodex amendment, plus the mobile follow-up.
+- Next action: Raj reviews the updated PR and Vercel preview (`https://stooopidsocial-git-cursor-run-crew-pa-7113dc-raj-nairs-projects.vercel.app`, behind Vercel SSO). Do not merge or deploy to production without a separate approval.
 
 ## Stage Coverage
 
@@ -21,12 +21,12 @@
 
 ## Current Reality
 
-- Implemented: `/run` with its own header and footer, five sections, duck sequence, Rolodex, placeholder content, and Run links in the shared header and on `/links`.
-- Verified: Lint, `tsc --noEmit`, `npm run build`, and browser checks at 375px and desktop, including reduced motion, keyboard, drag, loading text, and the photo error card. Evidence is in work record 010.
+- Implemented: `/run` as before, plus the phone-only hero collapse, corner peek, heading sprint, hop button, and Rolodex-top peek. Desktop behavior is unchanged.
+- Verified: Lint, `tsc --noEmit`, `npm run build`, and browser checks at 375px, 390px, and 1280px. Phone recording of the scroll. Evidence is in work record 010.
 - Checks not run / uncertainty: Not checked in Safari or Firefox on a physical phone. Vercel preview URL is reported on the PR when the deployment exists. No analytics check, because analytics is out of scope.
 - Blockers / decisions needed: Merge and production deploy. Real copy, photos, and whether Sunday should name a timezone.
 - Next slice / approval needed: Raj's review. Anything in the deferred list needs its own approval.
 
 ## Handoff
 
-The branch is ready for review. The page does not use the dark site header. Work record 009 removed Run from the header; this slice puts that link back, on purpose. Placeholder strings start with `[Placeholder]`. Photos are `public/run/photos/01.webp` through `06.webp`. Duck frames are `public/run/duck/`. `run-a.webp` and `run-b.webp` are a matched pair. Do not merge to `main` or deploy production from this work alone.
+Desktop is the approved wide layout and was not changed by the phone follow-up. Phones under 768px collapse the hero after the hold, keep the duck on screen in gaps, and use a full-width column. Placeholder strings start with `[Placeholder]`. Do not merge to `main` or deploy production from this work alone.

@@ -47,6 +47,7 @@ export const runContent = {
     title: "Stooopid Run Crew",
     lede: "Every Sunday at 10 AM at Café Tranquille.",
     note: "[Placeholder] A longer intro for the crew can replace this note.",
+    scrollCue: "scroll",
   },
   sunday: {
     id: "sunday",
@@ -141,6 +142,7 @@ export const runContent = {
     ] satisfies RunPhoto[],
   },
   duck: {
+    hopLabel: "Stooopid duck, hop",
     alt: {
       start: "Illustrated duck crouched in starting blocks",
       run: "Illustrated duck running",

@@ -198,6 +198,29 @@ dialog.event-image-dialog::backdrop {
   margin: 0 1.15rem 0 8.35rem;
 }
 
+.run-pocket {
+  height: 0;
+  overflow: hidden;
+}
+
+.run-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.run-scroll-cue {
+  display: none;
+  margin: 0.4rem 0 0;
+  text-align: center;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: #1b3f72;
+  opacity: 0.55;
+}
+
 .run-hero-copy {
   margin: 0 1.15rem;
 }
@@ -315,9 +338,20 @@ dialog.event-image-dialog::backdrop {
   position: absolute;
   top: 0;
   left: 0;
-  z-index: 15;
+  z-index: 30;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: inherit;
   pointer-events: none;
   user-select: none;
+  line-height: 0;
+  touch-action: pan-y;
+}
+
+.run-duck-sprite {
+  display: block;
 }
 
 .run-duck-mover img {
@@ -332,6 +366,10 @@ dialog.event-image-dialog::backdrop {
 
 .run-duck-mover.is-running .run-duck-sprite {
   animation: run-duck-bob 320ms ease-in-out infinite;
+}
+
+.run-duck-mover.is-hopping .run-duck-sprite {
+  animation: run-duck-hop 420ms ease;
 }
 
 @keyframes run-duck-drop {
@@ -356,6 +394,16 @@ dialog.event-image-dialog::backdrop {
   }
   50% {
     transform: translateY(-6px);
+  }
+}
+
+@keyframes run-duck-hop {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  45% {
+    transform: translateY(-18px);
   }
 }
 
@@ -402,6 +450,7 @@ dialog.event-image-dialog::backdrop {
 
   .run-section {
     scroll-snap-align: start;
+    scroll-snap-stop: normal;
     min-height: calc(100dvh - 4.5rem);
   }
 
@@ -412,6 +461,113 @@ dialog.event-image-dialog::backdrop {
 
   .run-hero-stage {
     flex: 1;
+  }
+}
+
+/* Phone-only layout. Desktop (800px and up) is unchanged. */
+@media (max-width: 767px) {
+  .run-copy {
+    margin-right: 1.15rem;
+    margin-left: 1.15rem;
+  }
+
+  .run-section {
+    min-height: 0;
+  }
+
+  .run-section h2 {
+    text-decoration: underline;
+    text-decoration-thickness: 3px;
+    text-underline-offset: 0.28rem;
+    text-decoration-color: #2c2c2a;
+  }
+
+  .run-section-hero {
+    min-height: calc(100dvh - 4.5rem);
+    transition: min-height 680ms ease;
+  }
+
+  .run-hero-stage {
+    max-height: 75vh;
+    overflow: visible;
+    transition: max-height 680ms ease, opacity 520ms ease, padding 680ms ease, flex-basis 680ms ease;
+  }
+
+  .run-content.run-holding .run-scroll-cue {
+    display: block;
+    position: relative;
+    z-index: 2;
+    margin-top: 0.35rem;
+  }
+
+  .run-content.run-holding .run-scroll-cue::after {
+    content: "";
+    display: block;
+    width: 0.45rem;
+    height: 0.45rem;
+    margin: 0.28rem auto 0;
+    border-right: 2px solid currentColor;
+    border-bottom: 2px solid currentColor;
+    transform: rotate(45deg);
+  }
+
+  .run-content.run-departed .run-section-hero {
+    min-height: 0;
+  }
+
+  .run-content.run-departed .run-hero-stage {
+    flex: 0 0 0px;
+    max-height: 0;
+    min-height: 0;
+    padding-top: 0;
+    padding-bottom: 0;
+    overflow: hidden;
+    opacity: 0;
+  }
+
+  .run-stack {
+    gap: 7.75rem;
+  }
+
+  .run-pocket {
+    height: 7.75rem;
+  }
+
+  .run-pocket-photo {
+    height: 3.25rem;
+  }
+
+  .run-pocket + .run-cta {
+    margin-top: 0;
+  }
+
+  .run-duck-mover {
+    pointer-events: auto;
+    cursor: pointer;
+  }
+
+  .run-duck-mover[data-clip="corner"] {
+    width: 7.1rem;
+    height: 6.5rem;
+    overflow: hidden;
+  }
+
+  .run-duck-mover[data-clip="corner"] img {
+    width: 10.5rem;
+    max-width: none;
+    transform: translate(-20%, -12%);
+  }
+
+  .run-duck-mover[data-clip="rolodex"] {
+    width: 6.5rem;
+    height: 4.8rem;
+    overflow: hidden;
+  }
+
+  .run-duck-mover[data-clip="rolodex"] img {
+    width: 11rem;
+    max-width: none;
+    transform: translate(-46%, -20%);
   }
 }
 
@@ -470,7 +626,12 @@ dialog.event-image-dialog::backdrop {
   }
 
   .run-duck-mover.is-dropping .run-duck-sprite,
-  .run-duck-mover.is-running .run-duck-sprite {
+  .run-duck-mover.is-running .run-duck-sprite,
+  .run-duck-mover.is-hopping .run-duck-sprite {
     animation: none;
+  }
+
+  .run-scroll-cue {
+    display: none !important;
   }
 }

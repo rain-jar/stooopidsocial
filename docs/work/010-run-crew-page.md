@@ -31,6 +31,7 @@
 - User approval / date / proposal revision or scope: Raj approved the proposal in chat on 2026-11-10 (America/Toronto), including the amendment that replaces Instagram embeds with a Rolodex gallery.
 - Conditions and separately authorized external actions: Branch commits and a pull request are authorized. Merge, push to `main`, and production deploy are not authorized.
 - Material amendments / renewed approval: Rolodex instead of Instagram embeds, recorded above. Putting Run back in the shared header intentionally reverses the part of work record 009 that removed it.
+- Mobile follow-up, approved by Raj on 2026-11-10 at about 7:32 PM America/Toronto, after he reviewed the preview: desktop stays as approved. Phones under 768px only: collapse the hero after the 2 second hold, with a small scroll cue during the hold; the peeking duck stays on screen inside a section and runs only when the next heading enters the upper viewport, along that heading's underline, then tucks into a corner gap; no left gutter, content is full width with equal side padding; the duck is a button that hops when tapped; in Photos it peeks over the Rolodex. Reduced motion stays a static duck with no snap. Scroll-snap on phones stays proximity, not mandatory.
 
 ## Results (after implementation)
 
@@ -61,7 +62,8 @@
   - Vercel preview is a platform deploy from the PR branch, not a production release. The URL is reported when GitHub shows the deployment.
 - Deviations / residual risks / follow-ups:
   - Sunday has no timezone label. Assumption D4 in `docs/run/PROJECT.md`.
-  - Desktop hides the hero landing stage after the duck leaves so the peek sits beside Sunday instead of leaving a large hole. Phone keeps a full-height hero for scroll-snap.
+  - Desktop hides the hero landing stage after the duck leaves so the peek sits beside Sunday. That desktop path was not changed by the 7:32 PM mobile amendment.
+  - Phones under 768px: after the hold, the hero stage collapses and Sunday moves up. The duck is a corner peek in the gaps, or over the Rolodex in Photos. Checked at 375 and 390 with no settled overlap on text or buttons. A phone recording shows the hold, collapse, FAQ peek, Photos peek, and a tap.
   - Gallery images that fail one-by-one show the fallback inside that card. If every photo fails, the stack is replaced by one fallback card.
   - Real copy, photos, Graph API feed, race tracker, analytics, and admin editing remain deferred.
 - Canonical documents updated: `docs/run/PROJECT.md`, `docs/run/STATUS.md`, this file. No repo-root `PROJECT.md` or `STATUS.md`.
