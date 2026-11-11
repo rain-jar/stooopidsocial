@@ -62,7 +62,7 @@ export const runContent = {
       "Meet at the café entrance. Run starts at 10.15AM.",
     ],
     cta: {
-      href: "https://anyonecanpacebeta.pages.dev/",
+      href: "https://anyonecanpacebeta.pages.dev/?sunday",
       label: "This week's details",
     } satisfies RunLink,
   },
