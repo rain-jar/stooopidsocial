@@ -5,7 +5,7 @@ import {
 } from "@/lib/events/images";
 import { eventSubmissionsEnabled } from "@/lib/events/source";
 import { readSubmissionToken, sameOrigin } from "@/lib/events/submission-security";
-import { parsePublicEventInput } from "@/lib/events/validation";
+import { generateEventOccurrences, parsePublicEventInput, suggestedEventSlug } from "@/lib/events/validation";
 import { getAdminSupabaseClient } from "@/lib/supabase";
 
 export const runtime = "nodejs";
@@ -66,6 +66,13 @@ export async function POST(request: Request) {
       body.event as Record<string, unknown>,
       Boolean(token.path),
     );
+    if (eventInput.recurrence) {
+      generateEventOccurrences(
+        eventInput,
+        suggestedEventSlug(eventInput.name, eventInput.startsAt),
+        token.id,
+      );
+    }
   } catch (error) {
     return response(
       { error: error instanceof Error ? error.message : "Check the event details and try again." },
@@ -94,6 +101,10 @@ export async function POST(request: Request) {
     image_path: token.path ?? null,
     image_alt: eventInput.imageAlt ?? null,
     image_position: eventInput.imagePosition,
+    recurrence_frequency: eventInput.recurrence?.frequency ?? null,
+    recurrence_weekdays: eventInput.recurrence?.weekdays ?? null,
+    recurrence_end_date: eventInput.recurrence?.endDate ?? null,
+    recurrence_count: eventInput.recurrence?.count ?? null,
   });
   if (insertError) {
     return response({ error: "Unable to save the event. Please try again." }, 503);

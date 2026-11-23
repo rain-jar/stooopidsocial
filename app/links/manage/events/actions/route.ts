@@ -1,7 +1,7 @@
 import { revalidatePath, revalidateTag } from "next/cache";
 import { NextResponse } from "next/server";
 import { deleteEventImage } from "@/lib/events/images";
-import { parseManagedEventInput, validEventSlug, validEventStatus, validImagePosition } from "@/lib/events/validation";
+import { generateEventOccurrences, parseManagedEventInput, validEventSlug, validEventStatus, validImagePosition } from "@/lib/events/validation";
 import { getAdminSession, verifyCsrf, verifySameOrigin } from "@/lib/links/auth";
 import { isChecked, validUuid } from "@/lib/links/validation";
 import { getAdminSupabaseClient } from "@/lib/supabase";
@@ -11,12 +11,17 @@ function destination(request: Request, result: "success" | "error") {
 }
 
 function formRecord(formData: FormData) {
-  return Object.fromEntries(
+  return {
+    ...Object.fromEntries(
     [
       "name", "description", "startDate", "startTime", "endDate", "endTime",
-      "venue", "address", "rsvpUrl", "imageAlt",
+      "venue", "address", "rsvpUrl", "imageAlt", "recurrenceFrequency",
+      "recurrenceEndType", "recurrenceEndDate", "recurrenceCount",
     ].map((key) => [key, formData.get(key)]),
-  );
+    ),
+    recurring: formData.get("recurring"),
+    recurrenceWeekdays: formData.getAll("recurrenceWeekdays"),
+  };
 }
 
 export async function POST(request: Request) {
@@ -45,6 +50,11 @@ export async function POST(request: Request) {
 
     if (action === "reject") {
       if (!isChecked(formData.get("confirm"))) throw new Error("Confirmation required.");
+      const { error: occurrenceError } = await client
+        .from("event_occurrences")
+        .delete()
+        .eq("event_id", id);
+      if (occurrenceError) throw occurrenceError;
       const { error: updateError } = await client.from("events").update({
         moderation_status: "rejected",
         reviewed_at: new Date().toISOString(),
@@ -62,6 +72,10 @@ export async function POST(request: Request) {
       const event = parseManagedEventInput(formRecord(formData), Boolean(imagePath));
       const slug = validEventSlug(formData.get("slug"));
       const imagePosition = validImagePosition(formData.get("imagePosition"));
+      const shouldPublish = action === "approve" || current.moderation_status === "approved";
+      const occurrences = shouldPublish
+        ? generateEventOccurrences(event, slug, id)
+        : [];
       const values = {
         slug,
         name: event.name,
@@ -75,12 +89,33 @@ export async function POST(request: Request) {
         event_status: validEventStatus(formData.get("eventStatus")) ?? null,
         image_alt: event.imageAlt ?? null,
         image_position: imagePosition,
-        ...(action === "approve"
-          ? { moderation_status: "approved", reviewed_at: new Date().toISOString() }
-          : {}),
+        recurrence_frequency: event.recurrence?.frequency ?? null,
+        recurrence_weekdays: event.recurrence?.weekdays ?? null,
+        recurrence_end_date: event.recurrence?.endDate ?? null,
+        recurrence_count: event.recurrence?.count ?? null,
+        ...(shouldPublish ? { moderation_status: "pending" } : {}),
       };
       const { error: updateError } = await client.from("events").update(values).eq("id", id);
       if (updateError) throw updateError;
+      if (shouldPublish) {
+        const { error: occurrenceError } = await client.rpc("replace_event_occurrences", {
+          p_event_id: id,
+          p_occurrences: occurrences.map((occurrence) => ({
+            occurrence_index: occurrence.occurrenceIndex,
+            slug: occurrence.slug,
+            starts_at: occurrence.startsAt,
+            ends_at: occurrence.endsAt ?? null,
+          })),
+          p_publish: true,
+        });
+        if (occurrenceError) throw occurrenceError;
+      } else {
+        const { error: occurrenceError } = await client
+          .from("event_occurrences")
+          .delete()
+          .eq("event_id", id);
+        if (occurrenceError) throw occurrenceError;
+      }
     } else {
       throw new Error("Unknown action.");
     }

@@ -9,6 +9,10 @@ import {
   type FormEvent,
 } from "react";
 import { getBrowserSupabaseClient } from "@/lib/supabase-browser";
+import DescriptionEditor from "./DescriptionEditor";
+import EventDateField from "./EventDateField";
+import EventTimeField from "./EventTimeField";
+import RecurrenceFields from "./RecurrenceFields";
 
 const MAX_INPUT_IMAGE_BYTES = 15 * 1024 * 1024;
 const MAX_OUTPUT_IMAGE_BYTES = 5 * 1024 * 1024;
@@ -105,6 +109,7 @@ export default function EventSubmissionDialog({ enabled, turnstileSiteKey }: Pro
   const [imagePreview, setImagePreview] = useState("");
   const [turnstileToken, setTurnstileToken] = useState("");
   const [turnstileReady, setTurnstileReady] = useState(false);
+  const [formVersion, setFormVersion] = useState(0);
   const dialogRef = useRef<HTMLDialogElement>(null);
   const triggerRef = useRef<HTMLButtonElement>(null);
   const formRef = useRef<HTMLFormElement>(null);
@@ -222,6 +227,12 @@ export default function EventSubmissionDialog({ enabled, turnstileSiteKey }: Pro
             startTime: stringValue(formData, "startTime"),
             endDate: stringValue(formData, "endDate"),
             endTime: stringValue(formData, "endTime"),
+            recurring: formData.get("recurring") === "on",
+            recurrenceFrequency: stringValue(formData, "recurrenceFrequency"),
+            recurrenceWeekdays: formData.getAll("recurrenceWeekdays"),
+            recurrenceEndType: stringValue(formData, "recurrenceEndType"),
+            recurrenceEndDate: stringValue(formData, "recurrenceEndDate"),
+            recurrenceCount: stringValue(formData, "recurrenceCount"),
             venue: stringValue(formData, "venue"),
             address: stringValue(formData, "address"),
             rsvpUrl: stringValue(formData, "rsvpUrl"),
@@ -235,6 +246,7 @@ export default function EventSubmissionDialog({ enabled, turnstileSiteKey }: Pro
       }
 
       formRef.current?.reset();
+      setFormVersion((version) => version + 1);
       selectImage(null);
       setSuccess(true);
       setMessage("Event submitted for review. It is not live yet.");
@@ -311,22 +323,11 @@ export default function EventSubmissionDialog({ enabled, turnstileSiteKey }: Pro
                     Event name
                     <input name="name" required maxLength={160} className={inputClass} />
                   </label>
-                  <label className="text-sm">
-                    Start date
-                    <input name="startDate" type="date" required className={inputClass} />
-                  </label>
-                  <label className="text-sm">
-                    Start time <span className="text-white/50">(Eastern)</span>
-                    <input name="startTime" type="time" required className={inputClass} />
-                  </label>
-                  <label className="text-sm">
-                    End date <span className="text-white/50">(optional)</span>
-                    <input name="endDate" type="date" className={inputClass} />
-                  </label>
-                  <label className="text-sm">
-                    End time <span className="text-white/50">(optional)</span>
-                    <input name="endTime" type="time" className={inputClass} />
-                  </label>
+                  <EventDateField name="startDate" label="Start date" required className={inputClass} />
+                  <EventTimeField key={`start-${formVersion}`} name="startTime" label="Start time" required className={inputClass} />
+                  <EventDateField name="endDate" label="End date" optional minFrom="startDate" className={inputClass} />
+                  <EventTimeField key={`end-${formVersion}`} name="endTime" label="End time" optional className={inputClass} />
+                  <RecurrenceFields key={`recurrence-${formVersion}`} className={inputClass} />
                   <label className="text-sm sm:col-span-2">
                     Venue
                     <input name="venue" required maxLength={240} className={inputClass} />
@@ -335,10 +336,7 @@ export default function EventSubmissionDialog({ enabled, turnstileSiteKey }: Pro
                     Address <span className="text-white/50">(optional)</span>
                     <input name="address" maxLength={400} className={inputClass} />
                   </label>
-                  <label className="text-sm sm:col-span-2">
-                    Description
-                    <textarea name="description" required maxLength={5000} rows={6} className={inputClass} />
-                  </label>
+                  <DescriptionEditor key={`description-${formVersion}`} name="description" className={inputClass} />
                   <label className="text-sm sm:col-span-2">
                     RSVP link <span className="text-white/50">(optional)</span>
                     <input name="rsvpUrl" type="url" maxLength={2048} className={inputClass} />

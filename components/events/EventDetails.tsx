@@ -10,6 +10,7 @@ import {
   isEventPast,
 } from "@/lib/event-date";
 import { googleCalendarUrl } from "@/lib/google-calendar";
+import FormattedDescription from "./FormattedDescription";
 
 type EventDetailsProps = {
   event: CommunityEvent;
@@ -214,7 +215,7 @@ export default function EventDetails({ event }: EventDetailsProps) {
 
         <div>
           <h3 className="text-lg font-semibold text-white">About this event</h3>
-          <p className="mt-2 leading-7 text-white/72">{event.description}</p>
+          <FormattedDescription description={event.description} />
         </div>
 
         {!cancelled && !postponed && !past ? (

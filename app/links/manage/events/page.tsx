@@ -4,6 +4,10 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import Footer from "@/components/layout/Footer";
 import Header from "@/components/layout/Header";
+import DescriptionEditor from "@/components/events/DescriptionEditor";
+import EventDateField from "@/components/events/EventDateField";
+import EventTimeField from "@/components/events/EventTimeField";
+import RecurrenceFields from "@/components/events/RecurrenceFields";
 import { getManagedEvents } from "@/lib/events/repository";
 import { suggestedEventSlug } from "@/lib/events/validation";
 import { csrfToken, getAdminSession } from "@/lib/links/auth";
@@ -132,13 +136,20 @@ export default async function ManageEventsPage({ searchParams }: { searchParams:
 
                       <div className="grid gap-4 sm:grid-cols-2">
                         <label className="text-sm sm:col-span-2">Event name<input name="name" defaultValue={event.name} required maxLength={160} className={inputClass} /></label>
-                        <label className="text-sm">Start date<input name="startDate" type="date" defaultValue={start.date} required className={inputClass} /></label>
-                        <label className="text-sm">Start time (Eastern)<input name="startTime" type="time" defaultValue={start.time} required className={inputClass} /></label>
-                        <label className="text-sm">End date<input name="endDate" type="date" defaultValue={end.date} className={inputClass} /></label>
-                        <label className="text-sm">End time<input name="endTime" type="time" defaultValue={end.time} className={inputClass} /></label>
+                        <EventDateField name="startDate" label="Start date" defaultValue={start.date} required className={inputClass} />
+                        <EventTimeField name="startTime" label="Start time" defaultValue={start.time} required className={inputClass} />
+                        <EventDateField name="endDate" label="End date" defaultValue={end.date} optional minFrom="startDate" className={inputClass} />
+                        <EventTimeField name="endTime" label="End time" defaultValue={end.time} optional className={inputClass} />
+                        <RecurrenceFields
+                          className={inputClass}
+                          defaultFrequency={event.recurrence_frequency}
+                          defaultWeekdays={event.recurrence_weekdays}
+                          defaultEndDate={event.recurrence_end_date}
+                          defaultCount={event.recurrence_count}
+                        />
                         <label className="text-sm sm:col-span-2">Venue<input name="venue" defaultValue={event.venue} required maxLength={240} className={inputClass} /></label>
                         <label className="text-sm sm:col-span-2">Address<input name="address" defaultValue={event.address || ""} maxLength={400} className={inputClass} /></label>
-                        <label className="text-sm sm:col-span-2">Description<textarea name="description" defaultValue={event.description} required maxLength={5000} rows={5} className={inputClass} /></label>
+                        <DescriptionEditor name="description" defaultValue={event.description} rows={5} className={inputClass} />
                         <label className="text-sm sm:col-span-2">RSVP link<input name="rsvpUrl" type="url" defaultValue={event.rsvp_url || ""} maxLength={2048} className={inputClass} /></label>
                         {event.image_path ? <label className="text-sm sm:col-span-2">Image description<input name="imageAlt" defaultValue={event.image_alt || ""} required maxLength={300} className={inputClass} /></label> : null}
                         <label className="text-sm">Event status<select name="eventStatus" defaultValue={event.event_status || ""} className={inputClass}><option value="">Scheduled</option><option value="postponed">Postponed</option><option value="cancelled">Cancelled</option></select></label>

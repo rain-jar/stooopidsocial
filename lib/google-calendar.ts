@@ -1,4 +1,5 @@
 import type { CommunityEvent } from "@/data/events";
+import { descriptionToPlainText } from "@/lib/events/description";
 
 const DEFAULT_EVENT_DURATION_MS = 60 * 60 * 1000;
 
@@ -16,7 +17,7 @@ export function googleCalendarUrl(event: CommunityEvent) {
     text: event.name,
     dates: `${googleCalendarDate(start)}/${googleCalendarDate(end)}`,
     ctz: event.timezone,
-    details: event.description,
+    details: descriptionToPlainText(event.description),
     location: event.address ?? event.venue,
   });
 

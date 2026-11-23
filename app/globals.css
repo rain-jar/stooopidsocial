@@ -25,6 +25,15 @@ body {
   font-family: Arial, Helvetica, sans-serif;
 }
 
+.event-date-input {
+  color-scheme: dark;
+}
+
+.event-date-input::-webkit-calendar-picker-indicator {
+  cursor: pointer;
+  opacity: 0.78;
+}
+
 :root {
   --linktree-navy: #1b3f72;
   --linktree-gold: #ef9f27;
