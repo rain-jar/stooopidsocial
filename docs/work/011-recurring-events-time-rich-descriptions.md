@@ -2,7 +2,7 @@
 
 ## Status
 
-Implementation complete; rollout pending — the user approved the documented proposal on 2026-11-23. Application code and the additive migration are ready, but the migration has not been applied and production has not been changed.
+Deployed; production end-to-end recurrence validation pending — the user approved the documented proposal on 2026-11-23. The additive migration and application release are live, but a real recurring submission has not yet completed the full moderation/publication lifecycle.
 
 ## Source Requirements
 
@@ -202,7 +202,7 @@ The migration is additive. Existing non-recurring events retain current behavior
 
 Approve the proposed schema, recurrence limits/semantics, series-level moderation behavior, dependency-free description markup, security controls, and verification/rollback plan before implementation begins.
 
-Approval was received on 2026-11-23. It did not authorize a remote database migration, commit, push, or deployment.
+Approval was received on 2026-11-23. The user subsequently authorized production rollout and confirmed the Supabase migration was applied before the application release.
 
 ## Actual Changes
 
@@ -215,7 +215,7 @@ Approval was received on 2026-11-23. It did not authorize a remote database migr
 - Added shared mobile/desktop recurrence controls for supported frequency, weekdays, and date/count endings.
 - Added a dependency-free description toolbar and allowlisted React renderer for HTTP/HTTPS links, bullet lists, underline, and strikethrough. Raw HTML remains inert text.
 - Converted formatted descriptions back to readable plain text when constructing Google Calendar URLs.
-- Added no dependencies and made no remote or production changes.
+- Added no dependencies.
 
 ## Verification Evidence
 
@@ -226,12 +226,13 @@ Approval was received on 2026-11-23. It did not authorize a remote database migr
 - The default Turbopack build could not complete in the execution environment because its CSS worker was denied permission to bind a local port; this is an environment restriction rather than an application compile error.
 - Focused runtime fixtures passed for one-occurrence schedules, weekly DST wall-clock preservation, biweekly multiple weekdays, monthly missing-date skips, invalid empty-weekday rejection, and description-to-plain-text conversion.
 - Local production smoke test returned HTTP 200 for the homepage and preserved the authenticated management redirect boundary.
+- The user applied the additive Supabase migration before application deployment. A post-migration anonymous read confirmed the recurrence columns and `event_occurrences` table are available through the intended public RLS boundary; no approved occurrence rows existed at verification time.
+- Commit `f9703b8` was pushed to `origin/main`. The canonical Vercel production site returned HTTP 200 with the recurrence and formatting controls present, event submissions enabled, and `/links/manage/events` still redirecting unauthenticated visitors to the protected management login.
 - `npm audit --omit=dev` reports one open moderate Next.js production finding; full `npm audit` reports eight moderate findings across Next.js and the existing development-only ESLint/minimatch chain. No audit fix was applied. The production framework finding is tracked in `docs/security/SEC-2026-002-nextjs-moderate-advisories.md`.
 
 ## Checks Not Run and Remaining Gates
 
-- The additive Supabase migration has not been applied to any remote database, so live RLS, grants, function execution, atomic failure, and cascade behavior remain to be verified in a controlled environment.
 - No recurring event has yet completed the real public submission, image upload, moderation, occurrence publication, update/regeneration, rejection, or deletion flow.
-- Interactive desktop/mobile visual, keyboard, focus, touch, and supported-browser checks have not been run. The local production configuration rendered submissions as unavailable, so the new controls were build-verified but not browser-operated.
-- No commit, push, preview deployment, production deployment, or production data change was performed.
-- Rollout requires separate approval to apply the migration, followed by protected-preview end-to-end verification before production promotion.
+- The user visually reviewed the local desktop dialog, recurrence controls, formatting UI, time selector, and corrected date-field treatment. Dedicated mobile, keyboard-only, touch, and cross-browser checks remain outstanding.
+- Transactional failure, cascade deletion, and service-role mutation grants have not yet been exercised against a disposable recurring series in production.
+- The release is live; completion of the phase still requires one controlled recurring submission through moderation and public occurrence verification.
