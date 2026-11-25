@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Image from "next/image";
 import Rolodex from "@/components/run/Rolodex";
+import RunCrewNotes, { getRunExtraLinks } from "@/components/run/RunCrewNotes";
 import RunDuck from "@/components/run/RunDuck";
 import RunFooter from "@/components/run/RunFooter";
 import RunHeader from "@/components/run/RunHeader";
@@ -12,8 +13,11 @@ export const metadata: Metadata = {
   description: runContent.meta.description,
 };
 
-export default function RunPage() {
+export const revalidate = 300;
+
+export default async function RunPage() {
   const { hero, sunday, faqs, pacing, photos, duck } = runContent;
+  const extraLinks = await getRunExtraLinks();
 
   return (
     <div className="run-content relative">
@@ -60,10 +64,11 @@ export default function RunPage() {
                 <li key={detail}>{detail}</li>
               ))}
             </ul>
-            <div className="run-cta mt-6">
+            <div id="crew-links" className="run-cta mt-6 flex flex-col gap-3 min-[800px]:flex-row min-[800px]:flex-wrap">
               <RunLink href={sunday.cta.href} external>
                 {sunday.cta.label}
               </RunLink>
+              <RunCrewNotes extraLinks={extraLinks} />
             </div>
           </div>
         </section>

@@ -444,6 +444,107 @@ dialog.event-image-dialog::backdrop {
   text-underline-offset: 4px;
 }
 
+.run-notes-popover {
+  position: fixed;
+  inset: 0;
+  box-sizing: border-box;
+  width: min(24rem, calc(100% - 1.3rem));
+  height: fit-content;
+  max-height: calc(100dvh - 1.5rem);
+  overflow: auto;
+  margin: auto;
+  padding: 0.45rem 0.85rem 0.85rem;
+  border: 1px solid #1b3f7255;
+  border-radius: 0.85rem;
+  background: var(--linktree-cream);
+  color: var(--linktree-navy);
+  box-shadow: 3px 5px 0 #1b3f7240;
+}
+
+.run-notes-popover::backdrop {
+  background: rgb(27 63 114 / 22%);
+}
+
+.run-notes-close {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  font-size: 1.5rem;
+  cursor: pointer;
+}
+
+.run-notes-stack {
+  display: grid;
+  gap: 0.65rem;
+  list-style: none;
+}
+
+.run-sticky-note {
+  position: relative;
+  border-radius: 0.12rem 0.12rem 0.6rem 0.12rem;
+  background: var(--run-note-paper, #faf1dc);
+  box-shadow: 1px 3px 4px #302a1c40;
+  font-size: 0.875rem;
+  font-weight: 700;
+}
+
+.run-sticky-note::before {
+  position: absolute;
+  inset: -0.23rem auto auto calc(50% - 1rem);
+  width: 2rem;
+  height: 0.6rem;
+  background: #fff9;
+  content: "";
+  pointer-events: none;
+  transform: rotate(-7deg);
+}
+
+.run-sticky-note[data-note-color="honey"] { --run-note-paper: #f7e0a0; }
+.run-sticky-note[data-note-color="peach"] { --run-note-paper: #f8d8b4; }
+.run-sticky-note[data-note-color="blue"] { --run-note-paper: #dbe6f3; }
+
+.run-note-action {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.4rem;
+  min-height: 44px;
+  padding: 0.4rem 0.65rem;
+}
+
+.run-community-note summary {
+  cursor: pointer;
+  list-style: none;
+}
+
+.run-community-note summary::-webkit-details-marker { display: none; }
+.run-note-fold::before { content: "+"; }
+.run-community-note[open] .run-note-fold::before { content: "−"; }
+
+.run-community-note ul {
+  max-height: 12rem;
+  overflow: auto;
+  padding: 0 0.65rem 0.5rem;
+}
+
+.run-community-note a {
+  display: flex;
+  min-height: 44px;
+  align-items: center;
+  padding: 0.3rem 0;
+  border-top: 1px dashed #1b3f7266;
+  overflow-wrap: anywhere;
+  font-weight: 400;
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+}
+
+a.run-note-action:hover {
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+}
+
 .run-press {
   display: inline-flex;
   align-items: center;
@@ -460,6 +561,11 @@ dialog.event-image-dialog::backdrop {
   line-height: 1.2;
   text-align: center;
   transition: transform 120ms ease, box-shadow 120ms ease;
+}
+
+.run-press-secondary {
+  background: var(--linktree-cream);
+  cursor: pointer;
 }
 
 .run-press:hover {

@@ -40,7 +40,6 @@ export const runContent = {
     homeHref: "/",
     links: [
       { href: "/run", label: "Run" },
-      { href: "/links", label: "Linktree" },
     ] satisfies RunLink[],
   },
   footer: {
