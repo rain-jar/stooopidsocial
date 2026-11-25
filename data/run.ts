@@ -48,7 +48,6 @@ export const runContent = {
   },
   hero: {
     title: "Stooopid Run Crew",
-    lede: "Sundays - 10 AM @ Café Tranquille",
     note: "All paces welcome. No experience needed. Because we believe - Anyone Can Run!",
     scrollCue: "scroll",
   },

@@ -29,7 +29,6 @@ export default async function RunPage() {
             <h1 id="run-hero-title" className="text-4xl font-bold tracking-tight">
               {hero.title}
             </h1>
-            <p className="mt-3 text-lg font-bold">{hero.lede}</p>
             <p className="mt-3">{hero.note}</p>
           </div>
           <div className="run-hero-stage" data-duck-stage>
