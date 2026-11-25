@@ -1,6 +1,9 @@
 import { runContent } from "@/data/run";
 import { getPublicLinkCategories } from "@/lib/links/repository";
 import { validHttpUrl } from "@/lib/links/validation";
+import RunCrewNotesDeepLink from "./RunCrewNotesDeepLink";
+
+const popoverId = "run-notes-menu";
 
 const shortcuts = [
   { label: "Instagram", href: runContent.photos.follow.href, color: "honey" },
@@ -73,14 +76,14 @@ export default function RunCrewNotes({ extraLinks }: {
     <>
       <button
         type="button"
-        popoverTarget="run-notes-menu"
+        popoverTarget={popoverId}
         className="run-press run-press-secondary"
       >
         Crew links <span aria-hidden="true">+</span>
       </button>
       <div
         className="run-notes-popover"
-        id="run-notes-menu"
+        id={popoverId}
         popover="auto"
         role="group"
         aria-labelledby="run-notes-label"
@@ -89,7 +92,7 @@ export default function RunCrewNotes({ extraLinks }: {
           <span id="run-notes-label">Crew &amp; community</span>
           <button
             type="button"
-            popoverTarget="run-notes-menu"
+            popoverTarget={popoverId}
             popoverTargetAction="hide"
             className="run-notes-close"
             aria-label="Close crew and community links"
@@ -99,6 +102,7 @@ export default function RunCrewNotes({ extraLinks }: {
         </div>
         {notes}
       </div>
+      <RunCrewNotesDeepLink popoverId={popoverId} />
     </>
   );
 }
