@@ -149,10 +149,30 @@ body {
   outline: 3px solid #173d69;
   outline-offset: 4px;
 }
-@media (min-width: 768px) and (prefers-reduced-motion: no-preference) {
-  .board-photo { rotate: -1deg; transition: rotate 160ms, translate 160ms; }
-  .board-photo:nth-child(even) { rotate: 1deg; }
-  .board-photo:hover, .board-photo:focus-visible { rotate: 0deg; translate: 0 -3px; }
+@media (max-width: 767px) {
+  .board-photo {
+    width: calc(100% - clamp(12px, 5vw, 28px));
+    justify-self: center;
+  }
+}
+.board-photo:active {
+  box-shadow: 1px 3px 5px #57361973;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .board-photo {
+    --photo-tilt: 1deg;
+    rotate: calc(-1 * var(--photo-tilt));
+    transition: rotate 160ms, translate 160ms, box-shadow 160ms;
+  }
+  .board-photo:nth-child(even) { rotate: var(--photo-tilt); }
+  @media (max-width: 767px) {
+    .board-photo { --photo-tilt: .65deg; }
+  }
+  @media (hover: hover) and (pointer: fine) {
+    .board-photo:hover { rotate: 0deg; translate: 0 -3px; }
+  }
+  .board-photo:focus-visible { rotate: 0deg; translate: 0 -3px; }
+  .board-photo:active { rotate: 0deg; translate: 0 1px; }
 }
 .board-add {
   color: #fff8e7;
