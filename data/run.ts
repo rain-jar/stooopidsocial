@@ -178,3 +178,49 @@ export const runContent = {
     } satisfies Record<string, DuckFrame>,
   },
 };
+
+export type RunNoteColor = "honey" | "peach" | "blue";
+
+export type RunCrewShortcut = {
+  label: string;
+  href: string;
+  color: RunNoteColor;
+};
+
+export type RunCrewLinkGroup = {
+  id: string;
+  label: string;
+  links: readonly RunCrewShortcut[];
+  /** Shown on the Community disclosure, when extra published links exist. */
+  disclosureLabel?: string;
+};
+
+/**
+ * Crew links popup: section tags and the shortcuts under them.
+ * Instagram and the pacing app reuse the URLs already listed above.
+ */
+export const runCrewLinkGroups: readonly RunCrewLinkGroup[] = [
+  {
+    id: "socials",
+    label: "Socials",
+    links: [
+      { label: "Instagram", href: runContent.photos.follow.href, color: "honey" },
+      { label: "Strava", href: "https://www.strava.com/clubs/2391274", color: "peach" },
+    ],
+  },
+  {
+    id: "apps",
+    label: "Apps",
+    links: [
+      { label: "Pacing app", href: runContent.pacing.cta.href, color: "blue" },
+    ],
+  },
+  {
+    id: "community",
+    label: "Community",
+    disclosureLabel: "Community links",
+    links: [],
+  },
+];
+
+export const runCrewLinksTitle = "Crew & community";

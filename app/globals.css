@@ -448,6 +448,8 @@ dialog.event-image-dialog::backdrop {
   position: fixed;
   inset: 0;
   box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
   /* Default width tracks the phone text column inset; desktop widths
      are set with .run-copy in the 800px and 1100px breakpoints below. */
   width: min(24rem, calc(100% - 1.75rem));
@@ -470,6 +472,32 @@ dialog.event-image-dialog::backdrop {
   -webkit-backdrop-filter: blur(6px);
 }
 
+.run-notes-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  flex: 0 0 auto;
+  margin-bottom: 0.35rem;
+}
+
+.run-notes-title {
+  margin: 0;
+  padding: 0;
+  font-size: 1.05rem;
+  font-weight: 700;
+  line-height: 1.2;
+  text-decoration: none;
+}
+
+.run-section .run-notes-popover :is(h2, h3),
+.run-notes-popover :is(h2, h3) {
+  padding-left: 0;
+  text-decoration: none;
+  text-decoration-thickness: initial;
+  text-underline-offset: unset;
+}
+
 .run-notes-close {
   display: grid;
   place-items: center;
@@ -479,9 +507,47 @@ dialog.event-image-dialog::backdrop {
   cursor: pointer;
 }
 
+.run-notes-board {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 auto;
+  justify-content: space-evenly;
+  gap: 1.05rem;
+  min-height: 0;
+}
+
+.run-notes-group {
+  margin: 0;
+}
+
+.run-notes-tag {
+  margin: 0 0 0.45rem 0.15rem;
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  line-height: 1.2;
+  transform: rotate(-1.2deg);
+  transform-origin: left center;
+}
+
+.run-notes-tag::after {
+  content: "";
+  display: block;
+  width: 2.35rem;
+  height: 2px;
+  margin-top: 0.18rem;
+  background: currentColor;
+  opacity: 0.4;
+  transform: rotate(-2deg);
+  transform-origin: left center;
+}
+
 .run-notes-stack {
   display: grid;
-  gap: 0.65rem;
+  gap: 0.7rem;
+  margin: 0;
+  padding: 0;
   list-style: none;
 }
 
@@ -490,9 +556,14 @@ dialog.event-image-dialog::backdrop {
   border-radius: 0.12rem 0.12rem 0.6rem 0.12rem;
   background: var(--run-note-paper, #faf1dc);
   box-shadow: 1px 3px 4px #302a1c40;
-  font-size: 0.875rem;
+  font-size: 1rem;
   font-weight: 700;
 }
+
+.run-notes-group:nth-child(1) .run-sticky-note:nth-of-type(1) { transform: rotate(-1deg); }
+.run-notes-group:nth-child(1) .run-sticky-note:nth-of-type(2) { transform: rotate(0.9deg); }
+.run-notes-group:nth-child(2) .run-sticky-note { transform: rotate(-0.7deg); }
+.run-notes-group:nth-child(3) .run-sticky-note { transform: rotate(0.75deg); }
 
 .run-sticky-note::before {
   position: absolute;
@@ -514,8 +585,8 @@ dialog.event-image-dialog::backdrop {
   align-items: center;
   justify-content: space-between;
   gap: 0.4rem;
-  min-height: 44px;
-  padding: 0.4rem 0.65rem;
+  min-height: 3.15rem;
+  padding: 0.55rem 0.85rem;
 }
 
 .run-community-note summary {
@@ -942,6 +1013,27 @@ a.run-note-action:hover {
     padding: 1.15rem 1.5rem 1.7rem;
   }
 
+  .run-notes-title {
+    font-size: 1.15rem;
+  }
+
+  .run-notes-board {
+    gap: 1.25rem;
+  }
+
+  .run-notes-stack {
+    gap: 0.85rem;
+  }
+
+  .run-sticky-note {
+    font-size: 1.0625rem;
+  }
+
+  .run-note-action {
+    min-height: 3.35rem;
+    padding: 0.65rem 1rem;
+  }
+
   .run-copy .run-press {
     width: auto;
   }
@@ -1013,5 +1105,11 @@ a.run-note-action:hover {
 
   .run-scroll-cue {
     display: none !important;
+  }
+
+  .run-notes-tag,
+  .run-notes-tag::after,
+  .run-sticky-note {
+    transform: none;
   }
 }
