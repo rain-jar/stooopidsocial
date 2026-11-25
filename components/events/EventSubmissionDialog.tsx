@@ -276,7 +276,7 @@ export default function EventSubmissionDialog({ enabled, turnstileSiteKey }: Pro
           setSuccess(false);
           setOpen(true);
         }}
-        className="board-add shrink-0 rounded-sm px-4 py-3 text-sm font-bold"
+        className="board-add shrink-0 rounded-sm px-4 py-3 text-[.9375rem] font-bold"
       >
         Add Your Event
       </button>
