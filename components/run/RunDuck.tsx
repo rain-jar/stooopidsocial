@@ -49,6 +49,8 @@ const INITIAL: Motion = {
 const HOLD_MS = 2000;
 const DROP_MS = 700;
 const PHONE_MAX = 767;
+/** Scroll positions at or below this count as the top of the page. */
+const AT_TOP = 80;
 /** Share of peek-mobile.webp that stays on screen. The beak base starts near 48%. */
 const PEEK_VISIBLE = 0.53;
 const BEAK_TIP = 0.974;
@@ -85,6 +87,9 @@ export default function RunDuck() {
     const content = document.querySelector<HTMLElement>(".run-content");
     const scrollport = document.querySelector<HTMLElement>(".run-scrollport");
     if (!content || !scrollport) return;
+
+    const hasDeparted = () => content.classList.contains("run-departed");
+    const atTop = () => scrollport.scrollTop <= AT_TOP;
 
     const frames = runContent.duck.frames;
     for (const frame of [frames.start, frames.runA, frames.runB, frames.peek, frames.peekMobile, frames.rest]) {
@@ -176,11 +181,12 @@ export default function RunDuck() {
 
     const finishAt = (index: number) => {
       stopRunning();
-      const pose: DuckPose = index <= 0 ? "rest" : "peek";
-      const point = index <= 0 ? landingBox() : lanePoint(index);
+      const restInHero = index <= 0 && !hasDeparted();
+      const pose: DuckPose = restInHero ? "rest" : "peek";
+      const point = restInHero ? landingBox() : lanePoint(Math.max(0, index));
       let x = point.x;
       let width = point.width;
-      if (index <= 0) {
+      if (restInHero) {
         const startRatio = frames.start.height / frames.start.width;
         const restRatio = frames.rest.height / frames.rest.width;
         width = Math.min(point.width, (point.width * startRatio) / restRatio);
@@ -200,15 +206,28 @@ export default function RunDuck() {
       });
       currentIndex = index;
       animating = false;
-      if (queued !== null && queued !== currentIndex) {
-        const next = queued;
-        queued = null;
-        void runTo(next);
-      }
+      flushQueue();
     };
 
     const viewTop = () => 76;
     const viewBottom = () => window.innerHeight - 12;
+
+    const sectionVisible = (index: number) => {
+      const section = sections()[index];
+      if (!section) return false;
+      const rect = section.getBoundingClientRect();
+      return rect.bottom > viewTop() && rect.top < viewBottom();
+    };
+
+    const activeIndex = () => {
+      if (atTop()) return 0;
+      const midY = scrollport.clientHeight * 0.45;
+      const visible = sections().find((section) => {
+        const rect = section.getBoundingClientRect();
+        return rect.top <= midY && rect.bottom >= midY;
+      });
+      return Number(visible?.dataset.runSection ?? currentIndex);
+    };
 
     const cornerPoint = (index: number): Point | null => {
       const section = sections()[index];
@@ -302,24 +321,17 @@ export default function RunDuck() {
     };
 
     const runToDesktop = async (from: number, index: number) => {
-      if (from < 0 && index > 0) {
+      if (from < 0 && index > 0 && !hasDeparted()) {
         await moveTo(stageLanePoint(), 480);
         if (cancelled) return;
         content.classList.add("run-departed");
         await settleLayout();
         if (cancelled) return;
         await moveTo(lanePoint(index), 820);
-      } else if (from > 0 && index <= 0) {
-        content.classList.remove("run-departed");
-        await settleLayout();
-        if (cancelled) return;
-        await moveTo(stageLanePoint(), 820);
-        if (cancelled) return;
-        await moveTo(landingBox(), 480);
-      } else if (index <= 0) {
+      } else if (index <= 0 && !hasDeparted()) {
         await moveTo(landingBox(), 520);
       } else {
-        const fromPoint = from > 0 ? lanePoint(from) : stageLanePoint();
+        const fromPoint = from > 0 || hasDeparted() ? lanePoint(Math.max(0, from)) : stageLanePoint();
         const toPoint = lanePoint(index);
         const distance = Math.hypot(toPoint.x - fromPoint.x, toPoint.y - fromPoint.y);
         const ms = Math.max(480, Math.min(1100, distance * 0.85));
@@ -329,8 +341,27 @@ export default function RunDuck() {
       finishAt(index);
     };
 
+    const flushQueue = () => {
+      if (queued !== null && queued !== currentIndex) {
+        const next = queued;
+        queued = null;
+        void runTo(next);
+      } else {
+        queued = null;
+      }
+    };
+
+    const finishPhone = (index: number) => {
+      if (cancelled) return;
+      stopRunning();
+      currentIndex = index;
+      animating = false;
+      applyPeek(index, false);
+      flushQueue();
+    };
+
     const runToPhone = async (from: number, index: number) => {
-      if (from < 0 && index > 0) {
+      if (from < 0 && index > 0 && !hasDeparted()) {
         const box = landingBox();
         const runW = Math.min(box.width, 150);
         startRunning();
@@ -361,16 +392,17 @@ export default function RunDuck() {
         await sprintPhone(index);
       }
       if (cancelled) return;
-      stopRunning();
-      currentIndex = index;
-      animating = false;
-      applyPeek(index, false);
+      if (!animating || currentIndex !== index) return;
+      finishPhone(index);
     };
 
     const runTo = async (index: number) => {
       if (cancelled) return;
+      // Once the intro has left the hero, staying at the top always
+      // means peeking at the hero title, never a later section.
+      if (introDone && hasDeparted() && atTop()) index = 0;
       if (animating) {
-        if (!isPhone() && index !== currentIndex) queued = index;
+        if (index !== currentIndex) queued = index;
         return;
       }
       if (index === currentIndex) return;
@@ -381,9 +413,7 @@ export default function RunDuck() {
       if (isPhone()) {
         const watchdog = window.setTimeout(() => {
           if (!cancelled && animating && currentIndex === index) {
-            animating = false;
-            stopRunning();
-            applyPeek(index, false);
+            finishPhone(index);
           }
         }, 1800);
         await runToPhone(from, index);
@@ -404,6 +434,27 @@ export default function RunDuck() {
         }
       });
       return { best, bestRatio };
+    };
+
+    const scrollDestination = () => {
+      if (atTop()) return 0;
+      if (isPhone()) {
+        const index = activeIndex();
+        return index >= 0 ? index : 1;
+      }
+      const { best, bestRatio } = visibleSection();
+      return best >= 1 && bestRatio > 0.5 ? best : Math.max(1, best);
+    };
+
+    const departEarly = () => {
+      if (cancelled || introDone || animating) return;
+      introDone = true;
+      window.clearTimeout(timer);
+      window.cancelAnimationFrame(trackId);
+      apply({ dropping: false });
+      content.classList.remove("run-holding");
+      content.classList.add("run-departed");
+      void runTo(scrollDestination());
     };
 
     const showLanding = () => {
@@ -473,22 +524,23 @@ export default function RunDuck() {
     let scrollRaf = 0;
     const onScroll = () => {
       if (scrollport.scrollTop > 48) scrolled = true;
-      if (!isPhone() || animating || !introDone || currentIndex < 0) return;
+      if (!introDone && scrolled) {
+        departEarly();
+        return;
+      }
+      if (!introDone) return;
       if (scrollRaf) return;
       scrollRaf = window.requestAnimationFrame(() => {
         scrollRaf = 0;
-        if (cancelled || animating || !isPhone()) return;
-        if (cornerPoint(currentIndex)) {
-          applyPeek(currentIndex, false);
+        if (cancelled || !introDone) return;
+        const index = atTop() ? 0 : activeIndex();
+        if (index < 0) return;
+        if (index !== currentIndex) {
+          void runTo(index);
           return;
         }
-        const midY = scrollport.clientHeight * 0.45;
-        const visible = sections().find((section) => {
-          const rect = section.getBoundingClientRect();
-          return rect.top <= midY && rect.bottom >= midY;
-        });
-        const index = Number(visible?.dataset.runSection ?? -1);
-        if (index >= 0 && index !== currentIndex) void runTo(index);
+        if (animating) return;
+        if (isPhone() && sectionVisible(index)) applyPeek(index, false);
       });
     };
     scrollport.addEventListener("scroll", onScroll, { passive: true });
@@ -498,12 +550,12 @@ export default function RunDuck() {
         if (isPhone()) return;
         for (const entry of entries) ratios.set(entry.target, entry.intersectionRatio);
         if (!introDone || !scrolled) return;
+        if (atTop()) {
+          void runTo(0);
+          return;
+        }
         const { best, bestRatio } = visibleSection();
         if (best >= 1 && bestRatio >= 0.46) void runTo(best);
-        else if (best === 0 && bestRatio >= 0.6 && scrollport.scrollTop < 24) {
-          scrolled = false;
-          void runTo(0);
-        }
       },
       { root: scrollport, threshold: [0.25, 0.4, 0.55, 0.7, 0.85] },
     );
@@ -511,14 +563,18 @@ export default function RunDuck() {
 
     const phoneObserver = new IntersectionObserver(
       (entries) => {
-        if (!isPhone() || !introDone || animating) return;
+        if (!isPhone() || !introDone) return;
+        if (atTop()) {
+          void runTo(0);
+          return;
+        }
         for (const entry of entries) {
           if (!entry.isIntersecting) continue;
           const section = (entry.target as HTMLElement).closest<HTMLElement>("[data-run-section]");
           if (!section) continue;
           const index = Number(section.dataset.runSection ?? -1);
           if (index < 0 || index === currentIndex) continue;
-          if (index === 0 && scrollport.scrollTop > 80) continue;
+          if (index === 0 && !atTop()) continue;
           void runTo(index);
           return;
         }
@@ -532,20 +588,21 @@ export default function RunDuck() {
     const onResize = () => {
       if (animating) return;
       if (isPhone()) {
-        if (!introDone || currentIndex < 0) {
+        if (!introDone || currentIndex < 0 || !hasDeparted()) {
           const box = landingBox();
           apply({ x: box.x, y: box.y, width: box.width, animate: false, phone: true, clip: "none" });
           return;
         }
-        applyPeek(currentIndex, false);
+        const index = Math.max(0, currentIndex);
+        if (sectionVisible(index)) applyPeek(index, false);
         return;
       }
-      if (!introDone || currentIndex <= 0) {
+      if (!introDone || (currentIndex <= 0 && !hasDeparted())) {
         const box = landingBox();
         apply({ x: box.x, y: box.y, width: box.width, animate: false, phone: false, clip: "none" });
         return;
       }
-      apply({ ...lanePoint(currentIndex), animate: false, phone: false, clip: "none" });
+      apply({ ...lanePoint(Math.max(0, currentIndex)), animate: false, phone: false, clip: "none" });
     };
 
     const resizeObserver = new ResizeObserver(() => onResize());
