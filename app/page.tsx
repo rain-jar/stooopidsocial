@@ -14,21 +14,20 @@ export default async function Home() {
     <>
       <Header />
 
-      <main className="home-canvas-background py-10">
-        <section className="mx-auto w-full max-w-[1400px] px-6 text-center">
-        <h1 className="text-3xl md:text-4xl font-bold tracking-tight">
-          Sto🙄opid Calendar
+      <main className="calendar-board">
+        <h1 className="board-heading" aria-label="Stooopid Community Calendar">
+          <span className="board-letters" aria-hidden="true">
+            {Array.from("Stooopid", (letter, index) => (
+              <span className="board-letter board-pinned" key={index}>{letter}</span>
+            ))}
+          </span>
+          <span className="board-title" aria-hidden="true">Community Calendar</span>
         </h1>
 
-        <p className="mx-auto mt-2 max-w-xl text-xl md:text-lg text-white/70">
-          All the times when we are being stooopid!
-        </p>
-      </section>
-
-      <section className="mx-auto mt-10 w-full max-w-[1400px] px-6">
-        <div className="mb-5 flex items-end justify-between gap-4">
+      <section className="mx-auto mt-8 w-full max-w-[1140px]">
+        <div className="mb-7 flex flex-wrap items-center justify-between gap-3">
           <div>
-            <h2 className="mt-1 text-2xl font-bold tracking-tight md:text-3xl">
+            <h2 className="board-section-title">
               Upcoming stooopidities
             </h2>
           </div>

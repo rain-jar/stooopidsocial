@@ -276,14 +276,14 @@ export default function EventSubmissionDialog({ enabled, turnstileSiteKey }: Pro
           setSuccess(false);
           setOpen(true);
         }}
-        className="shrink-0 rounded-full bg-white px-4 py-2 text-sm font-semibold text-black transition-colors hover:bg-white/85 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
+        className="board-add shrink-0 rounded-sm px-4 py-3 text-sm font-bold"
       >
         Add Your Event
       </button>
 
       <dialog
         ref={dialogRef}
-        className="event-dialog"
+        className="event-dialog board-dialog"
         aria-label="Submit an event"
         onCancel={(cancelEvent) => {
           cancelEvent.preventDefault();
@@ -301,7 +301,7 @@ export default function EventSubmissionDialog({ enabled, turnstileSiteKey }: Pro
             ×
           </button>
 
-          <form ref={formRef} onSubmit={submitEvent} className="-mt-7 space-y-5 p-5 pb-8 md:p-8">
+          <form ref={formRef} onSubmit={submitEvent} className="board-dialog-copy -mt-7 space-y-5 p-5 pb-8 md:p-8">
             <div className="pr-12">
               <p className="text-sm font-semibold uppercase tracking-[0.14em] text-[#ff8065]">
                 Community submission

@@ -65,7 +65,7 @@ export default function EventModal({
   return (
     <dialog
       ref={dialogRef}
-      className="event-dialog"
+      className="event-dialog board-dialog"
       aria-label={event ? `${event.name} details` : "Event details unavailable"}
       onCancel={(cancelEvent) => {
         cancelEvent.preventDefault();
@@ -99,7 +99,7 @@ export default function EventModal({
         {event ? (
           <EventDetails event={event} />
         ) : (
-          <div className="grid min-h-80 place-items-center p-8 text-center">
+          <div className="board-dialog-copy grid min-h-80 place-items-center p-8 text-center">
             <div>
               <h2 className="text-2xl font-bold">We couldn’t find this event</h2>
               <p className="mt-2 text-white/65">

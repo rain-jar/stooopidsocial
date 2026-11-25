@@ -31,8 +31,9 @@ export default function EventCard({ event, priority = false, onSelect }: EventCa
       type="button"
       onClick={handleClick}
       aria-label={`View details for ${event.name}`}
-      className={`group relative isolate aspect-[4/3] min-h-[250px] w-full overflow-hidden rounded-[1.35rem] border border-white/15 bg-neutral-900 text-left text-white shadow-[0_18px_45px_rgba(0,0,0,0.24)] transition duration-200 hover:-translate-y-1 hover:border-white/35 hover:shadow-[0_24px_55px_rgba(0,0,0,0.34)] active:translate-y-0 active:scale-[0.99] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#ff8065] focus-visible:ring-offset-4 focus-visible:ring-offset-[#0a0a0a] ${artworkClasses[event.artwork]}`}
+      className="board-photo board-pinned group w-full text-left"
     >
+      <span className={`relative isolate block aspect-[4/3] overflow-hidden ${artworkClasses[event.artwork]}`}>
       {event.image && !imageFailed ? (
         <Image
           src={event.image.src}
@@ -45,11 +46,6 @@ export default function EventCard({ event, priority = false, onSelect }: EventCa
           priority={priority}
         />
       ) : null}
-
-      <span
-        aria-hidden="true"
-        className="absolute inset-0 -z-10 bg-[linear-gradient(180deg,rgba(4,7,6,0.08)_8%,rgba(4,7,6,0.25)_43%,rgba(4,7,6,0.94)_100%),linear-gradient(90deg,rgba(4,7,6,0.36),transparent_62%)] transition duration-200 group-hover:brightness-110"
-      />
 
       <span className="absolute left-4 top-4 grid min-w-14 rounded-xl bg-white/95 px-2.5 py-2 text-center text-neutral-950 shadow-lg">
         <span className="text-[0.68rem] font-medium tracking-[0.12em]">
@@ -66,11 +62,12 @@ export default function EventCard({ event, priority = false, onSelect }: EventCa
         </span>
       ) : null}
 
-      <span className="absolute inset-x-0 bottom-0 p-5 md:p-6">
-        <span className="line-clamp-2 block text-xl font-semibold leading-tight drop-shadow-sm md:text-2xl">
+      </span>
+      <span className="block px-2 pb-2 pt-4">
+        <span className="block break-words text-xl font-bold leading-tight">
           {event.name}
         </span>
-        <span className="mt-3 grid gap-1.5 text-sm text-white/85">
+        <span className="mt-3 grid gap-1.5 text-sm text-stone-700">
           <span className="flex items-center gap-2">
             <span aria-hidden="true">◷</span>
             <span>{formatCardDayAndTime(event)}</span>

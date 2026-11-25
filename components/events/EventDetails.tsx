@@ -169,7 +169,7 @@ export default function EventDetails({ event }: EventDetailsProps) {
         </dialog>
       ) : null}
 
-      <div className="space-y-6 p-5 pb-8 md:p-8">
+      <div className="board-dialog-copy space-y-6 p-5 pb-8 md:p-8">
         <div>
           <p className="text-sm font-semibold uppercase tracking-[0.14em] text-[#ff8065]">
             Community event

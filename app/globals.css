@@ -63,13 +63,129 @@ body {
   background-attachment: local;
 }
 
-.home-canvas-background {
-  background-color: #0B0C0E;
-  background-image:
-    radial-gradient(circle at center, rgb(255 255 255 / 17%) 0 1px, transparent 1.4px),
-    radial-gradient(ellipse 75% 45% at 50% 8%, rgb(255 255 255 / 4%) 0%, transparent 72%);
-  background-position: 0 0, center top;
-  background-size: 22px 22px, 100% 100%;
+.calendar-board {
+  padding: clamp(1rem, 4vw, 3.5rem);
+  border: clamp(11.5px, 4vw, 56px) solid #704425;
+  border-image: url("/calendar-wood-frame.webp") 69 round;
+  color: #26190f;
+  background-color: #ba8249;
+  background-image: url("/calendar-cork.webp");
+  background-size: 640px 640px;
+  background-clip: padding-box;
+  box-shadow: inset 0 0 0 2px #57321f99, inset 0 4px 18px #482712a0;
+}
+
+.board-heading { text-align: center; }
+.board-letters {
+  display: flex;
+  justify-content: center;
+  gap: clamp(3px, 1vw, 12px);
+  padding-top: 12px;
+}
+.board-letter {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: clamp(24px, 8.8vw, 90px);
+  padding: .22em 0 .08em;
+  background: #fff8e7;
+  font: 900 clamp(24px, 7.5vw, 82px)/1.06 "Arial Black", Arial, sans-serif;
+  box-shadow: 2px 5px 6px #562e245e;
+  rotate: -5deg;
+}
+.board-letter:nth-child(even) { rotate: 4deg; }
+.board-letter:nth-child(2) { background: #f9d43e; }
+.board-letter:nth-child(3) { background: #93c9ec; --pin: #2257af; }
+.board-letter:nth-child(4) { background: #22201e; color: #fff8e7; --pin: #f7c530; }
+.board-letter:nth-child(5) { background: #bd292f; color: #fff8e7; --pin: #fff8e7; }
+.board-letter:nth-child(6) { background: #92ca76; --pin: #267640; }
+.board-letter:nth-child(7) { background: #f3adad; }
+.board-title {
+  display: block;
+  width: fit-content;
+  max-width: 100%;
+  margin: .46em auto 0;
+  padding: .28em .5em .33em;
+  font: 900 clamp(1.4rem, 5.35vw, 5.25rem)/1.04 Impact, "Arial Narrow", sans-serif;
+  text-wrap: balance;
+  letter-spacing: .045em;
+  text-transform: uppercase;
+  color: #fff9ed;
+  background: #191614;
+  box-shadow: 3px 6px 0 #3a211994;
+}
+.board-section-title {
+  background: #ffdf65;
+  padding: .4em .7em;
+  font-size: clamp(1rem, 3vw, 1.4rem);
+  font-weight: 800;
+  box-shadow: 2px 3px 0 #69442160;
+}
+.board-pinned::before {
+  content: "";
+  position: absolute;
+  pointer-events: none;
+  z-index: 2;
+  top: 0;
+  left: 50%;
+  width: clamp(10px, 2vw, 18px);
+  aspect-ratio: 1;
+  transform: translate(-50%, -36%);
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 28%, #ffffffa0, transparent 36%), var(--pin, #ba2525);
+  box-shadow: 1px 3px 3px #3c221b85, inset -2px -3px 3px #0004;
+}
+.board-photo {
+  position: relative;
+  height: 100%;
+  cursor: pointer;
+  padding: 12px;
+  background: #fffbeb;
+  box-shadow: 3px 6px 10px #57361973;
+}
+.board-photo:nth-child(3n + 2) { --pin: #2257af; background: #e9f4fa; }
+.board-photo:nth-child(3n) { --pin: #267640; background: #fff0ec; }
+.board-photo:focus-visible, .board-add:focus-visible {
+  outline: 3px solid #173d69;
+  outline-offset: 4px;
+}
+@media (min-width: 768px) and (prefers-reduced-motion: no-preference) {
+  .board-photo { rotate: -1deg; transition: rotate 160ms, translate 160ms; }
+  .board-photo:nth-child(even) { rotate: 1deg; }
+  .board-photo:hover, .board-photo:focus-visible { rotate: 0deg; translate: 0 -3px; }
+}
+.board-add {
+  color: #fff8e7;
+  background: #742c25;
+}
+.board-add:hover { background: #59221d; }
+
+.board-dialog .event-modal-panel {
+  color-scheme: light;
+  background: #fff8e9;
+  color: #2b211b;
+}
+.board-dialog .board-dialog-copy :is([class~="text-white"], [class*="text-white/"]) {
+  color: #493a30;
+}
+.board-dialog .board-dialog-copy [class~="text-[#ff8065]"] { color: #8a2d25; }
+.board-dialog .board-dialog-copy [class*="border-white/"] { border-color: #82655065; }
+.board-dialog .board-dialog-copy :is([class~="bg-white/5"], [class~="bg-white/[0.03]"]) { background-color: #f6ebd8; }
+.board-dialog .board-dialog-copy [class~="hover:bg-white/10"]:hover { background-color: #ebdac0; }
+.board-dialog .board-dialog-copy :is(input, textarea)::placeholder { color: #766252; }
+.board-dialog .board-dialog-copy .event-date-input { color-scheme: light; }
+.board-dialog .board-dialog-copy [class~="text-amber-100"] { color: #724707; }
+.board-dialog .board-dialog-copy :is([class~="text-emerald-100"], [class~="text-emerald-200"]) { color: #205939; }
+.board-dialog .board-dialog-copy [class~="text-red-200"] { color: #912c24; }
+.board-dialog .board-dialog-copy :is(a, button, input, select, textarea):focus-visible {
+  outline: 2px solid #173d69;
+  outline-offset: 2px;
+}
+.board-dialog .event-modal-drag-handle span { background: #422e27; }
+.board-state {
+  background: #fff5d7;
+  color: #493a30;
+  box-shadow: 2px 4px 7px #57361950;
 }
 
 .event-art-photo {

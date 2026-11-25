@@ -22,7 +22,7 @@ export function EventGridSkeleton({ count = 3 }: { count?: number }) {
       {Array.from({ length: count }, (_, index) => (
         <div
           key={index}
-          className="aspect-[4/3] min-h-[250px] animate-pulse rounded-[1.35rem] border border-white/10 bg-white/8 motion-reduce:animate-none"
+          className="board-state aspect-[4/3] min-h-[250px] animate-pulse motion-reduce:animate-none"
         />
       ))}
     </div>
@@ -100,9 +100,9 @@ export default function EventGrid({ events, renderedAt }: EventGridProps) {
           ))}
         </div>
       ) : (
-        <div className="rounded-2xl border border-white/10 bg-white/5 px-6 py-16 text-center">
+        <div className="board-state px-6 py-16 text-center">
           <h2 className="text-2xl font-semibold">No upcoming events yet</h2>
-          <p className="mt-2 text-white/65">
+          <p className="mt-2">
             Check back soon for the next community event.
           </p>
         </div>
