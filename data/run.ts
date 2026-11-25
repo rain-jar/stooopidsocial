@@ -85,7 +85,7 @@ export const runContent = {
       {
         question: "Where exactly do you all meet?",
         answer:
-          "Entrace to the Café Tranquille at 1442 Rue Clark. Right next to the Skating Rink. If you don't see anyone outside, we're most likely inside near the skating lockers. ",
+          "Entrance to the Café Tranquille at 1442 Rue Clark. Right next to the Skating Rink. If you don't see anyone outside, we're most likely inside near the skating lockers. ",
       },
       {
         question: "Are there lockers to store things",
