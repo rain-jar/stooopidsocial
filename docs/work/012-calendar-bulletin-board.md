@@ -2,7 +2,7 @@
 
 ## Status
 
-Approved for production rollout. The user reviewed the local design and requested deployment.
+Deployed. The user reviewed the local design and approved production rollout. Independent mobile and keyboard verification is pending.
 
 ## Requirements and current state
 
@@ -41,3 +41,7 @@ Follow-up feedback called for realistic material detail. The CSS gradient patter
 After visual review, the frame was set to 4% of the viewport width within 11.5–56 px bounds. The title uses ivory lettering on a charcoal paper strip for contrast against the cork.
 
 The calendar now uses photographic-style cork and wood assets, pinned letter tiles, instant-photo event cards, and scoped paper styling for event and submission dialogs. Lint, TypeScript during the Webpack production build, and whitespace checks passed. The local preview served the calendar heading, event cards, Add Your Event, and the approved frame and title styles. Independent mobile, keyboard, and touch checks remain pending.
+
+Release `2dbe605` was pushed to `origin/main`. The canonical Vercel homepage served the new heading and Add Your Event, the production stylesheet contained the approved frame width and title colors, and both WebP textures returned successfully.
+
+Production feedback led to a smaller “Community Calendar” subtitle and a standalone “Stooopid” main heading. Lint, TypeScript, and whitespace checks passed for the adjustment.

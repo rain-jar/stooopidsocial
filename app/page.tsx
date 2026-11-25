@@ -15,14 +15,14 @@ export default async function Home() {
       <Header />
 
       <main className="calendar-board">
-        <h1 className="board-heading" aria-label="Stooopid Community Calendar">
-          <span className="board-letters" aria-hidden="true">
+        <header className="board-heading">
+          <h1 className="board-letters" aria-label="Stooopid">
             {Array.from("Stooopid", (letter, index) => (
-              <span className="board-letter board-pinned" key={index}>{letter}</span>
+              <span className="board-letter board-pinned" aria-hidden="true" key={index}>{letter}</span>
             ))}
-          </span>
-          <span className="board-title" aria-hidden="true">Community Calendar</span>
-        </h1>
+          </h1>
+          <p className="board-title">Community Calendar</p>
+        </header>
 
       <section className="mx-auto mt-8 w-full max-w-[1140px]">
         <div className="mb-7 flex flex-wrap items-center justify-between gap-3">

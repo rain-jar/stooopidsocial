@@ -104,9 +104,9 @@ body {
   display: block;
   width: fit-content;
   max-width: 100%;
-  margin: .46em auto 0;
-  padding: .28em .5em .33em;
-  font: 900 clamp(1.4rem, 5.35vw, 5.25rem)/1.04 Impact, "Arial Narrow", sans-serif;
+  margin: clamp(12px, 1.6vw, 22px) auto 0;
+  padding: .32em .7em .37em;
+  font: 900 clamp(1rem, 2.8vw, 2.75rem)/1.1 Impact, "Arial Narrow", sans-serif;
   text-wrap: balance;
   letter-spacing: .045em;
   text-transform: uppercase;
