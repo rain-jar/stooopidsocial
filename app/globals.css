@@ -448,8 +448,6 @@ dialog.event-image-dialog::backdrop {
   position: fixed;
   inset: 0;
   box-sizing: border-box;
-  display: flex;
-  flex-direction: column;
   /* Default width tracks the phone text column inset; desktop widths
      are set with .run-copy in the 800px and 1100px breakpoints below. */
   width: min(24rem, calc(100% - 1.75rem));
@@ -464,6 +462,11 @@ dialog.event-image-dialog::backdrop {
   background: var(--linktree-cream);
   color: var(--linktree-navy);
   box-shadow: 3px 5px 0 #1b3f7240;
+}
+
+.run-notes-popover:popover-open {
+  display: flex;
+  flex-direction: column;
 }
 
 .run-notes-popover::backdrop {
