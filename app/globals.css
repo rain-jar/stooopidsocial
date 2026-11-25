@@ -448,12 +448,15 @@ dialog.event-image-dialog::backdrop {
   position: fixed;
   inset: 0;
   box-sizing: border-box;
-  width: min(24rem, calc(100% - 1.3rem));
+  /* Default width tracks the phone text column inset; desktop widths
+     are set with .run-copy in the 800px and 1100px breakpoints below. */
+  width: min(24rem, calc(100% - 1.75rem));
   height: fit-content;
-  max-height: calc(100dvh - 1.5rem);
+  min-height: max(26rem, min(32rem, 58dvh));
+  max-height: calc(100dvh - 1.75rem);
   overflow: auto;
   margin: auto;
-  padding: 0.45rem 0.85rem 0.85rem;
+  padding: 1rem 1.15rem 1.45rem;
   border: 1px solid #1b3f7255;
   border-radius: 0.85rem;
   background: var(--linktree-cream);
@@ -462,7 +465,9 @@ dialog.event-image-dialog::backdrop {
 }
 
 .run-notes-popover::backdrop {
-  background: rgb(27 63 114 / 22%);
+  background: rgb(27 63 114 / 48%);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
 }
 
 .run-notes-close {
@@ -925,10 +930,16 @@ a.run-note-action:hover {
 
 @media (min-width: 800px) {
   .run-copy,
-  .run-hero-copy {
+  .run-hero-copy,
+  .run-notes-popover {
     width: min(34rem, calc(100% - 18rem));
     margin-right: auto;
     margin-left: auto;
+  }
+
+  .run-notes-popover {
+    min-height: min(36rem, calc(100dvh - 5rem));
+    padding: 1.15rem 1.5rem 1.7rem;
   }
 
   .run-copy .run-press {
@@ -943,7 +954,8 @@ a.run-note-action:hover {
 
 @media (min-width: 1100px) {
   .run-copy,
-  .run-hero-copy {
+  .run-hero-copy,
+  .run-notes-popover {
     width: min(40rem, calc(100% - 24rem));
   }
 }
