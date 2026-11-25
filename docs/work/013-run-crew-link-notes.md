@@ -59,3 +59,13 @@ Vercel listed one exception for the approved hostname. A request without cookies
 The user approved adding `/run?crew-links=1` to PR #2. On arrival, open the existing native popover and let the visitor dismiss it normally. On dismissal, remove only the popup query parameter without reloading the page. Keep ordinary Run visits closed by default and preserve the existing static route and link data. Verify direct arrival, dismissal, URL cleanup, refresh, and the regular button. The original review URL is pinned to its deployment. Check access on the updated branch preview before sharing it. Preview protection changes require separate approval.
 
 Local browser verification showed the popup opening and focusing its close button on arrival. Escape closed it and removed only `crew-links`, preserving an unrelated query parameter and the fragment. It stayed closed after refresh, and the regular button still opened it. ESLint and TypeScript passed.
+
+### Security Impact of stable preview access
+
+Approved for PR #2 team review. The user approved public access to the stable `review/run-crew-links` branch preview URL, including future deployments served at that address. Add an exception for that exact generated branch hostname. The original public URL is pinned to the earlier build, and the tokenized share URL failed on some phones. Leave other deployment settings and the application's authentication in place. Anyone with the public preview address can view its public pages across browsers and reach the existing sign-in boundary. Review future changes to this branch with that exposure in mind. This is a preview-access change with no application or data migration.
+
+Verify access without cookies or a token, test the popup on the branch URL, and check that a separate preview still requires Vercel sign-in and the preview admin still requires application sign-in. Remove the branch hostname exception to roll back, then confirm a cookie-free request redirects to Vercel sign-in. The earlier deployment exception has its own rollback.
+
+Complete. Vercel lists the approved branch hostname as public. Signed-out requests, including one with a mobile Chrome user agent, returned HTTP 200 and the popup markup on the branch URL. The live browser opened the popup on arrival and removed its query parameter on close. The commit-specific preview and an unrelated preview still redirected to Vercel sign-in. Preview event administration redirected to the application passcode page, and production continued to serve the prior Run page. Physical-device testing was not performed.
+
+To roll back PR #2: `git revert 74c68a8d` or Vercel instant rollback to the deploy before it.
