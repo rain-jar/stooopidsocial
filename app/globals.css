@@ -633,6 +633,7 @@ a.run-note-action:hover {
   top: 0;
   left: 0;
   z-index: 35;
+  will-change: transform;
   margin: 0;
   padding: 0;
   border: 0;
@@ -661,6 +662,14 @@ a.run-note-action:hover {
 
 .run-duck-mover.is-running .run-duck-sprite {
   animation: run-duck-bob 320ms ease-in-out infinite;
+}
+
+.run-duck-mover.is-hopping .run-duck-sprite {
+  animation: run-duck-hop 420ms ease;
+}
+
+.run-duck-mover.is-arriving .run-duck-sprite {
+  animation: run-duck-arrive 480ms ease;
 }
 
 .run-duck-mover.is-hopping .run-duck-sprite {
@@ -699,6 +708,16 @@ a.run-note-action:hover {
   }
   45% {
     transform: translateY(-18px);
+  }
+}
+
+@keyframes run-duck-arrive {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  40% {
+    transform: translateY(-5px);
   }
 }
 
@@ -947,6 +966,11 @@ a.run-note-action:hover {
     animation: none !important;
   }
 
+  .run-section-hero,
+  .run-hero-stage {
+    transition: none;
+  }
+
   .run-duck-static-start {
     display: none !important;
   }
@@ -959,9 +983,19 @@ a.run-note-action:hover {
     display: none !important;
   }
 
+  .run-content.run-static-peek .run-duck-static-rest {
+    display: none !important;
+  }
+
+  .run-content.run-static-peek .run-duck-mover {
+    display: block !important;
+    animation: none;
+  }
+
   .run-duck-mover.is-dropping .run-duck-sprite,
   .run-duck-mover.is-running .run-duck-sprite,
-  .run-duck-mover.is-hopping .run-duck-sprite {
+  .run-duck-mover.is-hopping .run-duck-sprite,
+  .run-duck-mover.is-arriving .run-duck-sprite {
     animation: none;
   }
 

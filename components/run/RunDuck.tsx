@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import Image from "next/image";
 import { runContent, type DuckPose } from "@/data/run";
 
@@ -54,6 +54,10 @@ const AT_TOP = 80;
 /** Share of peek-mobile.webp that stays on screen. The beak base starts near 48%. */
 const PEEK_VISIBLE = 0.53;
 const BEAK_TIP = 0.974;
+/** Time constant for the post-intro glide, in seconds. */
+const GLIDE_TAU = 0.2;
+const ARRIVE_MS = 480;
+const ARRIVE_PX = 2;
 
 /**
  * Travel width matches the desktop content column in app/globals.css.
@@ -77,12 +81,20 @@ function isPhone() {
 export default function RunDuck() {
   const [motion, setMotion] = useState<Motion>(INITIAL);
   const [hopping, setHopping] = useState(false);
+  const [arriving, setArriving] = useState(false);
   const hopTimer = useRef(0);
+  const arriveTimer = useRef(0);
   const runningRef = useRef(false);
+  const hoppingRef = useRef(false);
+  const moverRef = useRef<HTMLElement | null>(null);
+  const posRef = useRef({ x: 0, y: 0, width: 200 });
+
+  useEffect(() => {
+    hoppingRef.current = hopping;
+  }, [hopping]);
 
   useEffect(() => {
     const media = window.matchMedia("(prefers-reduced-motion: reduce)");
-    if (media.matches) return;
 
     const content = document.querySelector<HTMLElement>(".run-content");
     const scrollport = document.querySelector<HTMLElement>(".run-scrollport");
@@ -103,15 +115,32 @@ export default function RunDuck() {
     let introDone = false;
     let currentIndex = -1;
     let animating = false;
-    let queued: number | null = null;
-    const ratios = new Map<Element, number>();
+    let gliding = false;
+    let glideId = 0;
+    let lastGlideT = 0;
+    let settledIndex = -1;
+    let scrolled = false;
+    // After the intro, stay on Sunday until the visitor leaves the top.
+    // Once they have, returning to the top peeks at the hero title.
+    let leftTop = false;
 
     const sections = () => Array.from(content.querySelectorAll<HTMLElement>("[data-run-section]"));
     const landingImage = () => content.querySelector<HTMLElement>(".run-duck-static-start");
 
+    const writeMover = () => {
+      const el = moverRef.current;
+      if (!el) return;
+      const { x, y, width } = posRef.current;
+      el.style.transform = `translate3d(${x}px, ${y}px, 0)`;
+      el.style.width = `${width}px`;
+    };
+
     const apply = (partial: Partial<Motion>) => {
       if (cancelled) return;
       if (partial.running !== undefined) runningRef.current = partial.running;
+      if (partial.x !== undefined) posRef.current.x = partial.x;
+      if (partial.y !== undefined) posRef.current.y = partial.y;
+      if (partial.width !== undefined) posRef.current.width = partial.width;
       setMotion((previous) => ({ ...previous, ...partial }));
     };
 
@@ -124,15 +153,6 @@ export default function RunDuck() {
       const image = landingImage();
       if (!image) return { x: 16, y: 180, width: travelWidth() };
       return { x: image.offsetLeft, y: image.offsetTop, width: image.offsetWidth };
-    };
-
-    const lanePoint = (index: number) => {
-      const section = sections()[index];
-      return {
-        x: 0,
-        y: section ? section.offsetTop + 76 : 0,
-        width: travelWidth(),
-      };
     };
 
     const stageLanePoint = () => {
@@ -179,44 +199,17 @@ export default function RunDuck() {
         window.requestAnimationFrame(() => window.requestAnimationFrame(() => resolve()));
       });
 
-    const finishAt = (index: number) => {
-      stopRunning();
-      const restInHero = index <= 0 && !hasDeparted();
-      const pose: DuckPose = restInHero ? "rest" : "peek";
-      const point = restInHero ? landingBox() : lanePoint(Math.max(0, index));
-      let x = point.x;
-      let width = point.width;
-      if (restInHero) {
-        const startRatio = frames.start.height / frames.start.width;
-        const restRatio = frames.rest.height / frames.rest.width;
-        width = Math.min(point.width, (point.width * startRatio) / restRatio);
-        x = point.x + (point.width - width) / 2;
-      }
-      apply({
-        x,
-        y: point.y,
-        width,
-        animate: false,
-        running: false,
-        dropping: false,
-        pose,
-        visible: true,
-        phone: false,
-        clip: "none",
-      });
-      currentIndex = index;
-      animating = false;
-      flushQueue();
-    };
-
     const viewTop = () => 76;
     const viewBottom = () => window.innerHeight - 12;
 
-    const sectionVisible = (index: number) => {
-      const section = sections()[index];
-      if (!section) return false;
-      const rect = section.getBoundingClientRect();
-      return rect.bottom > viewTop() && rect.top < viewBottom();
+    const markLeftTop = () => {
+      if (scrollport.scrollTop > AT_TOP) leftTop = true;
+    };
+
+    const targetIndex = () => {
+      markLeftTop();
+      if (atTop()) return leftTop ? 0 : Math.max(0, currentIndex);
+      return Math.max(0, activeIndex());
     };
 
     const activeIndex = () => {
@@ -226,21 +219,21 @@ export default function RunDuck() {
         const rect = section.getBoundingClientRect();
         return rect.top <= midY && rect.bottom >= midY;
       });
-      return Number(visible?.dataset.runSection ?? currentIndex);
+      return Number(visible?.dataset.runSection ?? Math.max(0, currentIndex));
     };
 
-    const cornerPoint = (index: number): Point | null => {
+    const clampY = (y: number, height: number) => {
+      const minY = scrollport.scrollTop + viewTop();
+      const maxY = scrollport.scrollTop + viewBottom() - height;
+      if (maxY < minY) return minY;
+      return Math.max(minY, Math.min(y, maxY));
+    };
+
+    const followHeading = (index: number, width: number, height: number): number => {
       const section = sections()[index];
-      if (!section) return null;
-      const copy = section.querySelector<HTMLElement>(".run-copy, .run-hero-copy");
-      const heading = section.querySelector<HTMLElement>("h1, h2");
-      if (!copy || !heading) return null;
-      const frame = runContent.duck.frames.peekMobile;
-      const copyLeft = copy.getBoundingClientRect().left;
-      const tipX = Math.max(14, copyLeft - 6);
-      const width = tipX / (BEAK_TIP - (1 - PEEK_VISIBLE));
-      const x = Math.round(-(1 - PEEK_VISIBLE) * width);
-      const height = width * (frame.height / frame.width);
+      const heading = section?.querySelector<HTMLElement>("h1, h2");
+      const scrollY = scrollport.scrollTop;
+      if (!section || !heading) return clampY(scrollY + viewTop(), height);
       const head = heading.getBoundingClientRect();
       const sec = section.getBoundingClientRect();
       const viewT = viewTop();
@@ -251,117 +244,181 @@ export default function RunDuck() {
       const minTop = Math.max(viewT, sec.top);
       const maxTop = Math.min(viewB, sec.bottom) - height;
       top = maxTop < minTop ? minTop : Math.max(minTop, Math.min(top, maxTop));
+      return clampY(top + scrollY, height);
+    };
+
+    const cornerPoint = (index: number): Point => {
+      const section = sections()[index];
+      const frame = runContent.duck.frames.peekMobile;
+      const copy = section?.querySelector<HTMLElement>(".run-copy, .run-hero-copy");
+      const heading = section?.querySelector<HTMLElement>("h1, h2");
+      if (!section || !copy || !heading) {
+        const width = 78;
+        const height = width * (frame.height / frame.width);
+        return {
+          x: -220,
+          y: clampY(scrollport.scrollTop + viewTop(), height),
+          width,
+          clip: "corner",
+          boxH: Math.round(height),
+        };
+      }
+      const copyLeft = copy.getBoundingClientRect().left;
+      const tipX = Math.max(14, copyLeft - 6);
+      const width = tipX / (BEAK_TIP - (1 - PEEK_VISIBLE));
+      const x = Math.round(-(1 - PEEK_VISIBLE) * width);
+      const height = width * (frame.height / frame.width);
       return {
         x,
-        y: top + scrollport.scrollTop,
+        y: followHeading(index, width, height),
         width: Math.round(width),
         clip: "corner",
         boxH: Math.round(height),
       };
     };
 
-    const applyPeek = (index: number, animate: boolean, ms = 280) => {
-      const section = sections()[index];
-      const point = cornerPoint(index) ?? {
-        x: -220,
-        y: scrollport.scrollTop + viewTop(),
-        width: 78,
-        clip: "corner" as const,
-        boxH: 64,
+    const desktopPeekPoint = (index: number): Point => {
+      const width = travelWidth();
+      const height = width * (frames.peek.height / frames.peek.width);
+      return {
+        x: 0,
+        y: followHeading(index, width, height),
+        width,
+        clip: "none",
+        boxH: Math.round(height),
       };
-      if (!section) return;
+    };
+
+    const peekTarget = (index: number): Point => (isPhone() ? cornerPoint(index) : desktopPeekPoint(index));
+
+    const triggerBob = () => {
+      if (cancelled || hoppingRef.current || media.matches) return;
+      window.clearTimeout(arriveTimer.current);
+      setArriving(false);
+      arriveTimer.current = window.setTimeout(() => {
+        if (cancelled || hoppingRef.current) return;
+        setArriving(true);
+        arriveTimer.current = window.setTimeout(() => {
+          if (!cancelled) setArriving(false);
+        }, ARRIVE_MS);
+      }, 20);
+    };
+
+    const stopGlide = () => {
+      gliding = false;
+      if (glideId) window.cancelAnimationFrame(glideId);
+      glideId = 0;
+    };
+
+    const glideFrame = (now: number) => {
+      if (cancelled || !gliding) return;
+      const dt = Math.min(0.05, Math.max(0, (now - lastGlideT) / 1000));
+      lastGlideT = now;
+      const index = targetIndex();
+      currentIndex = index;
+      const target = peekTarget(index);
+      const height = target.boxH ?? target.width * 0.8;
+      const k = 1 - Math.exp(-dt / GLIDE_TAU);
+      const pos = posRef.current;
+      pos.x += (target.x - pos.x) * k;
+      pos.y += (target.y - pos.y) * k;
+      pos.width += (target.width - pos.width) * k;
+      const dist = Math.hypot(target.x - pos.x, target.y - pos.y);
+      if (dist < 0.5) {
+        pos.x = target.x;
+        pos.y = target.y;
+        pos.width = target.width;
+      }
+      pos.y = clampY(pos.y, height);
+      writeMover();
+      if (dist < ARRIVE_PX && index !== settledIndex) {
+        settledIndex = index;
+        triggerBob();
+      }
+      glideId = window.requestAnimationFrame(glideFrame);
+    };
+
+    const startGlideLoop = () => {
+      if (cancelled || media.matches) return;
+      gliding = true;
+      if (!glideId) {
+        lastGlideT = performance.now();
+        glideId = window.requestAnimationFrame(glideFrame);
+      }
+    };
+
+    const snapToPeek = (index: number) => {
+      if (cancelled) return;
+      const phone = isPhone();
+      markLeftTop();
+      const dest = atTop() && leftTop ? 0 : Math.max(0, index);
+      currentIndex = dest;
+      const target = peekTarget(dest);
+      posRef.current.x = target.x;
+      posRef.current.y = target.y;
+      posRef.current.width = target.width;
       apply({
-        x: point.x,
-        y: point.y,
-        width: point.width,
-        boxH: point.boxH ?? null,
-        clip: point.clip ?? "corner",
-        animate,
-        ms,
+        x: target.x,
+        y: target.y,
+        width: target.width,
+        boxH: target.boxH ?? null,
+        animate: false,
         running: false,
         dropping: false,
         pose: "peek",
         visible: true,
-        phone: true,
+        phone,
+        clip: phone ? "corner" : "none",
       });
+      writeMover();
     };
 
-    const sprintPhone = async (index: number) => {
-      const section = sections()[index];
-      const heading = section?.querySelector<HTMLElement>("h1, h2");
-      if (!heading) {
-        applyPeek(index, false);
+    const enterGlide = (index: number, opts?: { fromOffset?: number; snap?: boolean }) => {
+      if (cancelled) return;
+      introDone = true;
+      animating = false;
+      stopRunning();
+      window.cancelAnimationFrame(trackId);
+      const phone = isPhone();
+      markLeftTop();
+      const dest = atTop() && leftTop ? 0 : Math.max(0, index);
+      currentIndex = dest;
+      const target = peekTarget(dest);
+      if (opts?.snap) {
+        posRef.current.x = target.x;
+        posRef.current.y = target.y;
+        posRef.current.width = target.width;
+      } else if (opts?.fromOffset != null) {
+        posRef.current.x = target.x;
+        posRef.current.y = target.y + opts.fromOffset;
+        posRef.current.width = target.width;
+      }
+      apply({
+        x: posRef.current.x,
+        y: posRef.current.y,
+        width: posRef.current.width,
+        boxH: target.boxH ?? null,
+        animate: false,
+        running: false,
+        dropping: false,
+        pose: "peek",
+        visible: true,
+        phone,
+        clip: phone ? "corner" : "none",
+      });
+      settledIndex = -1;
+      if (media.matches) {
+        stopGlide();
+        writeMover();
         return;
       }
-      const rect = heading.getBoundingClientRect();
-      const runW = 84;
-      const runH = runW * (frames.runA.height / frames.runA.width);
-      const y = scrollport.scrollTop + rect.bottom - runH + 4;
-      apply({
-        x: -runW - 8,
-        y,
-        width: runW,
-        clip: "none",
-        animate: false,
-        running: true,
-        dropping: false,
-        pose: "run",
-        visible: true,
-        phone: true,
-        ms: 0,
-      });
-      await wait(40);
-      if (cancelled) return;
-      const endX = Math.max(12, Math.min(rect.right - runW - 4, rect.left + rect.width * 0.62));
-      await moveTo({ x: endX, y, width: runW, clip: "none" }, 520);
-      if (cancelled) return;
-      stopRunning();
-      applyPeek(index, true, 260);
-      await wait(300);
+      startGlideLoop();
     };
 
-    const runToDesktop = async (from: number, index: number) => {
-      if (from < 0 && index > 0 && !hasDeparted()) {
-        await moveTo(stageLanePoint(), 480);
-        if (cancelled) return;
-        content.classList.add("run-departed");
-        await settleLayout();
-        if (cancelled) return;
-        await moveTo(lanePoint(index), 820);
-      } else if (index <= 0 && !hasDeparted()) {
-        await moveTo(landingBox(), 520);
-      } else {
-        const fromPoint = from > 0 || hasDeparted() ? lanePoint(Math.max(0, from)) : stageLanePoint();
-        const toPoint = lanePoint(index);
-        const distance = Math.hypot(toPoint.x - fromPoint.x, toPoint.y - fromPoint.y);
-        const ms = Math.max(480, Math.min(1100, distance * 0.85));
-        await moveTo(toPoint, ms);
-      }
-      if (cancelled) return;
-      finishAt(index);
-    };
-
-    const flushQueue = () => {
-      if (queued !== null && queued !== currentIndex) {
-        const next = queued;
-        queued = null;
-        void runTo(next);
-      } else {
-        queued = null;
-      }
-    };
-
-    const finishPhone = (index: number) => {
-      if (cancelled) return;
-      stopRunning();
-      currentIndex = index;
-      animating = false;
-      applyPeek(index, false);
-      flushQueue();
-    };
-
-    const runToPhone = async (from: number, index: number) => {
-      if (from < 0 && index > 0 && !hasDeparted()) {
+    const playIntro = async (index: number) => {
+      if (cancelled || gliding || animating) return;
+      animating = true;
+      if (isPhone()) {
         const box = landingBox();
         const runW = Math.min(box.width, 150);
         startRunning();
@@ -385,65 +442,26 @@ export default function RunDuck() {
         content.classList.add("run-departed");
         await wait(700);
         if (cancelled) return;
-        await sprintPhone(index);
-      } else {
-        content.classList.remove("run-holding");
-        startRunning();
-        await sprintPhone(index);
-      }
-      if (cancelled) return;
-      if (!animating || currentIndex !== index) return;
-      finishPhone(index);
-    };
-
-    const runTo = async (index: number) => {
-      if (cancelled) return;
-      // Once the intro has left the hero, staying at the top always
-      // means peeking at the hero title, never a later section.
-      if (introDone && hasDeparted() && atTop()) index = 0;
-      if (animating) {
-        if (index !== currentIndex) queued = index;
-        return;
-      }
-      if (index === currentIndex) return;
-
-      const from = currentIndex;
-      currentIndex = index;
-      animating = true;
-      if (isPhone()) {
-        const watchdog = window.setTimeout(() => {
-          if (!cancelled && animating && currentIndex === index) {
-            finishPhone(index);
-          }
-        }, 1800);
-        await runToPhone(from, index);
-        window.clearTimeout(watchdog);
+        stopRunning();
+        animating = false;
+        enterGlide(index, { fromOffset: -28 });
         return;
       }
       startRunning();
-      await runToDesktop(from, index);
-    };
-
-    const visibleSection = () => {
-      let best = 0;
-      let bestRatio = 0;
-      ratios.forEach((ratio, element) => {
-        if (ratio > bestRatio) {
-          bestRatio = ratio;
-          best = Number((element as HTMLElement).dataset.runSection ?? 0);
-        }
-      });
-      return { best, bestRatio };
+      await moveTo(stageLanePoint(), 480);
+      if (cancelled) return;
+      content.classList.add("run-departed");
+      await settleLayout();
+      if (cancelled) return;
+      stopRunning();
+      animating = false;
+      enterGlide(index);
     };
 
     const scrollDestination = () => {
       if (atTop()) return 0;
-      if (isPhone()) {
-        const index = activeIndex();
-        return index >= 0 ? index : 1;
-      }
-      const { best, bestRatio } = visibleSection();
-      return best >= 1 && bestRatio > 0.5 ? best : Math.max(1, best);
+      const index = activeIndex();
+      return index >= 0 ? index : 1;
     };
 
     const departEarly = () => {
@@ -452,9 +470,13 @@ export default function RunDuck() {
       window.clearTimeout(timer);
       window.cancelAnimationFrame(trackId);
       apply({ dropping: false });
+      stopRunning();
       content.classList.remove("run-holding");
       content.classList.add("run-departed");
-      void runTo(scrollDestination());
+      void settleLayout().then(() => {
+        if (cancelled) return;
+        enterGlide(scrollDestination(), { fromOffset: -16 });
+      });
     };
 
     const showLanding = () => {
@@ -475,15 +497,28 @@ export default function RunDuck() {
       });
     };
 
+    const placeStaticPeek = async () => {
+      content.classList.add("run-departed", "run-static-peek");
+      content.classList.remove("run-holding");
+      await settleLayout();
+      if (cancelled) return;
+      markLeftTop();
+      const index = atTop() ? 0 : Math.max(0, activeIndex());
+      enterGlide(index, { snap: true });
+    };
+
     const onReduce = () => {
       if (!media.matches) return;
-      cancelled = true;
       window.clearTimeout(timer);
+      window.cancelAnimationFrame(trackId);
       stopRunning();
+      stopGlide();
+      window.clearTimeout(arriveTimer.current);
+      setArriving(false);
+      setHopping(false);
       content.classList.remove("run-motion");
-      content.classList.remove("run-departed");
       content.classList.remove("run-holding");
-      apply({ visible: false, running: false, dropping: false });
+      void placeStaticPeek();
     };
 
     media.addEventListener("change", onReduce);
@@ -501,108 +536,111 @@ export default function RunDuck() {
       trackId = window.requestAnimationFrame(trackLanding);
     };
 
-    const frameId = window.requestAnimationFrame(() => {
+    const startMidPage = () => {
+      if (cancelled || introDone) return;
+      window.clearTimeout(timer);
+      window.cancelAnimationFrame(trackId);
+      apply({ dropping: false });
+      stopRunning();
+      content.classList.add("run-motion");
+      content.classList.add("run-departed");
+      content.classList.remove("run-holding");
+      scrolled = true;
+      leftTop = true;
+      introDone = true;
+      void settleLayout().then(() => {
+        if (cancelled) return;
+        enterGlide(Math.max(0, activeIndex()), { snap: true });
+      });
+    };
+
+    const boot = () => {
+      if (cancelled || introDone) return;
+      if (media.matches) {
+        void placeStaticPeek();
+        return;
+      }
+      if (scrollport.scrollTop > AT_TOP) {
+        startMidPage();
+        return;
+      }
       showLanding();
       trackLanding();
       timer = window.setTimeout(() => {
+        if (cancelled || introDone) return;
+        if (scrollport.scrollTop > AT_TOP) {
+          startMidPage();
+          return;
+        }
         apply({ dropping: false });
         if (isPhone()) content.classList.add("run-holding");
         timer = window.setTimeout(() => {
-          introDone = true;
-          if (isPhone()) {
-            void runTo(1);
+          if (cancelled || introDone) return;
+          if (scrollport.scrollTop > AT_TOP) {
+            startMidPage();
             return;
           }
-          const { best, bestRatio } = visibleSection();
-          const destination = best >= 1 && bestRatio > 0.5 ? best : 1;
-          void runTo(destination);
+          introDone = true;
+          void playIntro(1);
         }, HOLD_MS);
       }, DROP_MS);
+    };
+
+    trackId = window.requestAnimationFrame(() => {
+      window.requestAnimationFrame(boot);
     });
 
-    let scrolled = false;
     let scrollRaf = 0;
     const onScroll = () => {
       if (scrollport.scrollTop > 48) scrolled = true;
-      if (!introDone && scrolled) {
-        departEarly();
+      if (!introDone && scrolled && !media.matches) {
+        if (scrollport.scrollTop > AT_TOP) {
+          startMidPage();
+        } else {
+          departEarly();
+        }
         return;
       }
-      if (!introDone) return;
       if (scrollRaf) return;
       scrollRaf = window.requestAnimationFrame(() => {
         scrollRaf = 0;
-        if (cancelled || !introDone) return;
-        const index = atTop() ? 0 : activeIndex();
-        if (index < 0) return;
-        if (index !== currentIndex) {
-          void runTo(index);
+        if (cancelled) return;
+        if (media.matches && hasDeparted()) {
+          snapToPeek(targetIndex());
           return;
         }
-        if (animating) return;
-        if (isPhone() && sectionVisible(index)) applyPeek(index, false);
+        if (!introDone || !gliding) return;
+        markLeftTop();
+        if (hasDeparted() && atTop() && leftTop) currentIndex = 0;
       });
     };
     scrollport.addEventListener("scroll", onScroll, { passive: true });
 
-    const desktopObserver = new IntersectionObserver(
-      (entries) => {
-        if (isPhone()) return;
-        for (const entry of entries) ratios.set(entry.target, entry.intersectionRatio);
-        if (!introDone || !scrolled) return;
-        if (atTop()) {
-          void runTo(0);
-          return;
-        }
-        const { best, bestRatio } = visibleSection();
-        if (best >= 1 && bestRatio >= 0.46) void runTo(best);
-      },
-      { root: scrollport, threshold: [0.25, 0.4, 0.55, 0.7, 0.85] },
-    );
-    sections().forEach((section) => desktopObserver.observe(section));
-
-    const phoneObserver = new IntersectionObserver(
-      (entries) => {
-        if (!isPhone() || !introDone) return;
-        if (atTop()) {
-          void runTo(0);
-          return;
-        }
-        for (const entry of entries) {
-          if (!entry.isIntersecting) continue;
-          const section = (entry.target as HTMLElement).closest<HTMLElement>("[data-run-section]");
-          if (!section) continue;
-          const index = Number(section.dataset.runSection ?? -1);
-          if (index < 0 || index === currentIndex) continue;
-          if (index === 0 && !atTop()) continue;
-          void runTo(index);
-          return;
-        }
-      },
-      { root: scrollport, rootMargin: "0px 0px -64% 0px", threshold: 0.15 },
-    );
-    content.querySelectorAll<HTMLElement>("[data-run-section] h1, [data-run-section] h2").forEach((heading) => {
-      phoneObserver.observe(heading);
-    });
-
     const onResize = () => {
-      if (animating) return;
-      if (isPhone()) {
-        if (!introDone || currentIndex < 0 || !hasDeparted()) {
-          const box = landingBox();
-          apply({ x: box.x, y: box.y, width: box.width, animate: false, phone: true, clip: "none" });
-          return;
-        }
-        const index = Math.max(0, currentIndex);
-        if (sectionVisible(index)) applyPeek(index, false);
-        return;
-      }
-      if (!introDone || (currentIndex <= 0 && !hasDeparted())) {
+      if (cancelled) return;
+      if (!introDone || !hasDeparted()) {
+        if (animating) return;
         const box = landingBox();
-        apply({ x: box.x, y: box.y, width: box.width, animate: false, phone: false, clip: "none" });
+        apply({ x: box.x, y: box.y, width: box.width, animate: false, phone: isPhone(), clip: "none" });
         return;
       }
-      apply({ ...lanePoint(Math.max(0, currentIndex)), animate: false, phone: false, clip: "none" });
+      const phone = isPhone();
+      const index = targetIndex();
+      const target = peekTarget(index);
+      posRef.current.x = target.x;
+      posRef.current.y = target.y;
+      posRef.current.width = target.width;
+      apply({
+        x: target.x,
+        y: target.y,
+        width: target.width,
+        boxH: target.boxH ?? null,
+        animate: false,
+        pose: "peek",
+        phone,
+        clip: phone ? "corner" : "none",
+      });
+      writeMover();
     };
 
     const resizeObserver = new ResizeObserver(() => onResize());
@@ -611,13 +649,12 @@ export default function RunDuck() {
 
     return () => {
       cancelled = true;
-      window.cancelAnimationFrame(frameId);
       window.cancelAnimationFrame(trackId);
       window.cancelAnimationFrame(scrollRaf);
       window.clearTimeout(timer);
+      window.clearTimeout(arriveTimer.current);
       stopRunning();
-      desktopObserver.disconnect();
-      phoneObserver.disconnect();
+      stopGlide();
       resizeObserver.disconnect();
       scrollport.removeEventListener("scroll", onScroll);
       window.removeEventListener("resize", onResize);
@@ -625,6 +662,7 @@ export default function RunDuck() {
       content.classList.remove("run-motion");
       content.classList.remove("run-departed");
       content.classList.remove("run-holding");
+      content.classList.remove("run-static-peek");
     };
   }, []);
 
@@ -632,13 +670,22 @@ export default function RunDuck() {
     return () => window.clearTimeout(hopTimer.current);
   }, []);
 
+  useLayoutEffect(() => {
+    if (motion.animate || motion.running || motion.dropping || motion.pose !== "peek") return;
+    const el = moverRef.current;
+    if (!el) return;
+    el.style.transition = "none";
+    el.style.transform = `translate3d(${posRef.current.x}px, ${posRef.current.y}px, 0)`;
+    el.style.width = `${posRef.current.width}px`;
+  }, [motion, hopping, arriving]);
+
   if (!motion.visible) return null;
 
   const frames = runContent.duck.frames;
   const frame =
     motion.pose === "start"
       ? frames.start
-      :     motion.pose === "peek" && motion.phone
+      : motion.pose === "peek" && motion.phone
         ? frames.peekMobile
         : motion.pose === "peek"
           ? frames.peek
@@ -648,7 +695,7 @@ export default function RunDuck() {
               ? frames.runA
               : frames.runB;
 
-  const className = `run-duck-mover${motion.dropping ? " is-dropping" : ""}${motion.running ? " is-running" : ""}${hopping ? " is-hopping" : ""}`;
+  const className = `run-duck-mover${motion.dropping ? " is-dropping" : ""}${motion.running ? " is-running" : ""}${hopping ? " is-hopping" : ""}${arriving ? " is-arriving" : ""}`;
   const style = {
     transform: `translate3d(${motion.x}px, ${motion.y}px, 0)`,
     transition: motion.animate ? `transform ${motion.ms}ms linear, width ${motion.ms}ms linear` : "none",
@@ -661,24 +708,39 @@ export default function RunDuck() {
     </div>
   );
 
+  const onHop = () => {
+    if (runningRef.current) return;
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    setHopping(true);
+    window.clearTimeout(hopTimer.current);
+    hopTimer.current = window.setTimeout(() => setHopping(false), 430);
+  };
+
   const node = motion.phone ? (
     <button
       type="button"
+      ref={(el) => {
+        moverRef.current = el;
+      }}
       className={className}
       style={style}
       data-clip={motion.clip}
       aria-label={runContent.duck.hopLabel}
-      onClick={() => {
-        if (runningRef.current) return;
-        setHopping(true);
-        window.clearTimeout(hopTimer.current);
-        hopTimer.current = window.setTimeout(() => setHopping(false), 430);
-      }}
+      onClick={onHop}
     >
       {sprite}
     </button>
   ) : (
-    <div className={className} style={style} data-clip="none" role="img" aria-label={runContent.duck.alt[motion.pose]}>
+    <div
+      ref={(el) => {
+        moverRef.current = el;
+      }}
+      className={className}
+      style={style}
+      data-clip="none"
+      role="img"
+      aria-label={runContent.duck.alt[motion.pose]}
+    >
       {sprite}
     </div>
   );
