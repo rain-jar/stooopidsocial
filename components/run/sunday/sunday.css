@@ -1,0 +1,901 @@
+@keyframes duck-fall {
+  to {
+    transform: translateY(1300%);
+  }
+}
+
+/* Scoped Sunday dashboard. Tokens and rules stay inside .run-sunday so they do not leak. */
+.run-sunday {
+  --navy: #1b3f72;
+  --gold: #ef9f27;
+  --pavement: #f5f0e8;
+  --asphalt: #2c2c2a;
+  --white: #ffffff;
+  --paper: #fffdf8;
+  --font: 'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace;
+  --radius: 22px;
+  --line: 3px;
+  --press: 4px;
+  color: var(--asphalt);
+  font-family: var(--font);
+  font-size: 16px;
+  line-height: 1.4;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.4em;
+    min-height: 56px;
+    padding: 10px 16px;
+    border: var(--line) solid var(--asphalt);
+    border-radius: var(--radius);
+    background: var(--paper);
+    color: var(--navy);
+    font-weight: 800;
+    font-size: 1rem;
+    letter-spacing: 0.04em;
+    cursor: pointer;
+    box-shadow: 0 var(--press) 0 var(--asphalt);
+    touch-action: manipulation;
+    user-select: none;
+    -webkit-user-select: none;
+    transition: transform 80ms ease, box-shadow 80ms ease;
+    text-decoration: none;
+  }
+
+  .btn:active:not(:disabled) {
+    transform: translateY(var(--press));
+    box-shadow: 0 0 0 var(--asphalt);
+  }
+
+  .btn:disabled {
+    cursor: not-allowed;
+    opacity: 0.4;
+    box-shadow: none;
+  }
+
+  .btn--small {
+    min-height: 44px;
+    padding: 6px 12px;
+    font-size: 0.85rem;
+  }
+
+  .visually-hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    padding: 0;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+    border: 0;
+  }
+
+  a.credits,
+  .credits a {
+    color: var(--navy);
+    font-weight: 800;
+  }
+  /* Stooopid Sunday Dashboard styles. Loaded with the dashboard chunk only. */
+
+  /* The 6K chunk defines these too, but the dashboard can't rely on it being loaded. */
+  .dash .brand--small {
+    font-size: 0.75rem;
+    font-weight: 800;
+    letter-spacing: 0.04em;
+  }
+
+  .dash .credits {
+    font-size: 0.72rem;
+  }
+
+  .dash__title {
+    color: var(--navy);
+    font-size: clamp(1.3rem, 6vw, 1.7rem);
+    font-weight: 800;
+    line-height: 1.1;
+  }
+
+  .dash__h3 {
+    margin-bottom: 8px;
+    color: var(--navy);
+    font-size: 1rem;
+    font-weight: 800;
+  }
+
+  .dash__h2 {
+    margin-bottom: 8px;
+    color: var(--navy);
+    font-size: 1.1rem;
+    font-weight: 800;
+  }
+
+  /* ---------- Forecast status ---------- */
+
+  .dash-status {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    font-size: 0.8rem;
+    font-weight: 600;
+  }
+
+  .dash-status .btn {
+    box-shadow: none;
+    border-width: 2px;
+  }
+
+  .dash-status--stale p {
+    padding: 4px 8px;
+    border: 2px dashed var(--asphalt);
+    border-radius: 10px;
+    font-weight: 700;
+  }
+
+  /* ---------- Run time: a strip of hour chips ---------- */
+
+  .run-time__head {
+    display: flex;
+    justify-content: space-between;
+    gap: 8px;
+    margin-bottom: 6px;
+    font-weight: 800;
+  }
+
+  .run-time__picked {
+    color: var(--navy);
+  }
+
+  .run-time__strip {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin: 0 -16px;
+    padding: 2px 16px 6px;
+    overflow-x: auto;
+    scrollbar-width: none;
+    overscroll-behavior-x: contain;
+  }
+
+  .run-time__strip::-webkit-scrollbar {
+    display: none;
+  }
+
+  .run-time__day {
+    flex-shrink: 0;
+    padding: 0 2px 0 8px;
+    color: var(--navy);
+    font-size: 0.6rem;
+    font-weight: 800;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+    writing-mode: vertical-rl;
+    transform: rotate(180deg);
+  }
+
+  .run-time__day:first-child {
+    padding-left: 0;
+  }
+
+  .hour-chip {
+    position: relative;
+    flex-shrink: 0;
+  }
+
+  .hour-chip > span {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 64px;
+    min-height: 44px;
+    padding: 0 10px;
+    border: 2px solid var(--asphalt);
+    border-radius: 999px;
+    background: var(--paper);
+    font-size: 0.85rem;
+    font-weight: 700;
+    white-space: nowrap;
+    cursor: pointer;
+    touch-action: manipulation;
+  }
+
+  /* Chosen hour: gold fill plus a heavier outline, so it isn't shown by colour alone. */
+  .hour-chip input:checked + span {
+    border-width: var(--line);
+    background: var(--gold);
+    color: var(--asphalt);
+    font-weight: 800;
+  }
+
+  .hour-chip input:focus-visible + span {
+    outline: 3px solid var(--navy);
+    outline-offset: 2px;
+  }
+
+  /* ---------- Hero: the dressed duck and the outfit ---------- */
+
+  .dash-hero {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    padding: 16px 14px;
+    border: var(--line) solid var(--asphalt);
+    border-radius: var(--radius);
+    background: var(--paper);
+    box-shadow: 0 5px 0 var(--asphalt);
+    text-align: center;
+  }
+
+  /* The dressed duck's square frame. */
+  .duck-slot {
+    position: relative;
+    width: min(100%, 230px);
+    aspect-ratio: 1;
+    margin-bottom: 4px;
+    border-radius: 24px;
+    background: var(--pavement);
+  }
+
+  /* The outfit: duck, words, one weather line, details. Centred, details full width. */
+  .dash-outfit {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    text-align: center;
+  }
+
+  .dash-outfit .dash-details {
+    align-self: stretch;
+    margin-top: 8px;
+    border-bottom: 0;
+    text-align: left;
+  }
+
+  .wear__also {
+    font-weight: 700;
+  }
+
+  .wear__weather {
+    font-size: 0.9rem;
+    line-height: 1.4;
+  }
+
+  .wear__weather strong {
+    font-size: 1.05rem;
+  }
+
+  /* "Feels like" sticker on the duck's top-left corner (the drawing leaves it empty). */
+  .duck-feels {
+    position: absolute;
+    top: -12px;
+    left: -16px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 4px 10px 6px;
+    border: 2px solid var(--asphalt);
+    border-radius: 14px;
+    background: var(--paper);
+    font-size: 0.68rem;
+    font-weight: 800;
+    line-height: 1.1;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    transform: rotate(-4deg);
+  }
+
+  .duck-feels strong {
+    color: var(--navy);
+    font-size: 1.6rem;
+    font-variant-numeric: tabular-nums;
+    letter-spacing: -0.02em;
+    text-transform: none;
+  }
+
+  .wear__headline {
+    color: var(--navy);
+    font-size: 1.2rem;
+    font-weight: 800;
+    line-height: 1.2;
+  }
+
+  /* "Run cold?" options: quieter than the outfit itself. */
+  .wear__optional {
+    margin: 10px 0 0;
+    padding: 0;
+    list-style: none;
+    font-size: 0.85rem;
+    font-style: italic;
+  }
+
+  .wear__optional li + li {
+    margin-top: 2px;
+  }
+
+  /* Weather and ground notes. The level is in the words too ("Warning:"), never colour alone. */
+  .wear__advice {
+    align-self: stretch;
+    margin: 12px 0 0;
+    padding: 0;
+    list-style: none;
+    text-align: left;
+    font-size: 0.9rem;
+  }
+
+  .wear__advice li {
+    padding: 6px 10px;
+    border-left: 4px solid var(--blue);
+  }
+
+  .wear__advice li + li {
+    margin-top: 6px;
+  }
+
+  .wear__advice li.wear__advice--caution {
+    border-left-color: var(--gold);
+  }
+
+  .wear__advice li.wear__advice--warning {
+    border-left-color: var(--asphalt);
+    background: var(--pavement);
+    font-weight: 700;
+  }
+
+  /* ---------- Details (folded away) ---------- */
+
+  .dash-details {
+    border-top: 2px solid var(--asphalt);
+    border-bottom: 2px solid var(--asphalt);
+  }
+
+  .dash-details summary {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    min-height: 48px;
+    color: var(--navy);
+    font-weight: 800;
+    cursor: pointer;
+    list-style: none;
+  }
+
+  .dash-details summary::-webkit-details-marker {
+    display: none;
+  }
+
+  .dash-details summary::after {
+    content: '+';
+    font-size: 1.4rem;
+    line-height: 1;
+  }
+
+  .dash-details[open] summary::after {
+    content: '−';
+  }
+
+  .dash-details__h3 {
+    align-self: stretch;
+    margin: 4px 0 4px;
+    font-size: 0.9rem;
+    font-weight: 800;
+  }
+
+  .weather__facts,
+  .wear__notes {
+    margin: 0 0 10px;
+    padding-left: 1.1em;
+    font-size: 0.9rem;
+  }
+
+  .weather__facts li + li,
+  .wear__notes li + li {
+    margin-top: 4px;
+  }
+
+  .dash-details__small {
+    margin-bottom: 12px;
+    font-size: 0.72rem;
+  }
+
+  /* ---------- Advisories ---------- */
+
+  .dash-advisories {
+    padding: 12px;
+    border: var(--line) solid var(--asphalt);
+    border-radius: var(--radius);
+    background: var(--paper);
+  }
+
+  .dash-clear {
+    font-size: 0.85rem;
+    font-weight: 700;
+  }
+
+  .dash-clear__checked {
+    font-size: 0.75rem;
+    font-weight: 500;
+  }
+
+  /* ---------- Empty states ---------- */
+
+  .dash-card {
+    padding: 14px;
+    border: var(--line) solid var(--asphalt);
+    border-radius: var(--radius);
+    background: var(--paper);
+  }
+
+  .dash-card--empty {
+    border-style: dashed;
+    text-align: center;
+  }
+
+  .dash-card__big {
+    color: var(--navy);
+    font-size: 1.6rem;
+    font-weight: 800;
+  }
+
+  /* ---------- Dressed duck (Stage 3) ---------- */
+
+  .dressed-duck {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    border-radius: inherit;
+  }
+
+  .dressed-duck__layer {
+    position: absolute;
+    inset: 4%;
+    width: 92%;
+    height: 92%;
+  }
+
+  /* Falling rain or snow behind the duck. Decorative; off for reduced motion. */
+  .duck-weather {
+    position: absolute;
+    inset: 0;
+  }
+
+  .duck-weather span {
+    position: absolute;
+    top: -12%;
+    animation: duck-fall 1.4s linear infinite;
+  }
+
+  .duck-weather--rain span {
+    width: 2px;
+    height: 10%;
+    border-radius: 2px;
+    background: var(--blue);
+    opacity: 0.7;
+    animation-duration: 0.9s;
+  }
+
+  .duck-weather--snow span {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--white);
+    box-shadow: 0 0 0 1px rgb(44 44 42 / 0.35);
+    animation-duration: 2.6s;
+  }
+
+
+
+  @media (prefers-reduced-motion: reduce) {
+    .duck-weather {
+      display: none;
+    }
+  }
+
+  /* "Bring" sits inside the centred hero card but reads as a left-aligned list. */
+  .dash-hero .dash-details__h3,
+  .dash-hero .wear__notes {
+    align-self: stretch;
+    margin-bottom: 0;
+    text-align: left;
+  }
+
+  /* ---------- Weekly run: day, outfit, where we meet ---------- */
+
+  .dash-run--main {
+    padding: 14px;
+    box-shadow: 0 5px 0 var(--asphalt);
+  }
+
+  .dash-run--main .dash__h2 {
+    margin-bottom: 2px;
+  }
+
+  .dash-run--main .dash-run__when {
+    margin: 0 0 10px;
+    text-align: center;
+  }
+
+  .dash-run__date {
+    display: block;
+    font-size: 1.6rem;
+    line-height: 1.15;
+    font-weight: 800;
+    color: var(--navy);
+  }
+
+  .dash-run__meet-time {
+    display: block;
+    margin-top: 2px;
+    font-size: 1.15rem;
+    font-weight: 800;
+    text-wrap: balance;
+  }
+
+  .dash-run__later {
+    padding: 10px 12px;
+    border: 2px dashed var(--asphalt);
+    border-radius: 12px;
+    font-weight: 700;
+  }
+
+  /* ---------- Running another time? ---------- */
+
+  .dash-another {
+    border-top: 2px solid var(--asphalt);
+    border-bottom: 2px solid var(--asphalt);
+  }
+
+  .dash-another__head {
+    margin: 0;
+    font-size: inherit;
+  }
+
+  .dash-another__toggle {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    width: 100%;
+    min-height: 48px;
+    padding: 8px 0;
+    border: 0;
+    background: none;
+    color: var(--navy);
+    font: inherit;
+    font-weight: 800;
+    text-align: left;
+    cursor: pointer;
+  }
+
+  .dash-another__title {
+    flex: 1;
+  }
+
+  .dash-another__sign {
+    font-size: 1.4rem;
+    line-height: 1;
+  }
+
+  /* One line under the title while closed: when, air temperature, outfit. */
+  .dash-another__preview {
+    flex-basis: 100%;
+    color: var(--asphalt);
+    font-size: 0.8rem;
+    font-weight: 600;
+  }
+
+  .dash-another .dash-hero {
+    margin: 10px 0 14px;
+  }
+
+  /* ---------- Sunday story (for whoever posts it) ---------- */
+
+  .dash-story .dash-run__actions {
+    margin-top: 0;
+  }
+
+  .dash-story__message {
+    margin-top: 6px;
+    font-size: 0.8rem;
+  }
+
+  .dash-story__message:empty {
+    display: none;
+  }
+
+  .dash-run {
+    padding: 12px;
+    border: var(--line) solid var(--asphalt);
+    border-radius: var(--radius);
+    background: var(--paper);
+    font-size: 0.9rem;
+  }
+
+  .dash-run p {
+    margin: 0 0 6px;
+  }
+
+  .dash-run__when {
+    font-weight: 800;
+  }
+
+  .dash-run__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 10px;
+  }
+
+  .dash-run__actions a {
+    display: inline-flex;
+    align-items: center;
+    text-decoration: none;
+  }
+
+  .dash-run__manual {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    font-size: 0.8rem;
+  }
+
+  .dash-run__manual input {
+    min-height: 44px;
+    font: inherit;
+  }
+
+  /* ---------- Sunday story ---------- */
+
+  .story-sheet__meta,
+  .story-sheet__hint {
+    margin: 0;
+    font-size: 0.8rem;
+  }
+
+  /* The two pages side by side, each with its own SAVE. */
+  .story-sheet__preview {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+  }
+
+  .story-sheet__page {
+    display: flex;
+    flex: 1 1 0;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    min-width: 0;
+    margin: 0;
+  }
+
+  .story-sheet__page img {
+    width: 100%;
+    max-height: 52dvh;
+    object-fit: contain;
+    aspect-ratio: 9 / 16;
+    border: 2px solid var(--asphalt);
+    border-radius: 12px;
+    /* Long-press to save on iPhone. */
+    -webkit-touch-callout: default;
+  }
+
+  .story-sheet__page .btn {
+    text-decoration: none;
+  }
+
+  .story-sheet__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .story-sheet__actions .btn {
+    flex: 1 1 auto;
+    text-align: center;
+    text-decoration: none;
+  }
+
+  /* On the sky backdrop the duck stands in the same sunset: the frame shows
+     the sky picture (faded to Pavement at the bottom, where his feet are). */
+  .app--paper .duck-slot {
+    background: var(--pavement) url('/run/sunday/sky.webp') top center / cover no-repeat;
+  }
+  /* Advisories list, shared by the route page and the dashboard (loaded with them). */
+
+  .notices__list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .notice-item {
+    padding: 10px 12px;
+    border: 2px solid var(--asphalt);
+    border-left-width: 8px;
+    border-radius: 12px;
+    background: var(--paper);
+  }
+
+  .notice-item--closure,
+  .notice-item--weather-warning {
+    border-left-color: var(--gold);
+  }
+
+  .notice-item__kind {
+    font-size: 0.72rem;
+    font-weight: 800;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+
+  .notice-item__text {
+    margin-top: 2px;
+    font-weight: 700;
+  }
+
+  .notice-item__meta {
+    margin-top: 4px;
+    font-size: 0.8rem;
+  }
+
+  .notice-item__meta a {
+    display: inline-block;
+    min-height: 24px;
+    color: var(--navy);
+    font-weight: 800;
+  }
+
+  .notices__checked {
+    margin-top: 8px;
+    font-size: 0.75rem;
+  }
+}
+
+
+/* Close button sits alone in the top-right; the card keeps "Next Stooopid Sunday:". */
+.run-notes-popover.run-details-popover {
+  /* Leave a sky band at the top for the floating close button. */
+  padding-top: 3.15rem;
+  background-color: #f5f0e8;
+  background-image:
+    url("/run/sunday/sky.webp"),
+    linear-gradient(rgb(55 138 221 / 0.09) 1px, transparent 1px),
+    linear-gradient(90deg, rgb(55 138 221 / 0.09) 1px, transparent 1px);
+  background-position: top center, 0 0, 0 0;
+  background-size: auto max(66vw, 42vh), 10px 10px, 10px 10px;
+  background-repeat: no-repeat, repeat, repeat;
+  color: #2c2c2a;
+  /* Size to the content, up to the viewport. The board scrolls if needed. */
+  min-height: 0;
+}
+
+.run-details-board {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 auto;
+  min-height: 0;
+  margin-inline: -0.35rem;
+  /* Bottom padding sits outside the scrollport so map buttons cannot
+     peek into this gap and sit on the footer at the fold. */
+  padding: 0.15rem 0.2rem 1.5rem;
+  overflow: hidden;
+}
+
+.run-details-board-scroll {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scroll-padding-bottom: 1.5rem;
+}
+
+/* X floats in the top-right sky corner so it does not steal a header row. */
+.run-notes-popover.run-details-popover .run-details-head,
+.run-notes-popover.run-details-popover .run-notes-head {
+  position: absolute;
+  top: 0.65rem;
+  right: 0.65rem;
+  z-index: 3;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  margin: 0;
+  min-height: 0;
+  width: auto;
+}
+
+.run-notes-popover.run-details-popover .run-notes-close {
+  color: #1b3f72;
+  background: #fffdf8;
+  border: 2px solid #2c2c2a;
+  border-radius: 999px;
+  box-shadow: 0 2px 0 #2c2c2a;
+  width: 40px;
+  height: 40px;
+  flex: 0 0 auto;
+}
+
+.run-notes-popover.run-details-popover .run-notes-footer {
+  flex: 0 0 auto;
+  position: relative;
+  z-index: 2;
+  background: color-mix(in srgb, #fffdf8 96%, transparent);
+  margin-inline: -0.2rem;
+  padding-inline: 0.2rem;
+  padding-top: 0.15rem;
+}
+
+@media (min-width: 800px) {
+  .run-notes-popover.run-details-popover {
+    min-height: 0;
+    max-height: calc(100dvh - 4rem);
+    padding-top: 3.3rem;
+  }
+}
+
+/* Compact the Sunday card on desktop so Location Deets fits above the footer. */
+@media (min-width: 800px) {
+  .run-sunday {
+    gap: 10px;
+  }
+  .run-sunday .duck-slot {
+    width: min(100%, 196px);
+  }
+  .run-sunday .dash-run--main {
+    padding: 12px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .run-sunday .btn,
+  .run-sunday .btn:active:not(:disabled) {
+    transform: none;
+    transition: none;
+  }
+}
+
+
+.run-sunday .credits {
+  font-size: 0.72rem;
+  color: #2c2c2a;
+}
+
+.run-sunday h2,
+.run-sunday h3,
+.run-sunday p {
+  margin: 0;
+}
+
+.run-sunday button {
+  font: inherit;
+  color: inherit;
+}
+
+.run-sunday :focus-visible {
+  outline: 3px solid #1b3f72;
+  outline-offset: 3px;
+}
+
+
+/* The board is the only scrollport. A definite max-height lets the board
+   shrink above the footer instead of painting under it. */
+.run-notes-popover.run-details-popover:popover-open {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  height: auto;
+  max-height: calc(100dvh - 1.75rem);
+}

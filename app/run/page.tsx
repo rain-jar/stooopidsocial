@@ -6,6 +6,7 @@ import RunDuck from "@/components/run/RunDuck";
 import RunFooter from "@/components/run/RunFooter";
 import RunHeader from "@/components/run/RunHeader";
 import RunLink from "@/components/run/RunLink";
+import RunWeekDetails from "@/components/run/RunWeekDetails";
 import { runContent } from "@/data/run";
 
 export const metadata: Metadata = {
@@ -64,9 +65,7 @@ export default async function RunPage() {
               ))}
             </ul>
             <div id="crew-links" className="run-cta mt-6 flex flex-col gap-3 min-[800px]:flex-row min-[800px]:flex-wrap">
-              <RunLink href={sunday.cta.href} external>
-                {sunday.cta.label}
-              </RunLink>
+              <RunWeekDetails />
               <RunCrewNotes extraLinks={extraLinks} />
             </div>
           </div>
