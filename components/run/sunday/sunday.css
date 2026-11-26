@@ -132,6 +132,9 @@
     position: relative;
     width: min(100%, 230px);
     aspect-ratio: 1;
+    /* Room above and beside for the feels-like sticker, so it does not
+       cover the café line or the card edge. */
+    margin-top: 20px;
     margin-bottom: 4px;
     border-radius: 24px;
     background: var(--pavement);
@@ -292,25 +295,6 @@
     font-size: 0.72rem;
   }
 
-  /* ---------- Advisories ---------- */
-
-  .dash-advisories {
-    padding: 12px;
-    border: var(--line) solid var(--asphalt);
-    border-radius: var(--radius);
-    background: var(--paper);
-  }
-
-  .dash-clear {
-    font-size: 0.85rem;
-    font-weight: 700;
-  }
-
-  .dash-clear__checked {
-    font-size: 0.75rem;
-    font-weight: 500;
-  }
-
   /* ---------- Empty states ---------- */
 
   .dash-card {
@@ -398,7 +382,7 @@
   }
 
   .dash-run--main .dash-run__when {
-    margin: 0 0 10px;
+    margin: 0 0 8px;
     text-align: center;
   }
 
@@ -415,6 +399,17 @@
     margin-top: 2px;
     font-size: 1.15rem;
     font-weight: 800;
+    text-wrap: balance;
+  }
+
+  /* Meeting spot, quieter than the date and time above it. */
+  .dash-run__place {
+    display: block;
+    margin-top: 4px;
+    color: var(--asphalt);
+    font-size: 1rem;
+    font-weight: 700;
+    line-height: 1.2;
     text-wrap: balance;
   }
 
@@ -538,58 +533,7 @@
   .app--paper .duck-slot {
     background: var(--pavement) url('/run/sunday/sky.webp') top center / cover no-repeat;
   }
-  /* Advisories list, shared by the route page and the dashboard (loaded with them). */
 
-  .notices__list {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    margin: 0;
-    padding: 0;
-    list-style: none;
-  }
-
-  .notice-item {
-    padding: 10px 12px;
-    border: 2px solid var(--asphalt);
-    border-left-width: 8px;
-    border-radius: 12px;
-    background: var(--paper);
-  }
-
-  .notice-item--closure,
-  .notice-item--weather-warning {
-    border-left-color: var(--gold);
-  }
-
-  .notice-item__kind {
-    font-size: 0.72rem;
-    font-weight: 800;
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
-  }
-
-  .notice-item__text {
-    margin-top: 2px;
-    font-weight: 700;
-  }
-
-  .notice-item__meta {
-    margin-top: 4px;
-    font-size: 0.8rem;
-  }
-
-  .notice-item__meta a {
-    display: inline-block;
-    min-height: 24px;
-    color: var(--navy);
-    font-weight: 800;
-  }
-
-  .notices__checked {
-    margin-top: 8px;
-    font-size: 0.75rem;
-  }
 }
 
 
@@ -597,6 +541,7 @@
 .run-notes-popover.run-details-popover {
   /* Leave a sky band at the top for the floating close button. */
   padding-top: 3.15rem;
+  padding-bottom: 0.5rem;
   background-color: #f5f0e8;
   background-image:
     url("/run/sunday/sky.webp"),
@@ -618,7 +563,7 @@
   margin-inline: -0.35rem;
   /* Bottom padding sits outside the scrollport so map buttons cannot
      peek into this gap and sit on the footer at the fold. */
-  padding: 0.15rem 0.2rem 1.5rem;
+  padding: 0.1rem 0.2rem 0.5rem;
   overflow: hidden;
 }
 
@@ -628,7 +573,7 @@
   overflow-x: hidden;
   overflow-y: auto;
   overscroll-behavior: contain;
-  scroll-padding-bottom: 1.5rem;
+  scroll-padding-bottom: 0.5rem;
 }
 
 /* X floats in the top-right sky corner so it does not steal a header row. */
@@ -670,19 +615,60 @@
 @media (min-width: 800px) {
   .run-notes-popover.run-details-popover {
     min-height: 0;
-    max-height: calc(100dvh - 4rem);
-    padding-top: 3.3rem;
+    max-height: calc(100dvh - 1rem);
+    padding-top: 3.15rem;
   }
 }
 
-/* Compact the Sunday card on desktop so Location Deets fits above the footer. */
+/* After moving Updated, Refresh, and the credit into Weather details,
+   restore a more open rhythm in the Sunday card. */
+.run-sunday {
+  gap: 12px;
+}
+
+.run-sunday .dash__h2 {
+  margin-bottom: 6px;
+}
+
 @media (min-width: 800px) {
+  .run-sunday {
+    gap: 12px;
+  }
+  .run-sunday .duck-slot {
+    width: min(100%, 220px);
+  }
+  .run-sunday .dash-run--main {
+    padding: 16px;
+  }
+}
+
+/* Short phones still get a slightly smaller duck so the map buttons
+   and Weather details bar remain on screen when the fold is closed. */
+@media (max-height: 700px) {
+  .run-notes-popover.run-details-popover {
+    padding-top: 2.85rem;
+    padding-bottom: 0.35rem;
+  }
+
+  .run-notes-popover.run-details-popover:popover-open {
+    max-height: calc(100dvh - 0.5rem);
+  }
+
+  .run-notes-popover.run-details-popover .run-details-head,
+  .run-notes-popover.run-details-popover .run-notes-head {
+    top: 0.35rem;
+    right: 0.4rem;
+  }
+
   .run-sunday {
     gap: 10px;
   }
+
   .run-sunday .duck-slot {
     width: min(100%, 196px);
+    margin-top: 16px;
   }
+
   .run-sunday .dash-run--main {
     padding: 12px;
   }
@@ -705,6 +691,15 @@
 /* Sunday Weather details sits on the paper after Location Deets. */
 .run-sunday > .dash-details {
   text-align: left;
+}
+
+.run-sunday .dash-details .dash-status {
+  margin-top: 12px;
+}
+
+.run-sunday .dash-details .credits {
+  margin-top: 10px;
+  padding-bottom: 4px;
 }
 
 .run-sunday h2,
@@ -731,5 +726,5 @@
   flex-direction: column;
   overflow: hidden;
   height: auto;
-  max-height: calc(100dvh - 1.75rem);
+  max-height: calc(100dvh - 1rem);
 }

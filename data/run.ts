@@ -61,20 +61,6 @@ export const sundayEvent = {
   } satisfies SundayMeetPlace,
 };
 
-/**
- * Route labels for advisory notices, copied from the same beta commit's
- * src/data/routes/manifest.json. Notices themselves live in
- * data/sunday-advisories.json (also empty at that commit).
- */
-export const sundayRouteNames: Record<string, string> = {
-  "sample-loop": "Sample Loop",
-  "pi-day": "Pi Day",
-  "canal-test": "Canal Test",
-  "verdun-with-this-test": "Verdun with this (Test)",
-  "1st-bday-of-the-stooopidverse": "1st bday of the Stooopid Run Crew",
-  "leonard-cohen-run": "Leonard Cohen Run",
-};
-
 export const runContent = {
   meta: {
     title: "Run | Stooopid Run Crew",
