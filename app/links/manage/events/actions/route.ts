@@ -4,6 +4,7 @@ import { deleteEventImage } from "@/lib/events/images";
 import { generateEventOccurrences, parseManagedEventInput, validEventSlug, validEventStatus, validImagePosition } from "@/lib/events/validation";
 import { getAdminSession, verifyCsrf, verifySameOrigin } from "@/lib/links/auth";
 import { isChecked, validUuid } from "@/lib/links/validation";
+import { canDeleteManagedEvent } from "@/lib/events/admin-schedule";
 import { missingOrganizerColumns, withoutOrganizerColumns } from "@/lib/events/repository";
 import { getAdminSupabaseClient } from "@/lib/supabase";
 
@@ -44,7 +45,7 @@ export async function POST(request: Request) {
     const action = formData.get("action");
     const { data: current, error: currentError } = await client
       .from("events")
-      .select("image_path,moderation_status")
+      .select("id,slug,name,description,venue,starts_at,ends_at,moderation_status,image_path,recurrence_frequency,recurrence_weekdays,recurrence_end_date,recurrence_count")
       .eq("id", id)
       .single();
     if (currentError || !current) throw new Error("Event not found.");
@@ -67,6 +68,7 @@ export async function POST(request: Request) {
       await deleteEventImage(imagePath);
     } else if (action === "delete") {
       if (!isChecked(formData.get("confirm"))) throw new Error("Confirmation required.");
+      if (!canDeleteManagedEvent(current)) throw new Error("Only archived events can be deleted.");
       const { error: deleteError } = await client.from("events").delete().eq("id", id);
       if (deleteError) throw deleteError;
       await deleteEventImage(imagePath);

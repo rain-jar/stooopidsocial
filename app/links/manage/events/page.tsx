@@ -1,15 +1,10 @@
-import Image from "next/image";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import Footer from "@/components/layout/Footer";
 import Header from "@/components/layout/Header";
-import DescriptionEditor from "@/components/events/DescriptionEditor";
-import EventDateField from "@/components/events/EventDateField";
-import EventTimeField from "@/components/events/EventTimeField";
-import RecurrenceFields from "@/components/events/RecurrenceFields";
+import ManagedEventList from "@/components/events/ManagedEventList";
 import { getManagedEvents } from "@/lib/events/repository";
-import { suggestedEventSlug } from "@/lib/events/validation";
 import { csrfToken, getAdminSession } from "@/lib/links/auth";
 
 export const dynamic = "force-dynamic";
@@ -20,32 +15,8 @@ export const metadata: Metadata = {
 
 type SearchParams = Promise<{ error?: string; success?: string }>;
 
-const inputClass =
-  "mt-1 w-full rounded-lg border border-white/15 bg-white/5 px-3 py-2 text-sm text-white outline-none focus:border-orange-400";
 const buttonClass =
   "min-h-10 rounded-lg border border-white/15 px-3 py-2 text-sm font-semibold hover:bg-white/10 focus-visible:outline-2 focus-visible:outline-orange-400";
-
-function localParts(value?: string | null) {
-  if (!value) return { date: "", time: "" };
-  const parts = Object.fromEntries(
-    new Intl.DateTimeFormat("en-CA", {
-      timeZone: "America/Toronto",
-      year: "numeric",
-      month: "2-digit",
-      day: "2-digit",
-      hour: "2-digit",
-      minute: "2-digit",
-      hourCycle: "h23",
-    })
-      .formatToParts(new Date(value))
-      .filter((part) => part.type !== "literal")
-      .map((part) => [part.type, part.value]),
-  );
-  return {
-    date: `${parts.year}-${parts.month}-${parts.day}`,
-    time: `${parts.hour}:${parts.minute}`,
-  };
-}
 
 export default async function ManageEventsPage({ searchParams }: { searchParams: SearchParams }) {
   const session = await getAdminSession();
@@ -99,103 +70,7 @@ export default async function ManageEventsPage({ searchParams }: { searchParams:
               No event records yet.
             </p>
           ) : (
-            <div className="mt-8 space-y-6">
-              {events.map((event) => {
-                const start = localParts(event.starts_at);
-                const end = localParts(event.ends_at);
-                const slug = event.slug || suggestedEventSlug(event.name, event.starts_at);
-                return (
-                  <article key={event.id} className="overflow-hidden rounded-2xl border border-white/10 bg-white/[0.04]">
-                    {event.image_path ? (
-                      <div className="relative aspect-[16/7] bg-black/30">
-                        <Image
-                          src={`/api/admin/event-images/${event.id}`}
-                          alt={event.image_alt || "Submitted event image"}
-                          fill
-                          unoptimized
-                          sizes="(max-width: 1024px) 100vw, 900px"
-                          className="object-contain"
-                        />
-                      </div>
-                    ) : null}
-                    <form action="/links/manage/events/actions" method="post" className="space-y-5 p-5">
-                      <input type="hidden" name="csrf" value={csrf} />
-                      <input type="hidden" name="id" value={event.id} />
-                      <div className="flex flex-wrap items-center justify-between gap-3">
-                        <div>
-                          <span className={`rounded-full px-3 py-1 text-xs font-bold uppercase tracking-wide ${event.moderation_status === "approved" ? "bg-emerald-400/15 text-emerald-200" : event.moderation_status === "rejected" ? "bg-red-400/15 text-red-200" : "bg-amber-300/15 text-amber-100"}`}>
-                            {event.moderation_status}
-                          </span>
-                          <p className="mt-2 text-xs text-white/45">Submitted {new Date(event.submitted_at || event.updated_at).toLocaleString("en-CA", { timeZone: "America/Toronto" })}</p>
-                        </div>
-                        <label className="text-sm">
-                          Public slug
-                          <input name="slug" defaultValue={slug} required maxLength={120} pattern="[a-z0-9]+(?:-[a-z0-9]+)*" className={`${inputClass} min-w-64`} />
-                        </label>
-                      </div>
-
-                      <div className="grid gap-4 sm:grid-cols-2">
-                        <label className="text-sm sm:col-span-2">Event name<input name="name" defaultValue={event.name} required maxLength={160} className={inputClass} /></label>
-                        <div className="grid gap-3 sm:col-span-2">
-                          <label className="text-sm">Your name <span className="text-white/50">(optional; first name, nickname, or crew name)</span><input name="organizerName" defaultValue={event.organizer_name || ""} maxLength={40} placeholder="First name or nickname" className={inputClass} /></label>
-                          <fieldset>
-                            <legend className="sr-only">Organizing or sharing</legend>
-                            <div className="flex flex-wrap gap-3">
-                              <label className="inline-flex min-h-11 items-center gap-2 text-sm"><input type="radio" name="organizerType" value="member" defaultChecked={event.organizer_type !== "shared"} className="size-4 accent-orange-400" /> Organizing</label>
-                              <label className="inline-flex min-h-11 items-center gap-2 text-sm"><input type="radio" name="organizerType" value="shared" defaultChecked={event.organizer_type === "shared"} className="size-4 accent-orange-400" /> Sharing</label>
-                            </div>
-                          </fieldset>
-                        </div>
-                        <EventDateField name="startDate" label="Start date" defaultValue={start.date} required className={inputClass} />
-                        <EventTimeField name="startTime" label="Start time" defaultValue={start.time} required className={inputClass} />
-                        <EventDateField name="endDate" label="End date" defaultValue={end.date} optional minFrom="startDate" className={inputClass} />
-                        <EventTimeField name="endTime" label="End time" defaultValue={end.time} optional className={inputClass} />
-                        <RecurrenceFields
-                          className={inputClass}
-                          defaultFrequency={event.recurrence_frequency}
-                          defaultWeekdays={event.recurrence_weekdays}
-                          defaultEndDate={event.recurrence_end_date}
-                          defaultCount={event.recurrence_count}
-                        />
-                        <label className="text-sm sm:col-span-2">Venue<input name="venue" defaultValue={event.venue} required maxLength={240} className={inputClass} /></label>
-                        <label className="text-sm sm:col-span-2">Address<input name="address" defaultValue={event.address || ""} maxLength={400} className={inputClass} /></label>
-                        <DescriptionEditor name="description" defaultValue={event.description} rows={5} className={inputClass} />
-                        <label className="text-sm sm:col-span-2">RSVP link<input name="rsvpUrl" type="url" defaultValue={event.rsvp_url || ""} maxLength={2048} className={inputClass} /></label>
-                        {event.image_path ? <label className="text-sm sm:col-span-2">Image description<input name="imageAlt" defaultValue={event.image_alt || ""} required maxLength={300} className={inputClass} /></label> : null}
-                        <label className="text-sm">Event status<select name="eventStatus" defaultValue={event.event_status || ""} className={inputClass}><option value="">Scheduled</option><option value="postponed">Postponed</option><option value="cancelled">Cancelled</option></select></label>
-                        <label className="text-sm">Image position<input name="imagePosition" defaultValue={event.image_position} maxLength={40} className={inputClass} /></label>
-                      </div>
-
-                      <div className="flex flex-wrap gap-3 border-t border-white/10 pt-5">
-                        <button name="action" value="update" className={buttonClass}>Save changes</button>
-                        {event.moderation_status !== "approved" ? (
-                          <button name="action" value="approve" className={`${buttonClass} bg-emerald-400 text-slate-950 hover:bg-emerald-300`}>Approve and publish</button>
-                        ) : null}
-                      </div>
-                    </form>
-
-                    <div className="flex flex-wrap gap-3 border-t border-white/10 p-5">
-                      {event.moderation_status !== "rejected" ? (
-                        <form action="/links/manage/events/actions" method="post" className="flex items-center gap-2">
-                          <input type="hidden" name="csrf" value={csrf} />
-                          <input type="hidden" name="id" value={event.id} />
-                          <input type="hidden" name="action" value="reject" />
-                          <label className="text-xs"><input type="checkbox" name="confirm" required className="mr-1" />Remove image and reject</label>
-                          <button className={`${buttonClass} border-amber-300/30 text-amber-100`}>Reject</button>
-                        </form>
-                      ) : null}
-                      <form action="/links/manage/events/actions" method="post" className="ml-auto flex items-center gap-2">
-                        <input type="hidden" name="csrf" value={csrf} />
-                        <input type="hidden" name="id" value={event.id} />
-                        <input type="hidden" name="action" value="delete" />
-                        <label className="text-xs"><input type="checkbox" name="confirm" required className="mr-1" />Permanently delete</label>
-                        <button className={`${buttonClass} border-red-400/30 text-red-200`}>Delete</button>
-                      </form>
-                    </div>
-                  </article>
-                );
-              })}
-            </div>
+            <ManagedEventList events={events} csrf={csrf} />
           )}
         </div>
       </main>
