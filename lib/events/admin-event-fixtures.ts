@@ -35,6 +35,8 @@ export const adminEventFixtures: EventRow[] = [
     organizer_type: "shared",
     organizer_name: "Maya",
     venue: "Côte-des-Neiges metro station",
+    image_path: "/events/photo-walk.png",
+    image_alt: "People walking through the neighbourhood with cameras",
   },
   {
     ...base,

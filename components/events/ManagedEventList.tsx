@@ -34,6 +34,16 @@ function localParts(value?: string | null) {
   };
 }
 
+
+function managedEventImageSrc(event: EventRow) {
+  // Preview fixtures may use a public path. Stored uploads always go through
+  // the session-gated admin route. next/image optimization would fetch that
+  // route server-side without the admin cookie and get a 403, so this must
+  // stay unoptimized.
+  if (event.image_path?.startsWith("/")) return event.image_path;
+  return `/api/admin/event-images/${event.id}`;
+}
+
 function barDate(value: string) {
   return new Intl.DateTimeFormat("en-CA", {
     timeZone: "America/Toronto",
@@ -165,9 +175,10 @@ function EventBar({
       {event.image_path ? (
         <div className="relative mx-4 mb-3 aspect-[16/9] overflow-hidden rounded-xl bg-black/30 sm:aspect-[21/9]">
           <Image
-            src={`/api/admin/event-images/${event.id}`}
+            src={managedEventImageSrc(event)}
             alt={event.image_alt || "Submitted event image"}
             fill
+            unoptimized
             className="object-cover"
             sizes="(max-width: 767px) 100vw, 1024px"
           />
