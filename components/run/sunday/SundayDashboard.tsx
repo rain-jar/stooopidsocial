@@ -128,7 +128,7 @@ export default function SundayDashboard() {
 
       <section className="dash-run dash-run--main" aria-label={EVENT.name}>
         <p className="dash-run__when">
-          <span className="dash-run__date">Next Stooopid {EVENT.weekday}:</span>
+          <span id="run-details-label" className="dash-run__date">Next Stooopid {EVENT.weekday}:</span>
           <span className="dash-run__meet-time">
             {monthDayFmt.format(run.startAt)}, {clockTime(run.meetAt).replace(":00", "").replace(/ /g, "\u00a0")}
           </span>

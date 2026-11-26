@@ -23,12 +23,9 @@ export default function RunWeekDetails() {
         className="run-notes-popover run-details-popover"
         role="dialog"
         aria-modal="true"
-        aria-labelledby="run-details-label"
+        aria-label={runContent.sunday.cta.label}
       >
-        <div className="run-notes-head">
-          <h2 id="run-details-label" className="run-details-title">
-            Stooopid Sunday
-          </h2>
+        <div className="run-notes-head run-details-head">
           <button
             type="button"
             className="run-notes-close"
@@ -40,7 +37,9 @@ export default function RunWeekDetails() {
           </button>
         </div>
         <div className="run-details-board">
-          <SundayDashboard />
+          <div className="run-details-board-scroll">
+            <SundayDashboard />
+          </div>
         </div>
         <footer className="run-notes-footer">
           <hr className="run-notes-rule" />

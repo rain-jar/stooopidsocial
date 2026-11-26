@@ -7,9 +7,10 @@ On `/run`, "This week's details" opened `https://anyonecanpacebeta.pages.dev/?su
 ## Decisions
 
 - The button opens a native `popover="auto"` sheet that reuses the Crew links paper, backdrop, and width family. `display: flex` is applied only under `:popover-open`.
-- Inside, a separate implementation of the Stooopid Sunday dashboard from `ShereenElaidi/anyoneCanPace-beta@376558b`: title "Stooopid Sunday", next-Sunday card, dressed duck, outfit copy, Weather details, "Running another time?" with hour chips, route advisories, loading/stale/Check outside + REFRESH, Location Deets (COPY MAP LINK / OPEN MAP), the quiet Updated line, and the Open-Meteo CC BY 4.0 credit.
-- Excluded: the AnyoneCanPace brand, the Insta story section, and the "ANYONE CAN RUN. ANYONE CAN PACE." footer slogan.
-- Close: an X in the top corner, Escape, backdrop click, and a bottom "Run Crew Home 🏠" button that hides the popover. No separate HOME button — in the pacing app HOME leaves the dashboard for the app menu; here the friendly equivalent is closing back onto the Run page.
+- Inside, a separate implementation of the Stooopid Sunday dashboard from `ShereenElaidi/anyoneCanPace-beta@376558b`: next-Sunday card, dressed duck, outfit copy, Weather details, "Running another time?" with hour chips, route advisories, loading/stale/Check outside + REFRESH, Location Deets (COPY MAP LINK / OPEN MAP), the quiet Updated line, and the Open-Meteo CC BY 4.0 credit.
+- Excluded: the AnyoneCanPace brand, the popup's "Stooopid Sunday" title ribbon (removed in t56u; the card still says "Next Stooopid Sunday:"), the Insta story section, and the "ANYONE CAN RUN. ANYONE CAN PACE." footer slogan.
+- Close: an X alone in the top-right corner, Escape, backdrop click, and a bottom "Run Crew Home 🏠" button that hides the popover. No separate HOME button — in the pacing app HOME leaves the dashboard for the app menu; here the friendly equivalent is closing back onto the Run page.
+- The board is a clipping frame with bottom padding outside the scrollport, so Location Deets and the weather credit clear the footer and map buttons cannot peek onto it at the fold. On a 1280×800 desktop the map buttons should be fully visible without overlap.
 - Event data lives in `data/run.ts` (`sundayEvent`) with a comment naming the source commit. Advisories are in `data/sunday-advisories.json`. Weather is a browser GET to Open-Meteo's public GEM endpoint for central Montréal (`45.5017, -73.5673`), cached 30 minutes in `localStorage` under `stooopidsocial:sunday-weather:v1`. Times use America/Toronto.
 - "Open the pacing app" in the later `/run` section is unchanged.
 - Content scrolls inside the paper. Desktop width matches the text column.
@@ -32,4 +33,4 @@ The implementation is a separate port, not a dependency on her repo. Duck art, o
 
 ## Verification
 
-Lint, `tsc`, and `next build` on this branch (retry the first Next.js 16.4.2 security reminder if it stops the build; do not upgrade). Playwright in Chromium and WebKit at 390, 375, and 1280: both popups closed on load; This week's details opens with the duck and outfit; fold-outs and hour chips work; map buttons work; close via X, Escape, backdrop, and Run Crew Home; Crew links still works; offline/forecast failure shows the fallback. Screenshots: `/workspace/run-details-popup/`.
+Lint, `tsc`, and `next build` on this branch (retry the first Next.js 16.4.2 security reminder if it stops the build; do not upgrade). Playwright in Chromium and WebKit at 390, 375, and 1280: both popups closed on load; This week's details opens with the duck and outfit; fold-outs and hour chips work; map buttons work; close via X, Escape, backdrop, and Run Crew Home; Crew links still works; offline/forecast failure shows the fallback. Screenshots: `/workspace/run-details-popup2/` (follow-up: title ribbon removed, footer clearance).

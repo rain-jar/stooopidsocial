@@ -764,29 +764,10 @@
 }
 
 
-/* Title ribbon, same as the pacing app's Stooopid Sunday heading. */
-.run-details-title {
-  display: inline-block;
-  margin: 0;
-  padding: 5px 14px 6px;
-  border: 2px solid #2c2c2a;
-  border-radius: 16px;
-  background: #1b3f72;
-  color: #ef9f27;
-  box-shadow: 0 3px 0 #2c2c2a;
-  font-size: clamp(1.15rem, 4.5vw, 1.5rem);
-  font-weight: 800;
-  line-height: 1.1;
-  text-decoration: none;
-}
-
-.run-section .run-details-popover :is(h2.run-details-title),
-.run-details-popover :is(h2.run-details-title) {
-  padding-left: 0;
-  text-decoration: none;
-}
-
-.run-details-popover {
+/* Close button sits alone in the top-right; the card keeps "Next Stooopid Sunday:". */
+.run-notes-popover.run-details-popover {
+  /* Leave a sky band at the top for the floating close button. */
+  padding-top: 3.15rem;
   background-color: #f5f0e8;
   background-image:
     url("/run/sunday/sky.webp"),
@@ -796,28 +777,47 @@
   background-size: auto max(66vw, 42vh), 10px 10px, 10px 10px;
   background-repeat: no-repeat, repeat, repeat;
   color: #2c2c2a;
-  /* A little taller than Crew links is fine; the board scrolls inside the paper. */
-  min-height: max(26rem, min(36rem, 70dvh));
+  /* Size to the content, up to the viewport. The board scrolls if needed. */
+  min-height: 0;
 }
 
 .run-details-board {
   display: flex;
   flex-direction: column;
   flex: 1 1 auto;
-  gap: 0.85rem;
   min-height: 0;
   margin-inline: -0.35rem;
-  padding: 0.15rem 0.2rem 0.5rem;
+  /* Bottom padding sits outside the scrollport so map buttons cannot
+     peek into this gap and sit on the footer at the fold. */
+  padding: 0.15rem 0.2rem 1.5rem;
+  overflow: hidden;
+}
+
+.run-details-board-scroll {
+  flex: 1 1 auto;
+  min-height: 0;
   overflow-x: hidden;
   overflow-y: auto;
   overscroll-behavior: contain;
+  scroll-padding-bottom: 1.5rem;
 }
 
-.run-details-popover .run-notes-head {
-  align-items: flex-start;
+/* X floats in the top-right sky corner so it does not steal a header row. */
+.run-notes-popover.run-details-popover .run-details-head,
+.run-notes-popover.run-details-popover .run-notes-head {
+  position: absolute;
+  top: 0.65rem;
+  right: 0.65rem;
+  z-index: 3;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  margin: 0;
+  min-height: 0;
+  width: auto;
 }
 
-.run-details-popover .run-notes-close {
+.run-notes-popover.run-details-popover .run-notes-close {
   color: #1b3f72;
   background: #fffdf8;
   border: 2px solid #2c2c2a;
@@ -828,16 +828,34 @@
   flex: 0 0 auto;
 }
 
-.run-details-popover .run-notes-footer {
-  background: color-mix(in srgb, #fffdf8 92%, transparent);
+.run-notes-popover.run-details-popover .run-notes-footer {
+  flex: 0 0 auto;
+  position: relative;
+  z-index: 2;
+  background: color-mix(in srgb, #fffdf8 96%, transparent);
   margin-inline: -0.2rem;
   padding-inline: 0.2rem;
   padding-top: 0.15rem;
 }
 
 @media (min-width: 800px) {
-  .run-details-popover {
-    min-height: min(40rem, calc(100dvh - 4rem));
+  .run-notes-popover.run-details-popover {
+    min-height: 0;
+    max-height: calc(100dvh - 4rem);
+    padding-top: 3.3rem;
+  }
+}
+
+/* Compact the Sunday card on desktop so Location Deets fits above the footer. */
+@media (min-width: 800px) {
+  .run-sunday {
+    gap: 10px;
+  }
+  .run-sunday .duck-slot {
+    width: min(100%, 196px);
+  }
+  .run-sunday .dash-run--main {
+    padding: 12px;
   }
 }
 
@@ -872,23 +890,12 @@
 }
 
 
-/* The board is the only scrollport. Keep the footer in normal flex flow
-   so Location Deets never sits half-under the Run Crew Home button. */
-.run-details-popover:popover-open {
+/* The board is the only scrollport. A definite max-height lets the board
+   shrink above the footer instead of painting under it. */
+.run-notes-popover.run-details-popover:popover-open {
   display: flex;
   flex-direction: column;
   overflow: hidden;
-  height: min-content;
+  height: auto;
   max-height: calc(100dvh - 1.75rem);
-}
-
-.run-details-board {
-  padding-bottom: 0.85rem;
-}
-
-.run-details-popover .run-notes-footer {
-  flex: 0 0 auto;
-  position: relative;
-  z-index: 2;
-  background: color-mix(in srgb, #fffdf8 96%, transparent);
 }
