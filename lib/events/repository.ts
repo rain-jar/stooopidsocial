@@ -1,7 +1,7 @@
 import "server-only";
 
 import { unstable_cache } from "next/cache";
-import type { CommunityEvent, EventStatus } from "@/data/events";
+import type { CommunityEvent, EventStatus, OrganizerType } from "@/data/events";
 import { eventImageVersion } from "@/lib/events/images";
 import { getAdminSupabaseClient, getPublicSupabaseClient } from "@/lib/supabase";
 import type { RecurrenceFrequency } from "@/lib/events/validation";
@@ -31,6 +31,8 @@ export type EventRow = {
   recurrence_weekdays: number[] | null;
   recurrence_end_date: string | null;
   recurrence_count: number | null;
+  organizer_type?: OrganizerType | null;
+  organizer_name?: string | null;
 };
 
 type EventOccurrenceRow = {
@@ -42,14 +44,36 @@ type EventOccurrenceRow = {
   ends_at: string | null;
 };
 
-const PUBLIC_COLUMNS = [
+const PUBLIC_COLUMNS_BASE = [
   "id", "slug", "name", "description", "starts_at", "ends_at", "timezone",
   "venue", "address", "rsvp_url", "event_status", "image_path", "image_alt",
   "image_position", "updated_at", "recurrence_frequency", "recurrence_weekdays",
   "recurrence_end_date", "recurrence_count",
 ].join(",");
 
-const ADMIN_COLUMNS = `${PUBLIC_COLUMNS},moderation_status,submitted_at,reviewed_at`;
+const ORGANIZER_COLUMNS = "organizer_type,organizer_name";
+const PUBLIC_COLUMNS = `${PUBLIC_COLUMNS_BASE},${ORGANIZER_COLUMNS}`;
+const ADMIN_COLUMNS_BASE = `${PUBLIC_COLUMNS_BASE},moderation_status,submitted_at,reviewed_at`;
+const ADMIN_COLUMNS = `${ADMIN_COLUMNS_BASE},${ORGANIZER_COLUMNS}`;
+
+export function missingOrganizerColumns(error: { message?: string; code?: string } | null) {
+  if (!error) return false;
+  const message = (error.message || "").toLowerCase();
+  return (
+    error.code === "42703" ||
+    message.includes("organizer_type") ||
+    message.includes("organizer_name")
+  );
+}
+
+export function withoutOrganizerColumns<T extends { organizer_type?: unknown; organizer_name?: unknown }>(
+  row: T,
+) {
+  const rest = { ...row };
+  delete rest.organizer_type;
+  delete rest.organizer_name;
+  return rest;
+}
 const OCCURRENCE_PAGE_SIZE = 1_000;
 
 function publicEvent(row: EventRow, occurrence?: EventOccurrenceRow): CommunityEvent | null {
@@ -78,18 +102,37 @@ function publicEvent(row: EventRow, occurrence?: EventOccurrenceRow): CommunityE
         }
       : {}),
     artwork: "photo",
+    ...(row.organizer_name
+      ? {
+          organizerName: row.organizer_name,
+          organizerType: row.organizer_type === "shared" ? "shared" : "member",
+        }
+      : {}),
   };
 }
 
-async function fetchApprovedEvents() {
-  const client = getPublicSupabaseClient();
-  const { data, error } = await client
+async function selectApprovedEventRows(client: ReturnType<typeof getPublicSupabaseClient>) {
+  const withOrganizer = await client
     .from("events")
     .select(PUBLIC_COLUMNS)
     .order("starts_at")
     .limit(500);
-  if (error) throw new Error("Approved events are temporarily unavailable.");
-  const rows = (data ?? []) as unknown as EventRow[];
+  if (!withOrganizer.error) return (withOrganizer.data ?? []) as unknown as EventRow[];
+  if (!missingOrganizerColumns(withOrganizer.error)) {
+    throw new Error("Approved events are temporarily unavailable.");
+  }
+  const fallback = await client
+    .from("events")
+    .select(PUBLIC_COLUMNS_BASE)
+    .order("starts_at")
+    .limit(500);
+  if (fallback.error) throw new Error("Approved events are temporarily unavailable.");
+  return (fallback.data ?? []) as unknown as EventRow[];
+}
+
+async function fetchApprovedEvents() {
+  const client = getPublicSupabaseClient();
+  const rows = await selectApprovedEventRows(client);
   const recurringIds = rows
     .filter((row) => row.recurrence_frequency)
     .map((row) => row.id);
@@ -127,7 +170,7 @@ async function fetchApprovedEvents() {
 
 const getCachedApprovedEvents = unstable_cache(
   fetchApprovedEvents,
-  ["supabase-events-v2"],
+  ["supabase-events-v3"],
   { revalidate: 300, tags: ["supabase-events"] },
 );
 
@@ -136,14 +179,25 @@ export function getApprovedSupabaseEvents() {
 }
 
 export async function getManagedEvents() {
-  const { data, error } = await getAdminSupabaseClient()
+  const client = getAdminSupabaseClient();
+  const withOrganizer = await client
     .from("events")
     .select(ADMIN_COLUMNS)
     .order("moderation_status")
     .order("submitted_at", { ascending: false })
     .limit(500);
-  if (error) throw new Error("Event management data is temporarily unavailable.");
-  return (data ?? []) as unknown as EventRow[];
+  if (!withOrganizer.error) return (withOrganizer.data ?? []) as unknown as EventRow[];
+  if (!missingOrganizerColumns(withOrganizer.error)) {
+    throw new Error("Event management data is temporarily unavailable.");
+  }
+  const fallback = await client
+    .from("events")
+    .select(ADMIN_COLUMNS_BASE)
+    .order("moderation_status")
+    .order("submitted_at", { ascending: false })
+    .limit(500);
+  if (fallback.error) throw new Error("Event management data is temporarily unavailable.");
+  return (fallback.data ?? []) as unknown as EventRow[];
 }
 
 export async function getApprovedSupabaseImage(slug: string) {

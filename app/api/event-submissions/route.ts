@@ -6,6 +6,7 @@ import {
 import { eventSubmissionsEnabled } from "@/lib/events/source";
 import { readSubmissionToken, sameOrigin } from "@/lib/events/submission-security";
 import { generateEventOccurrences, parsePublicEventInput, suggestedEventSlug } from "@/lib/events/validation";
+import { missingOrganizerColumns, withoutOrganizerColumns } from "@/lib/events/repository";
 import { getAdminSupabaseClient } from "@/lib/supabase";
 
 export const runtime = "nodejs";
@@ -86,7 +87,7 @@ export async function POST(request: Request) {
     return response({ error: "The uploaded image could not be verified." }, 400);
   }
 
-  const { error: insertError } = await client.from("events").insert({
+  const row = {
     id: token.id,
     slug: null,
     name: eventInput.name,
@@ -105,7 +106,13 @@ export async function POST(request: Request) {
     recurrence_weekdays: eventInput.recurrence?.weekdays ?? null,
     recurrence_end_date: eventInput.recurrence?.endDate ?? null,
     recurrence_count: eventInput.recurrence?.count ?? null,
-  });
+    organizer_type: eventInput.organizerType ?? null,
+    organizer_name: eventInput.organizerName ?? null,
+  };
+  let { error: insertError } = await client.from("events").insert(row);
+  if (insertError && missingOrganizerColumns(insertError)) {
+    ({ error: insertError } = await client.from("events").insert(withoutOrganizerColumns(row)));
+  }
   if (insertError) {
     return response({ error: "Unable to save the event. Please try again." }, 503);
   }

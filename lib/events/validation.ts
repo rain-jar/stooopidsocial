@@ -1,4 +1,4 @@
-import type { EventStatus } from "@/data/events";
+import type { EventStatus, OrganizerType } from "@/data/events";
 
 const DATE_PATTERN = /^(\d{4})-(\d{2})-(\d{2})$/;
 const TIME_PATTERN = /^(\d{2}):(\d{2})$/;
@@ -35,7 +35,22 @@ export type EventInput = {
   imagePosition: string;
   eventStatus?: EventStatus;
   recurrence?: EventRecurrence;
+  organizerType?: OrganizerType;
+  organizerName?: string;
 };
+
+function parseOrganizer(input: Record<string, unknown>) {
+  const organizerName = text(input.organizerName, 40, "Your name", false);
+  const rawType = typeof input.organizerType === "string" ? input.organizerType.trim() : "";
+  if (rawType && rawType !== "member" && rawType !== "shared") {
+    throw new Error("Choose Organizing or Sharing.");
+  }
+  if (!organizerName) return {};
+  return {
+    organizerName,
+    organizerType: (rawType === "shared" ? "shared" : "member") as OrganizerType,
+  };
+}
 
 function text(value: unknown, maximum: number, label: string, required = true) {
   const cleaned = typeof value === "string" ? value.trim() : "";
@@ -254,6 +269,7 @@ function parseEventInput(
     ...(imageAlt ? { imageAlt } : {}),
     imagePosition: "center",
     ...(recurrence ? { recurrence } : {}),
+    ...parseOrganizer(input),
   };
 }
 

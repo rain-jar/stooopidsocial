@@ -237,6 +237,8 @@ export default function EventSubmissionDialog({ enabled, turnstileSiteKey }: Pro
             address: stringValue(formData, "address"),
             rsvpUrl: stringValue(formData, "rsvpUrl"),
             imageAlt: stringValue(formData, "imageAlt"),
+            organizerName: stringValue(formData, "organizerName"),
+            organizerType: stringValue(formData, "organizerType"),
           },
         }),
       });
@@ -336,6 +338,31 @@ export default function EventSubmissionDialog({ enabled, turnstileSiteKey }: Pro
                     Address <span className="text-white/50">(optional)</span>
                     <input name="address" maxLength={400} className={inputClass} />
                   </label>
+                  <div className="grid gap-3 sm:col-span-2">
+                    <label className="text-sm">
+                      Your name <span className="text-white/50">(optional)</span>
+                      <input
+                        name="organizerName"
+                        maxLength={40}
+                        autoComplete="nickname"
+                        placeholder="First name or nickname"
+                        className={inputClass}
+                      />
+                    </label>
+                    <fieldset>
+                      <legend className="sr-only">Organizing or sharing</legend>
+                      <div className="flex flex-wrap gap-3">
+                        <label className="inline-flex min-h-11 cursor-pointer items-center gap-2 rounded-xl border border-white/15 px-3 text-sm">
+                          <input type="radio" name="organizerType" value="member" defaultChecked className="size-4 accent-[#ff8065]" />
+                          Organizing
+                        </label>
+                        <label className="inline-flex min-h-11 cursor-pointer items-center gap-2 rounded-xl border border-white/15 px-3 text-sm">
+                          <input type="radio" name="organizerType" value="shared" className="size-4 accent-[#ff8065]" />
+                          Sharing
+                        </label>
+                      </div>
+                    </fieldset>
+                  </div>
                   <DescriptionEditor key={`description-${formVersion}`} name="description" className={inputClass} />
                   <label className="text-sm sm:col-span-2">
                     RSVP link <span className="text-white/50">(optional)</span>
