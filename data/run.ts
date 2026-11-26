@@ -225,5 +225,5 @@ export const runCrewLinkGroups: readonly RunCrewLinkGroup[] = [
 
 export const runCrewLinksTitle = "Crew & community";
 
-/** Footer button in the Crew links popup. The link itself is the homepage. */
-export const runCrewHomeCtaLabel = "Visit Les Stooopids →";
+/** Footer button in the Crew links popup. It closes the sheet and leaves the visitor on /run. */
+export const runCrewHomeCtaLabel = "Run Crew Home 🏠";
