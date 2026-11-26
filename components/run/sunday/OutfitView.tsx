@@ -45,18 +45,15 @@ export function WeatherDetails(props: {
 }
 
 /**
- * The dressed duck with its feels-like sticker, the outfit in words, one line of weather,
- * and optionally the weather numbers folded away.
+ * The dressed duck with its feels-like sticker, the outfit in words, and one line of weather.
+ * The weather numbers live in a separate WeatherDetails fold-out.
  */
 export function OutfitView(props: {
   label: string;
-  detailsTitle: string;
   outfit: Outfit;
   hour: HourWeather;
-  sun: DaySun | null;
-  showDetails?: boolean;
 }) {
-  const { label, detailsTitle, outfit, hour, sun, showDetails = true } = props;
+  const { label, outfit, hour } = props;
   return (
     <section className="dash-outfit" aria-label={label}>
       <div className="duck-slot">
@@ -96,9 +93,6 @@ export function OutfitView(props: {
             ))}
           </ul>
         </>
-      )}
-      {showDetails && (
-        <WeatherDetails detailsTitle={detailsTitle} outfit={outfit} hour={hour} sun={sun} />
       )}
     </section>
   );

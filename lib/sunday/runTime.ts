@@ -1,18 +1,10 @@
 /**
- * Picking the run hour and building the outfit input for it. Pure: `now` is
- * always passed in. Local times are Montréal's, whatever the phone's zone.
+ * Local Montréal times and the outfit input for a chosen run start. Pure:
+ * `now` is always passed in. Local times are Montréal's, whatever the phone's zone.
  */
 import { hourAt, MONTREAL, sunFor, type Forecast } from './forecast';
 import { RUN_DURATION_MIN, type Light, type OutfitInput, type Recent } from './outfit';
 
-/** Default run start (local hour in Montréal). */
-export const DEFAULT_RUN_HOUR = 10;
-
-/** Earliest and latest start hours that count as "sensible" if 10:00 isn't in the forecast. */
-export const EARLIEST_RUN_HOUR = 6;
-export const LATEST_RUN_HOUR = 21;
-
-const hourFmt = new Intl.DateTimeFormat('en-CA', { timeZone: MONTREAL.timeZone, hour: 'numeric', hourCycle: 'h23' });
 const dateFmt = new Intl.DateTimeFormat('en-CA', {
   timeZone: MONTREAL.timeZone,
   year: 'numeric',
@@ -20,33 +12,9 @@ const dateFmt = new Intl.DateTimeFormat('en-CA', {
   day: '2-digit',
 });
 
-/** Hour of day (0–23) in Montréal. */
-export function localHour(at: number): number {
-  return Number(hourFmt.format(at)) % 24;
-}
-
 /** YYYY-MM-DD in Montréal. */
 export function localDate(at: number): string {
   return dateFmt.format(at);
-}
-
-/**
- * Default run start: the next 10:00 (not on `skipDate`, the group run's day,
- * which has its own card). If the forecast doesn't reach it, the
- * next whole hour between 6:00 and 21:00. Returns null when the forecast has
- * no upcoming hours.
- */
-export function defaultRunTime(f: Forecast, now: number, skipDate?: string): number | null {
-  const upcoming = f.hours.map((h) => h.at).filter((at) => at >= now);
-  if (!upcoming.length) return null;
-  const next = upcoming.find((at) => localHour(at) === DEFAULT_RUN_HOUR && localDate(at) !== skipDate);
-  if (next !== undefined) return next;
-  return upcoming.find((at) => localHour(at) >= EARLIEST_RUN_HOUR && localHour(at) <= LATEST_RUN_HOUR) ?? upcoming[0];
-}
-
-/** Hours the picker offers: every upcoming forecast hour. */
-export function runTimeChoices(f: Forecast, now: number): number[] {
-  return f.hours.map((h) => h.at).filter((at) => at >= now - 3_600_000 + 1);
 }
 
 /** Daylight during a run starting at `at`. */

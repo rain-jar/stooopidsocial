@@ -9,8 +9,8 @@
 export const MONTREAL = { lat: 45.5017, lon: -73.5673, timeZone: 'America/Toronto' } as const;
 
 /**
- * Days of forecast fetched (today included). Five so the Sunday story can be made from
- * Wednesday; the dashboard's hour picker still only shows 3 days (PICKER_DAYS).
+ * Days of forecast fetched (today included). Five so the Sunday outfit can be
+ * made from Wednesday.
  */
 export const FORECAST_DAYS = 5;
 
