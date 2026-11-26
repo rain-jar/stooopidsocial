@@ -130,9 +130,9 @@
   /* The dressed duck's square frame. */
   .duck-slot {
     position: relative;
-    width: min(100%, 230px);
+    width: min(100%, 168px);
     aspect-ratio: 1;
-    margin-bottom: 4px;
+    margin-bottom: 2px;
     border-radius: 24px;
     background: var(--pavement);
   }
@@ -142,7 +142,7 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 6px;
+    gap: 4px;
     text-align: center;
   }
 
@@ -370,7 +370,7 @@
   /* ---------- Weekly run: day, outfit, where we meet ---------- */
 
   .dash-run--main {
-    padding: 14px;
+    padding: 8px;
     box-shadow: 0 5px 0 var(--asphalt);
   }
 
@@ -379,7 +379,7 @@
   }
 
   .dash-run--main .dash-run__when {
-    margin: 0 0 10px;
+    margin: 0 0 6px;
     text-align: center;
   }
 
@@ -402,7 +402,7 @@
   /* Meeting spot, quieter than the date and time above it. */
   .dash-run__place {
     display: block;
-    margin-top: 4px;
+    margin-top: 2px;
     color: var(--asphalt);
     font-size: 1rem;
     font-weight: 700;
@@ -538,6 +538,7 @@
 .run-notes-popover.run-details-popover {
   /* Leave a sky band at the top for the floating close button. */
   padding-top: 3.15rem;
+  padding-bottom: 0.5rem;
   background-color: #f5f0e8;
   background-image:
     url("/run/sunday/sky.webp"),
@@ -559,7 +560,7 @@
   margin-inline: -0.35rem;
   /* Bottom padding sits outside the scrollport so map buttons cannot
      peek into this gap and sit on the footer at the fold. */
-  padding: 0.15rem 0.2rem 1.5rem;
+  padding: 0.1rem 0.2rem 0.5rem;
   overflow: hidden;
 }
 
@@ -569,7 +570,7 @@
   overflow-x: hidden;
   overflow-y: auto;
   overscroll-behavior: contain;
-  scroll-padding-bottom: 1.5rem;
+  scroll-padding-bottom: 0.5rem;
 }
 
 /* X floats in the top-right sky corner so it does not steal a header row. */
@@ -611,21 +612,70 @@
 @media (min-width: 800px) {
   .run-notes-popover.run-details-popover {
     min-height: 0;
-    max-height: calc(100dvh - 4rem);
-    padding-top: 3.3rem;
+    max-height: calc(100dvh - 1rem);
+    padding-top: 3.15rem;
   }
 }
 
-/* Compact the Sunday card on desktop so Location Deets fits above the footer. */
+/* Tighter vertical rhythm so the collapsed popup fits without scrolling
+   through the Updated line, without shrinking type or tap targets. */
+.run-sunday {
+  gap: 8px;
+}
+
+.run-sunday .dash__h2 {
+  margin-bottom: 4px;
+}
+
 @media (min-width: 800px) {
   .run-sunday {
-    gap: 10px;
+    gap: 8px;
   }
   .run-sunday .duck-slot {
-    width: min(100%, 196px);
+    width: min(100%, 168px);
   }
   .run-sunday .dash-run--main {
-    padding: 12px;
+    padding: 8px;
+  }
+}
+
+/* Short phones (e.g. 375×667): shrink the duck a bit more and tighten
+   chrome so Location Deets, the map buttons, and Weather details still fit. */
+@media (max-height: 700px) {
+  .run-notes-popover.run-details-popover {
+    padding-top: 2.85rem;
+    padding-bottom: 0.35rem;
+  }
+
+  .run-notes-popover.run-details-popover:popover-open {
+    max-height: calc(100dvh - 0.5rem);
+  }
+
+  .run-notes-popover.run-details-popover .run-details-head,
+  .run-notes-popover.run-details-popover .run-notes-head {
+    top: 0.35rem;
+    right: 0.4rem;
+  }
+
+  .run-notes-popover.run-details-popover .run-notes-rule {
+    height: 0.3rem;
+    margin: 0 0 0.25rem;
+  }
+
+  .run-sunday {
+    gap: 6px;
+  }
+
+  .run-sunday .duck-slot {
+    width: min(100%, 120px);
+  }
+
+  .run-sunday .dash-run--main {
+    padding: 6px 8px;
+  }
+
+  .run-sunday .dash-run--main .dash-run__when {
+    margin: 0 0 4px;
   }
 }
 
@@ -672,5 +722,5 @@
   flex-direction: column;
   overflow: hidden;
   height: auto;
-  max-height: calc(100dvh - 1.75rem);
+  max-height: calc(100dvh - 1rem);
 }

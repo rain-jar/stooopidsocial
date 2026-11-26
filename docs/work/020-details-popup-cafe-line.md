@@ -21,3 +21,23 @@ On the live "This week's details" popup, Raj asked to drop the "No route advisor
 ## Verification
 
 Lint, `tsc`, and `next build` (retry the Next.js 16.4.2 security reminder; do not upgrade). Playwright in Chromium and WebKit at 390, 375, and 1280: both popups closed on load; no advisories text; the café line sits under the date and time and above the duck; map buttons fully visible at 1280×800; close via X, Escape, backdrop, and Run Crew Home. Screenshots: `/workspace/run-details-popup-cafe/`.
+
+
+## Follow-up (t62u)
+
+Raj asked to tighten spacing so the collapsed popup fits without scrolling on smaller phones too, including the full Updated / Refresh line, without hurting readability (t62u, 26 Nov 2026, America/Toronto).
+
+### Decisions
+
+- Only vertical padding, margins, and gaps were reduced. Font sizes and tap targets stay as they were (map buttons and Refresh remain 44px; Run Crew Home is unchanged).
+- The duck graphic is modestly smaller (168px, down from 230px / 196px on desktop). On short viewports (max-height 700px, such as 375×667) it goes to 120px so Location Deets, the map buttons, and the Weather details bar still fit.
+- The Open-Meteo credit still sits under Updated / Refresh. On some phone heights that credit may still need a short scroll; it is not required to be on screen when the popup opens.
+- On 375×667 the Updated / Refresh row still needs a short scroll. Fitting it would have meant shrinking the duck further than feels readable. Map buttons and the collapsed Weather details bar do fit.
+
+### Files
+
+- `components/run/sunday/sunday.css` — tighter popup and card spacing; short-height duck size
+
+### Verification
+
+Lint, `tsc`, and `next build` (retry the Next.js 16.4.2 security reminder; do not upgrade). Playwright in Chromium and WebKit at 390×844, 375×812, 375×667, and 1280×800. Screenshots: `/workspace/run-details-popup-tight/`.
