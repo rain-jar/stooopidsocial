@@ -292,25 +292,6 @@
     font-size: 0.72rem;
   }
 
-  /* ---------- Advisories ---------- */
-
-  .dash-advisories {
-    padding: 12px;
-    border: var(--line) solid var(--asphalt);
-    border-radius: var(--radius);
-    background: var(--paper);
-  }
-
-  .dash-clear {
-    font-size: 0.85rem;
-    font-weight: 700;
-  }
-
-  .dash-clear__checked {
-    font-size: 0.75rem;
-    font-weight: 500;
-  }
-
   /* ---------- Empty states ---------- */
 
   .dash-card {
@@ -415,6 +396,17 @@
     margin-top: 2px;
     font-size: 1.15rem;
     font-weight: 800;
+    text-wrap: balance;
+  }
+
+  /* Meeting spot, quieter than the date and time above it. */
+  .dash-run__place {
+    display: block;
+    margin-top: 4px;
+    color: var(--asphalt);
+    font-size: 1rem;
+    font-weight: 700;
+    line-height: 1.2;
     text-wrap: balance;
   }
 
@@ -538,58 +530,7 @@
   .app--paper .duck-slot {
     background: var(--pavement) url('/run/sunday/sky.webp') top center / cover no-repeat;
   }
-  /* Advisories list, shared by the route page and the dashboard (loaded with them). */
 
-  .notices__list {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    margin: 0;
-    padding: 0;
-    list-style: none;
-  }
-
-  .notice-item {
-    padding: 10px 12px;
-    border: 2px solid var(--asphalt);
-    border-left-width: 8px;
-    border-radius: 12px;
-    background: var(--paper);
-  }
-
-  .notice-item--closure,
-  .notice-item--weather-warning {
-    border-left-color: var(--gold);
-  }
-
-  .notice-item__kind {
-    font-size: 0.72rem;
-    font-weight: 800;
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
-  }
-
-  .notice-item__text {
-    margin-top: 2px;
-    font-weight: 700;
-  }
-
-  .notice-item__meta {
-    margin-top: 4px;
-    font-size: 0.8rem;
-  }
-
-  .notice-item__meta a {
-    display: inline-block;
-    min-height: 24px;
-    color: var(--navy);
-    font-weight: 800;
-  }
-
-  .notices__checked {
-    margin-top: 8px;
-    font-size: 0.75rem;
-  }
 }
 
 

@@ -1,21 +1,14 @@
 "use client";
 
 import { useEffect, useState, type ReactNode } from "react";
-import advisoriesFile from "@/data/sunday-advisories.json";
-import { sundayRouteNames } from "@/data/run";
-import { lastCheckedText, NoticeList } from "@/components/run/sunday/NoticeList";
 import { OutfitView, WeatherDetails } from "@/components/run/sunday/OutfitView";
 import { SundayLocation } from "@/components/run/sunday/SundayLocation";
-import { activeNotices, collectNotices, type NoticeFile } from "@/lib/sunday/notices";
-import { ROUTE_NOTICES } from "@/lib/sunday/routeAdvisories";
 import { EVENT, nextRun, type RunTimes } from "@/lib/sunday/event";
 import { clockTime, dayLabel, runTimeLabel } from "@/lib/sunday/format";
 import { hourAt, sunFor, FORECAST_DAYS, freshForecastReaches } from "@/lib/sunday/forecast";
 import { whatToWear } from "@/lib/sunday/outfit";
-import { localDate, outfitInputFor } from "@/lib/sunday/runTime";
+import { outfitInputFor } from "@/lib/sunday/runTime";
 import { useForecast } from "@/lib/sunday/useForecast";
-
-const advisories = advisoriesFile as NoticeFile;
 
 /** A saved forecast older than this gets an "may be out of date" warning. */
 const OLD_FORECAST_MS = 6 * 3_600_000;
@@ -48,7 +41,6 @@ export default function SundayDashboard() {
   const runOutfit = runInput ? whatToWear(runInput) : null;
   const runHour = forecast ? hourAt(forecast, run.startAt) : null;
 
-  const notices = activeNotices(collectNotices(advisories.notices, ROUTE_NOTICES), null, localDate(now));
   const updatedAt = forecast?.fetchedAt ?? null;
   const statusNeedsAttention =
     !updatedAt || state === "offline" || state === "failed" || now - (updatedAt ?? 0) > OLD_FORECAST_MS;
@@ -92,21 +84,13 @@ export default function SundayDashboard() {
     <div className="run-sunday">
       {statusNeedsAttention && status}
 
-      {notices.length > 0 && (
-        <section className="dash-advisories" aria-labelledby="notices-title">
-          <h2 id="notices-title" className="dash__h2">
-            Route advisories
-          </h2>
-          <NoticeList notices={notices} lastChecked={advisories.lastChecked} routeNames={sundayRouteNames} empty="" />
-        </section>
-      )}
-
       <section className="dash-run dash-run--main" aria-label={EVENT.name}>
         <p className="dash-run__when">
           <span id="run-details-label" className="dash-run__date">Next Stooopid {EVENT.weekday}:</span>
           <span className="dash-run__meet-time">
             {monthDayFmt.format(run.startAt)}, {clockTime(run.meetAt).replace(":00", "").replace(/ /g, "\u00a0")}
           </span>
+          <span className="dash-run__place">{EVENT.place.name}</span>
         </p>
         {runSlot}
       </section>
@@ -120,13 +104,6 @@ export default function SundayDashboard() {
           hour={runHour}
           sun={forecast && sunFor(forecast, run.startAt)}
         />
-      )}
-
-      {notices.length === 0 && (
-        <p className="dash-clear">
-          <span aria-hidden="true">✓ </span>No route advisories.{" "}
-          <span className="dash-clear__checked">{lastCheckedText(advisories.lastChecked)}</span>
-        </p>
       )}
 
       {!statusNeedsAttention && status}
