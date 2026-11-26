@@ -130,9 +130,12 @@
   /* The dressed duck's square frame. */
   .duck-slot {
     position: relative;
-    width: min(100%, 168px);
+    width: min(100%, 230px);
     aspect-ratio: 1;
-    margin-bottom: 2px;
+    /* Room above and beside for the feels-like sticker, so it does not
+       cover the café line or the card edge. */
+    margin-top: 20px;
+    margin-bottom: 4px;
     border-radius: 24px;
     background: var(--pavement);
   }
@@ -142,7 +145,7 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 4px;
+    gap: 6px;
     text-align: center;
   }
 
@@ -370,7 +373,7 @@
   /* ---------- Weekly run: day, outfit, where we meet ---------- */
 
   .dash-run--main {
-    padding: 8px;
+    padding: 14px;
     box-shadow: 0 5px 0 var(--asphalt);
   }
 
@@ -379,7 +382,7 @@
   }
 
   .dash-run--main .dash-run__when {
-    margin: 0 0 6px;
+    margin: 0 0 8px;
     text-align: center;
   }
 
@@ -402,7 +405,7 @@
   /* Meeting spot, quieter than the date and time above it. */
   .dash-run__place {
     display: block;
-    margin-top: 2px;
+    margin-top: 4px;
     color: var(--asphalt);
     font-size: 1rem;
     font-weight: 700;
@@ -617,30 +620,30 @@
   }
 }
 
-/* Tighter vertical rhythm so the collapsed popup fits without scrolling
-   through the Updated line, without shrinking type or tap targets. */
+/* After moving Updated, Refresh, and the credit into Weather details,
+   restore a more open rhythm in the Sunday card. */
 .run-sunday {
-  gap: 8px;
+  gap: 12px;
 }
 
 .run-sunday .dash__h2 {
-  margin-bottom: 4px;
+  margin-bottom: 6px;
 }
 
 @media (min-width: 800px) {
   .run-sunday {
-    gap: 8px;
+    gap: 12px;
   }
   .run-sunday .duck-slot {
-    width: min(100%, 168px);
+    width: min(100%, 220px);
   }
   .run-sunday .dash-run--main {
-    padding: 8px;
+    padding: 16px;
   }
 }
 
-/* Short phones (e.g. 375×667): shrink the duck a bit more and tighten
-   chrome so Location Deets, the map buttons, and Weather details still fit. */
+/* Short phones still get a slightly smaller duck so the map buttons
+   and Weather details bar remain on screen when the fold is closed. */
 @media (max-height: 700px) {
   .run-notes-popover.run-details-popover {
     padding-top: 2.85rem;
@@ -657,25 +660,17 @@
     right: 0.4rem;
   }
 
-  .run-notes-popover.run-details-popover .run-notes-rule {
-    height: 0.3rem;
-    margin: 0 0 0.25rem;
-  }
-
   .run-sunday {
-    gap: 6px;
+    gap: 10px;
   }
 
   .run-sunday .duck-slot {
-    width: min(100%, 120px);
+    width: min(100%, 196px);
+    margin-top: 16px;
   }
 
   .run-sunday .dash-run--main {
-    padding: 6px 8px;
-  }
-
-  .run-sunday .dash-run--main .dash-run__when {
-    margin: 0 0 4px;
+    padding: 12px;
   }
 }
 
@@ -696,6 +691,15 @@
 /* Sunday Weather details sits on the paper after Location Deets. */
 .run-sunday > .dash-details {
   text-align: left;
+}
+
+.run-sunday .dash-details .dash-status {
+  margin-top: 12px;
+}
+
+.run-sunday .dash-details .credits {
+  margin-top: 10px;
+  padding-bottom: 4px;
 }
 
 .run-sunday h2,

@@ -41,3 +41,24 @@ Raj asked to tighten spacing so the collapsed popup fits without scrolling on sm
 ### Verification
 
 Lint, `tsc`, and `next build` (retry the Next.js 16.4.2 security reminder; do not upgrade). Playwright in Chromium and WebKit at 390×844, 375×812, 375×667, and 1280×800. Screenshots: `/workspace/run-details-popup-tight/`.
+
+
+## Follow-up (t63u)
+
+The tighter card felt cramped, and the feels-like sticker overlapped the café line. Raj asked to move the weather meta at the bottom (Updated time, Refresh, and the Open-Meteo credit) into the expandable Weather details section, then give the Sunday card more room so nothing overlaps (t63u, 26 Nov 2026, America/Toronto).
+
+### Decisions
+
+- Updated, Refresh, and the CC BY 4.0 credit only appear when Weather details is expanded. If there is no forecast yet, they still show under Location Deets so people can refresh.
+- The Sunday card gets its earlier padding and gaps back, plus space above the duck so the feels-like sticker does not cover the café line. The duck is 230px again (220px on desktop, 196px on short phones). Font sizes are unchanged. Tap targets stay at least 44px.
+- Expanding Weather details can still need a scroll, which is expected.
+
+### Files
+
+- `components/run/sunday/OutfitView.tsx` — status and credit render inside the fold-out
+- `components/run/sunday/SundayDashboard.tsx` — move those blocks out of the collapsed layout
+- `components/run/sunday/sunday.css` — more open card spacing; clearance for the sticker
+
+### Verification
+
+Lint, `tsc`, and `next build` (retry the Next.js 16.4.2 security reminder; do not upgrade). Playwright in Chromium and WebKit at 390×844, 375×812, 375×667, and 1280×800, including overlap checks and expanded Weather details (Updated, Refresh, credit; Refresh works). Screenshots: `/workspace/run-details-popup-fold/`.

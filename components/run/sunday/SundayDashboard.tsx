@@ -42,8 +42,6 @@ export default function SundayDashboard() {
   const runHour = forecast ? hourAt(forecast, run.startAt) : null;
 
   const updatedAt = forecast?.fetchedAt ?? null;
-  const statusNeedsAttention =
-    !updatedAt || state === "offline" || state === "failed" || now - (updatedAt ?? 0) > OLD_FORECAST_MS;
   const status = <StatusLine updatedAt={updatedAt} state={state} now={now} onRefresh={() => void refresh()} />;
 
   const checkOutside = (
@@ -80,10 +78,15 @@ export default function SundayDashboard() {
     day: "numeric",
   });
 
+  const credit = (
+    <p className="credits">
+      Weather data by <a href="https://open-meteo.com/">Open-Meteo.com</a> (CC BY 4.0) from Environment and Climate
+      Change Canada’s GEM model, for central Montréal. Your phone asks Open-Meteo directly, so they see an ordinary
+      web request (such as your IP address), but never your GPS location.
+    </p>
+  );
   return (
     <div className="run-sunday">
-      {statusNeedsAttention && status}
-
       <section className="dash-run dash-run--main" aria-label={EVENT.name}>
         <p className="dash-run__when">
           <span id="run-details-label" className="dash-run__date">Next Stooopid {EVENT.weekday}:</span>
@@ -103,16 +106,17 @@ export default function SundayDashboard() {
           outfit={runOutfit}
           hour={runHour}
           sun={forecast && sunFor(forecast, run.startAt)}
+          status={status}
+          credit={credit}
         />
       )}
 
-      {!statusNeedsAttention && status}
-
-      <p className="credits">
-        Weather data by <a href="https://open-meteo.com/">Open-Meteo.com</a> (CC BY 4.0) from Environment and Climate
-        Change Canada’s GEM model, for central Montréal. Your phone asks Open-Meteo directly, so they see an ordinary
-        web request (such as your IP address), but never your GPS location.
-      </p>
+      {!(runOutfit && runHour) && (
+        <>
+          {status}
+          {credit}
+        </>
+      )}
     </div>
   );
 }

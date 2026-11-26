@@ -1,3 +1,4 @@
+import type { ReactNode } from "react";
 import { weatherText, type DaySun, type HourWeather } from "@/lib/sunday/forecast";
 import type { Outfit } from "@/lib/sunday/outfit";
 import { extrasText } from "@/lib/sunday/outfitText";
@@ -10,8 +11,10 @@ export function WeatherDetails(props: {
   outfit: Outfit;
   hour: HourWeather;
   sun: DaySun | null;
+  status?: ReactNode;
+  credit?: ReactNode;
 }) {
-  const { detailsTitle, outfit, hour, sun } = props;
+  const { detailsTitle, outfit, hour, sun, status, credit } = props;
   return (
     <details className="dash-details">
       <summary>Weather details</summary>
@@ -40,6 +43,8 @@ export function WeatherDetails(props: {
       <p className="dash-details__small">
         Clothes follow the air temperature; wind, rain and snow adjust them. Made for an easy 45–60 min run.
       </p>
+      {status}
+      {credit}
     </details>
   );
 }
