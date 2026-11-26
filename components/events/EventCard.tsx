@@ -3,6 +3,7 @@
 import Image from "next/image";
 import { useState, type MouseEvent } from "react";
 import type { CommunityEvent } from "@/data/events";
+import { eventOrganizerLine } from "@/data/events";
 import { formatCardDayAndTime, formatDateBadge } from "@/lib/event-date";
 
 type EventCardProps = {
@@ -21,6 +22,7 @@ const artworkClasses: Record<CommunityEvent["artwork"], string> = {
 export default function EventCard({ event, priority = false, onSelect }: EventCardProps) {
   const [imageFailed, setImageFailed] = useState(false);
   const date = formatDateBadge(event);
+  const organizerLine = eventOrganizerLine(event);
 
   function handleClick(clickEvent: MouseEvent<HTMLButtonElement>) {
     onSelect(event, clickEvent.currentTarget);
@@ -67,6 +69,9 @@ export default function EventCard({ event, priority = false, onSelect }: EventCa
         <span className="block break-words text-xl font-bold leading-tight">
           {event.name}
         </span>
+        {organizerLine ? (
+          <span className="mt-2 block text-sm text-stone-700">{organizerLine}</span>
+        ) : null}
         <span className="mt-3 grid gap-1.5 text-sm text-stone-700">
           <span className="flex items-center gap-2">
             <span aria-hidden="true">◷</span>

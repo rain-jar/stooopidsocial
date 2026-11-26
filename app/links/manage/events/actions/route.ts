@@ -4,6 +4,7 @@ import { deleteEventImage } from "@/lib/events/images";
 import { generateEventOccurrences, parseManagedEventInput, validEventSlug, validEventStatus, validImagePosition } from "@/lib/events/validation";
 import { getAdminSession, verifyCsrf, verifySameOrigin } from "@/lib/links/auth";
 import { isChecked, validUuid } from "@/lib/links/validation";
+import { missingOrganizerColumns, withoutOrganizerColumns } from "@/lib/events/repository";
 import { getAdminSupabaseClient } from "@/lib/supabase";
 
 function destination(request: Request, result: "success" | "error") {
@@ -17,6 +18,7 @@ function formRecord(formData: FormData) {
       "name", "description", "startDate", "startTime", "endDate", "endTime",
       "venue", "address", "rsvpUrl", "imageAlt", "recurrenceFrequency",
       "recurrenceEndType", "recurrenceEndDate", "recurrenceCount",
+      "organizerName", "organizerType",
     ].map((key) => [key, formData.get(key)]),
     ),
     recurring: formData.get("recurring"),
@@ -93,9 +95,17 @@ export async function POST(request: Request) {
         recurrence_weekdays: event.recurrence?.weekdays ?? null,
         recurrence_end_date: event.recurrence?.endDate ?? null,
         recurrence_count: event.recurrence?.count ?? null,
+        organizer_type: event.organizerType ?? null,
+        organizer_name: event.organizerName ?? null,
         ...(shouldPublish ? { moderation_status: "pending" } : {}),
       };
-      const { error: updateError } = await client.from("events").update(values).eq("id", id);
+      let { error: updateError } = await client.from("events").update(values).eq("id", id);
+      if (updateError && missingOrganizerColumns(updateError)) {
+        ({ error: updateError } = await client
+          .from("events")
+          .update(withoutOrganizerColumns(values))
+          .eq("id", id));
+      }
       if (updateError) throw updateError;
       if (shouldPublish) {
         const { error: occurrenceError } = await client.rpc("replace_event_occurrences", {

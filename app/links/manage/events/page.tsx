@@ -136,6 +136,14 @@ export default async function ManageEventsPage({ searchParams }: { searchParams:
 
                       <div className="grid gap-4 sm:grid-cols-2">
                         <label className="text-sm sm:col-span-2">Event name<input name="name" defaultValue={event.name} required maxLength={160} className={inputClass} /></label>
+                        <label className="text-sm sm:col-span-2">Your name <span className="text-white/50">(optional; first name, nickname, or crew name)</span><input name="organizerName" defaultValue={event.organizer_name || ""} maxLength={40} placeholder="First name or nickname" className={inputClass} /></label>
+                        <fieldset className="sm:col-span-2">
+                          <legend className="text-sm">This event is</legend>
+                          <div className="mt-2 flex flex-wrap gap-3">
+                            <label className="inline-flex min-h-11 items-center gap-2 text-sm"><input type="radio" name="organizerType" value="member" defaultChecked={event.organizer_type !== "shared"} className="size-4 accent-orange-400" /> Organizing</label>
+                            <label className="inline-flex min-h-11 items-center gap-2 text-sm"><input type="radio" name="organizerType" value="shared" defaultChecked={event.organizer_type === "shared"} className="size-4 accent-orange-400" /> Sharing</label>
+                          </div>
+                        </fieldset>
                         <EventDateField name="startDate" label="Start date" defaultValue={start.date} required className={inputClass} />
                         <EventTimeField name="startTime" label="Start time" defaultValue={start.time} required className={inputClass} />
                         <EventDateField name="endDate" label="End date" defaultValue={end.date} optional minFrom="startDate" className={inputClass} />

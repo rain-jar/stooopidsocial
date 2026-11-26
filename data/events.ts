@@ -1,5 +1,7 @@
 export type EventStatus = "cancelled" | "postponed";
 
+export type OrganizerType = "member" | "shared";
+
 export type CommunityEvent = {
   id: string;
   slug: string;
@@ -18,7 +20,17 @@ export type CommunityEvent = {
   artwork: "photo" | "dance" | "run" | "birthday";
   rsvpUrl?: string;
   status?: EventStatus;
+  organizerType?: OrganizerType;
+  organizerName?: string;
 };
+
+export function eventOrganizerLine(
+  event: Pick<CommunityEvent, "organizerType" | "organizerName">,
+) {
+  const name = event.organizerName?.trim();
+  if (!name) return null;
+  return event.organizerType === "shared" ? `Shared by ${name}` : `Organized by ${name}`;
+}
 
 export const events: CommunityEvent[] = [
   {
@@ -37,6 +49,8 @@ export const events: CommunityEvent[] = [
       position: "center 42%",
     },
     artwork: "photo",
+    organizerType: "shared",
+    organizerName: "Maya",
   },
   {
     id: "west-coast-swing-2026-10-20",
@@ -62,6 +76,8 @@ export const events: CommunityEvent[] = [
     venue: "Café Tranquille",
     address: "Café Tranquille, Montréal, QC",
     artwork: "run",
+    organizerType: "member",
+    organizerName: "Run Crew",
   },
   {
     id: "stooopid-birthday-2026-11-07",

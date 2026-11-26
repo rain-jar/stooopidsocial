@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import { useEffect, useMemo, useRef, useState, useSyncExternalStore } from "react";
-import type { CommunityEvent } from "@/data/events";
+import { eventOrganizerLine, type CommunityEvent } from "@/data/events";
 import {
   formatEventDate,
   formatEventTime,
@@ -51,6 +51,7 @@ export default function EventDetails({ event }: EventDetailsProps) {
   const postponed = event.status === "postponed";
   const rsvpUrl = safeExternalUrl(event.rsvpUrl);
   const calendarUrl = useMemo(() => googleCalendarUrl(event), [event]);
+  const organizerLine = eventOrganizerLine(event);
 
   useEffect(() => {
     const dialog = imageDialogRef.current;
@@ -177,6 +178,9 @@ export default function EventDetails({ event }: EventDetailsProps) {
           <h2 className="mt-2 text-3xl font-bold tracking-tight text-white">
             {event.name}
           </h2>
+          {organizerLine ? (
+            <p className="mt-2 text-sm text-white/70">{organizerLine}</p>
+          ) : null}
         </div>
 
         <div className="grid gap-4 rounded-2xl border border-white/10 bg-white/5 p-4 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-center">
