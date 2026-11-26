@@ -1,6 +1,20 @@
 import Link from "next/link";
 import { runContent } from "@/data/run";
 
+type HeaderNavItem = {
+  label: string;
+  href: string | null;
+  hidden?: boolean;
+};
+
+const navItemClassName = "inline-flex min-h-11 items-center rounded-md px-1";
+
+const NAV_ITEMS: HeaderNavItem[] = [
+  ...runContent.header.links,
+  // No page yet: render as a non-navigating placeholder so it cannot 404.
+  { label: "Ice Skate", href: null },
+];
+
 export default function RunHeader() {
   return (
     <header className="run-header sticky top-0 z-40 border-b-[3px]">
@@ -9,16 +23,27 @@ export default function RunHeader() {
           {runContent.header.homeLabel}
         </Link>
         <nav aria-label="Run crew" className="flex items-center gap-4 text-sm font-bold">
-          {runContent.header.links.map((link) => (
-            <Link
-              key={link.href}
-              href={link.href}
-              aria-current={link.href === "/run" ? "page" : undefined}
-              className="rounded-md px-1 py-1"
-            >
-              {link.label}
-            </Link>
-          ))}
+          {NAV_ITEMS.filter((item) => !item.hidden).map((item) =>
+            item.href ? (
+              <Link
+                key={item.label}
+                href={item.href}
+                aria-current={item.href === "/run" ? "page" : undefined}
+                className={navItemClassName}
+              >
+                {item.label}
+              </Link>
+            ) : (
+              <span
+                key={item.label}
+                aria-disabled="true"
+                title="Coming soon"
+                className={navItemClassName}
+              >
+                {item.label}
+              </span>
+            )
+          )}
         </nav>
       </div>
     </header>
