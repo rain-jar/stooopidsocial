@@ -873,6 +873,16 @@
   color: #2c2c2a;
 }
 
+/* Sunday Weather details sits on the paper after Location Deets.
+   Keep a single shared rule where it meets "Running another time?". */
+.run-sunday > .dash-details {
+  text-align: left;
+}
+
+.run-sunday > .dash-details + .dash-another {
+  border-top: 0;
+}
+
 .run-sunday h2,
 .run-sunday h3,
 .run-sunday p {

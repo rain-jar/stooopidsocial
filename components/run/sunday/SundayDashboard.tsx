@@ -4,7 +4,7 @@ import { Fragment, useEffect, useLayoutEffect, useMemo, useRef, useState, type R
 import advisoriesFile from "@/data/sunday-advisories.json";
 import { sundayRouteNames } from "@/data/run";
 import { lastCheckedText, NoticeList } from "@/components/run/sunday/NoticeList";
-import { OutfitView } from "@/components/run/sunday/OutfitView";
+import { OutfitView, WeatherDetails } from "@/components/run/sunday/OutfitView";
 import { SundayLocation } from "@/components/run/sunday/SundayLocation";
 import { activeNotices, collectNotices, type NoticeFile } from "@/lib/sunday/notices";
 import { ROUTE_NOTICES } from "@/lib/sunday/routeAdvisories";
@@ -97,6 +97,7 @@ export default function SundayDashboard() {
         outfit={runOutfit}
         hour={runHour}
         sun={forecast && sunFor(forecast, run.startAt)}
+        showDetails={false}
       />
     );
   } else if (!forecast && state === "loading") {
@@ -135,6 +136,17 @@ export default function SundayDashboard() {
         </p>
         {runSlot}
       </section>
+
+      <SundayLocation />
+
+      {runOutfit && runHour && (
+        <WeatherDetails
+          detailsTitle={`Weather for ${lowerDay(runTimeLabel(runHour.at, now))}`}
+          outfit={runOutfit}
+          hour={runHour}
+          sun={forecast && sunFor(forecast, run.startAt)}
+        />
+      )}
 
       {choices.length > 0 && runAt !== null && (
         <section className="dash-another" aria-labelledby="another-title">
@@ -178,8 +190,6 @@ export default function SundayDashboard() {
           )}
         </section>
       )}
-
-      <SundayLocation />
 
       {notices.length === 0 && (
         <p className="dash-clear">
