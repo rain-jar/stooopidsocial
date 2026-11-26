@@ -1,6 +1,6 @@
 # 017 — Homepage link in the Crew links popup
 
-- Status: Implemented (not merged)
+- Status: Implemented, awaiting review
 - Proposal depth and reason: Standard — one new action in the existing Crew links paper on `/run`, with no new page and no new dependency.
 - Source requirements / milestone: The Crew links popup lists Socials, Apps, and Community, and then stops. Raj asked for a way back to the main Les Stooopids page from the bottom of that paper, without a full reload, and without the popup staying on screen after the move.
 
@@ -28,7 +28,7 @@
 
 - User approval / date / proposal revision or scope: Raj approved this footer in the task for the branch: divider, full-width "Visit Les Stooopids →", Next.js `<Link href="/">`, and `hidePopover` on click or route change, on 2026-11-26.
 - Conditions and separately authorized external actions: A branch, commits, and a pull request to `main` are authorized. Merge, push to `main`, and production deploy are not authorized. The Next.js security upgrade is out of scope.
-- Material amendments / renewed approval: None.
+- Material amendments / renewed approval: After the homepage link shipped in PR #8, Raj asked for the footer button to stay on `/run` instead of going to the homepage, and to use the label "Run Crew Home 🏠", on 2026-11-25 at about 10:21 PM America/Toronto. The control is now a button that hides the popover in place (`popoverTargetAction="hide"`). It does not navigate, reload, or auto-scroll. The footer, divider, navy-outline style, and sheet sizes stay the same.
 
 ## Results (after implementation)
 
@@ -39,4 +39,5 @@
   - `app/globals.css` — footer, hand-drawn divider, and navy-outline button. The open popover is a column with overflow hidden so the notes board scrolls and the footer stays at the bottom. `display: flex` remains only on `.run-notes-popover:popover-open`.
   - `docs/run/STATUS.md` and `docs/work/017-run-crew-links-home-cta.md` — this record.
 - Verification: `npm run lint` and `npx tsc --noEmit` passed on 2026-11-26. The first `npm run build` finished page generation and then stopped on the Next.js 16.4.2 security reminder. The same command retried successfully and prerendered `/run`. Next.js was not upgraded. Playwright Chromium and WebKit at 390×844, 375×667, and 1280×800, without `?crew-links=1`, passed 114/114. Each run checked: closed on load (`display: none`, not `:popover-open`, intro unobstructed); open with Socials, Apps, Community, the backdrop, and the CTA inside the paper, collapsed and with Community expanded; close by X, Escape, and backdrop, each from a fresh open; `window.__marker = 1` still `1` at `/` with no document request; popup absent after that navigation. Measured sheets: desktop collapsed 640×576 (same width as `.run-copy`), 390 collapsed 362×490, 375 collapsed 347×490. Expanded with two community links: 640×614, 362×586, and 347×586, footer still inside the paper. WebKit heights were within 0.2px of Chromium. Screenshots: `/opt/cursor/artifacts/run-crew-cta-390-load.png`, `/opt/cursor/artifacts/run-crew-cta-390-open.png`, `/opt/cursor/artifacts/run-crew-cta-375-community-expanded.png`, `/opt/cursor/artifacts/run-crew-cta-1280-open.png`. Not tested on a physical iPhone.
+- Follow-up (after PR #8): The footer CTA no longer goes to `/`. `runCrewHomeCtaLabel` is now "Run Crew Home 🏠". `RunCrewHomeLink.tsx` was removed; the footer is a `<button>` with `popoverTargetAction="hide"`, the same close action as the X. Clicking it closes the sheet and leaves the visitor on `/run`, with no navigation and no auto-scroll.
 - Remaining follow-ups: PR #2 remains revertable with `git revert 74c68a8d`. Next.js still recommends a security upgrade; that is out of scope for this PR.
