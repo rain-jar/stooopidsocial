@@ -1,6 +1,7 @@
 import { runCrewLinkGroups, runCrewLinksTitle } from "@/data/run";
 import { getPublicLinkCategories } from "@/lib/links/repository";
 import { validHttpUrl } from "@/lib/links/validation";
+import RunCrewHomeLink from "./RunCrewHomeLink";
 import RunCrewNotesDeepLink from "./RunCrewNotesDeepLink";
 
 const popoverId = "run-notes-menu";
@@ -114,6 +115,10 @@ export default function RunCrewNotes({ extraLinks }: {
             );
           })}
         </div>
+        <footer className="run-notes-footer">
+          <hr className="run-notes-rule" />
+          <RunCrewHomeLink popoverId={popoverId} />
+        </footer>
       </div>
       <RunCrewNotesDeepLink popoverId={popoverId} />
     </>

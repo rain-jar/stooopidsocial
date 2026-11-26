@@ -224,3 +224,6 @@ export const runCrewLinkGroups: readonly RunCrewLinkGroup[] = [
 ];
 
 export const runCrewLinksTitle = "Crew & community";
+
+/** Footer button in the Crew links popup. The link itself is the homepage. */
+export const runCrewHomeCtaLabel = "Visit Les Stooopids →";
