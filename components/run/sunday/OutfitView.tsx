@@ -4,18 +4,56 @@ import { extrasText } from "@/lib/sunday/outfitText";
 import { clockTime, degrees } from "@/lib/sunday/format";
 import { DressedDuck } from "./DressedDuck";
 
-/**
- * The dressed duck with its feels-like sticker, the outfit in words, one line of weather,
- * and the weather numbers folded away.
- */
-export function OutfitView(props: {
-  label: string;
+/** Fold-out list of weather numbers for a chosen hour. */
+export function WeatherDetails(props: {
   detailsTitle: string;
   outfit: Outfit;
   hour: HourWeather;
   sun: DaySun | null;
 }) {
-  const { label, detailsTitle, outfit, hour, sun } = props;
+  const { detailsTitle, outfit, hour, sun } = props;
+  return (
+    <details className="dash-details">
+      <summary>Weather details</summary>
+      <h3 className="dash-details__h3">{detailsTitle}</h3>
+      <ul className="weather__facts">
+        <li>
+          {weatherText(hour.code)}, air {degrees(hour.tempC)}, feels like {degrees(hour.feelsC)}
+        </li>
+        <li>
+          {hour.precipProb !== null ? `${Math.round(hour.precipProb)} % chance of rain or snow` : "Chance of rain unknown"}
+          {hour.precipMm ? ` (${hour.precipMm.toFixed(1)} mm)` : ""}
+        </li>
+        <li>
+          {hour.windKmh !== null
+            ? `Wind ${Math.round(hour.windKmh)} km/h${hour.gustKmh !== null ? `, gusts ${Math.round(hour.gustKmh)} km/h` : ""}`
+            : "Wind unknown"}
+        </li>
+        {outfit.windChillC !== null && <li>Wind chill {degrees(outfit.windChillC)}</li>}
+        {outfit.humidex !== null && outfit.humidex >= 25 && <li>Humidex {Math.round(outfit.humidex)}</li>}
+        {sun && (
+          <li>
+            Sunrise {clockTime(sun.sunrise)} · sunset {clockTime(sun.sunset)}
+          </li>
+        )}
+      </ul>
+      <p className="dash-details__small">
+        Clothes follow the air temperature; wind, rain and snow adjust them. Made for an easy 45–60 min run.
+      </p>
+    </details>
+  );
+}
+
+/**
+ * The dressed duck with its feels-like sticker, the outfit in words, and one line of weather.
+ * The weather numbers live in a separate WeatherDetails fold-out.
+ */
+export function OutfitView(props: {
+  label: string;
+  outfit: Outfit;
+  hour: HourWeather;
+}) {
+  const { label, outfit, hour } = props;
   return (
     <section className="dash-outfit" aria-label={label}>
       <div className="duck-slot">
@@ -56,34 +94,6 @@ export function OutfitView(props: {
           </ul>
         </>
       )}
-      <details className="dash-details">
-        <summary>Weather details</summary>
-        <h3 className="dash-details__h3">{detailsTitle}</h3>
-        <ul className="weather__facts">
-          <li>
-            {weatherText(hour.code)}, air {degrees(hour.tempC)}, feels like {degrees(hour.feelsC)}
-          </li>
-          <li>
-            {hour.precipProb !== null ? `${Math.round(hour.precipProb)} % chance of rain or snow` : "Chance of rain unknown"}
-            {hour.precipMm ? ` (${hour.precipMm.toFixed(1)} mm)` : ""}
-          </li>
-          <li>
-            {hour.windKmh !== null
-              ? `Wind ${Math.round(hour.windKmh)} km/h${hour.gustKmh !== null ? `, gusts ${Math.round(hour.gustKmh)} km/h` : ""}`
-              : "Wind unknown"}
-          </li>
-          {outfit.windChillC !== null && <li>Wind chill {degrees(outfit.windChillC)}</li>}
-          {outfit.humidex !== null && outfit.humidex >= 25 && <li>Humidex {Math.round(outfit.humidex)}</li>}
-          {sun && (
-            <li>
-              Sunrise {clockTime(sun.sunrise)} · sunset {clockTime(sun.sunset)}
-            </li>
-          )}
-        </ul>
-        <p className="dash-details__small">
-          Clothes follow the air temperature; wind, rain and snow adjust them. Made for an easy 45–60 min run.
-        </p>
-      </details>
     </section>
   );
 }
