@@ -29,6 +29,52 @@ export type RunPhoto = {
   caption?: string;
 };
 
+
+export type SundayWeekday = "Sunday" | "Monday" | "Tuesday" | "Wednesday" | "Thursday" | "Friday" | "Saturday";
+
+export type SundayMeetPlace = {
+  name: string;
+  /** Where exactly to stand ("At the café entrance"). */
+  spot: string;
+  address: string;
+  lat: number;
+  lon: number;
+};
+
+/**
+ * Weekly meet used by the This week's details popup.
+ * Copied from ShereenElaidi/anyoneCanPace-beta@376558b (src/data/event.json).
+ * This site keeps its own copy — update both if the meet changes.
+ */
+export const sundayEvent = {
+  name: "Sunday run",
+  weekday: "Sunday" as SundayWeekday,
+  meetTime: "10:00",
+  startTime: "10:15",
+  durationMin: 60,
+  place: {
+    name: "Café Tranquille",
+    spot: "At the café entrance",
+    address: "1442 Rue Clark",
+    lat: 45.50935,
+    lon: -73.56488,
+  } satisfies SundayMeetPlace,
+};
+
+/**
+ * Route labels for advisory notices, copied from the same beta commit's
+ * src/data/routes/manifest.json. Notices themselves live in
+ * data/sunday-advisories.json (also empty at that commit).
+ */
+export const sundayRouteNames: Record<string, string> = {
+  "sample-loop": "Sample Loop",
+  "pi-day": "Pi Day",
+  "canal-test": "Canal Test",
+  "verdun-with-this-test": "Verdun with this (Test)",
+  "1st-bday-of-the-stooopidverse": "1st bday of the Stooopid Run Crew",
+  "leonard-cohen-run": "Leonard Cohen Run",
+};
+
 export const runContent = {
   meta: {
     title: "Run | Stooopid Run Crew",
@@ -60,9 +106,8 @@ export const runContent = {
       "Meet at the café entrance. Run starts at 10.15AM.",
     ],
     cta: {
-      href: "https://anyonecanpacebeta.pages.dev/?sunday",
       label: "This week's details",
-    } satisfies RunLink,
+    },
   },
   faqs: {
     id: "faq",
