@@ -1,10 +1,17 @@
 "use client";
 
+import { Caveat } from "next/font/google";
 import Image from "next/image";
 import { useState, type MouseEvent } from "react";
 import type { CommunityEvent } from "@/data/events";
 import { eventOrganizerLine } from "@/data/events";
 import { formatCardDayAndTime, formatDateBadge } from "@/lib/event-date";
+
+const organizerNoteFont = Caveat({
+  subsets: ["latin"],
+  weight: ["600", "700"],
+  display: "swap",
+});
 
 type EventCardProps = {
   event: CommunityEvent;
@@ -23,6 +30,8 @@ export default function EventCard({ event, priority = false, onSelect }: EventCa
   const [imageFailed, setImageFailed] = useState(false);
   const date = formatDateBadge(event);
   const organizerLine = eventOrganizerLine(event);
+  const organizerName = event.organizerName?.trim();
+  const organizerKicker = event.organizerType === "shared" ? "Shared by" : "Organized by";
 
   function handleClick(clickEvent: MouseEvent<HTMLButtonElement>) {
     onSelect(event, clickEvent.currentTarget);
@@ -65,13 +74,10 @@ export default function EventCard({ event, priority = false, onSelect }: EventCa
       ) : null}
 
       </span>
-      <span className="block px-2 pb-2 pt-4">
+      <span className="relative block px-2 pb-2 pt-4">
         <span className="block break-words text-xl font-bold leading-tight">
           {event.name}
         </span>
-        {organizerLine ? (
-          <span className="mt-2 block text-sm text-stone-700">{organizerLine}</span>
-        ) : null}
         <span className="mt-3 grid gap-1.5 text-sm text-stone-700">
           <span className="flex items-center gap-2">
             <span aria-hidden="true">◷</span>
@@ -82,7 +88,9 @@ export default function EventCard({ event, priority = false, onSelect }: EventCa
             <span className="truncate">{event.venue}</span>
           </span>
         </span>
-        <span className="mt-4 inline-flex items-center gap-1.5 text-sm font-semibold">
+        <span
+          className={`mt-4 inline-flex items-center gap-1.5 text-sm font-semibold${organizerLine ? " event-card-details-with-note" : ""}`}
+        >
           View details
           <span
             aria-hidden="true"
@@ -91,6 +99,15 @@ export default function EventCard({ event, priority = false, onSelect }: EventCa
             ↗
           </span>
         </span>
+        {organizerLine && organizerName ? (
+          <span
+            className={`event-organizer-note ${organizerNoteFont.className}${event.organizerType === "shared" ? " event-organizer-note--shared" : ""}`}
+            aria-label={organizerLine}
+          >
+            <span className="event-organizer-note-kicker">{organizerKicker}</span>
+            <span className="event-organizer-note-name">{organizerName}</span>
+          </span>
+        ) : null}
       </span>
     </button>
   );

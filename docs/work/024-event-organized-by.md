@@ -28,16 +28,16 @@ SQL (not applied): `supabase/migrations/202611260001_event_organizer.sql`.
 On "Add Your Event":
 
 - An optional **Your name** field, placeholder "First name or nickname".
-- A choice between **Organizing** and **Sharing**. The choice only matters if a name is given; it defaults to Organizing.
-- If the name is left blank, both columns stay null and the card has no attribution line.
+- A choice between **Organizing** and **Sharing**, shown as two radio buttons under Your name, without a "This event is" label (the group still has a visually hidden accessible name). The choice only matters if a name is given; it defaults to Organizing.
+- If the name is left blank, both columns stay null and the card has no sticky note.
 
 The admin form at `/links/manage/events` shows and edits the same two fields, so existing events (for example the Sunday run, with the name "Run Crew" and Organizing) can be backfilled.
 
 ## Display
 
-- On the card, a single optional line under the title and above the date/time, in the existing small stone-colored meta style.
-- In the details dialog, the same wording under the title.
-- `member` → `Organized by {name}`; `shared` → `Shared by {name}`. Omit the line when there is no name.
+- On the card, a small tilted sticky note in the empty space across from "View details", so the card does not grow taller. The note uses two short lines ("Organized by" or "Shared by" over the name). Cards with no name look unchanged.
+- In the details dialog, a simple line under the title with the same wording.
+- `member` → `Organized by {name}`; `shared` → `Shared by {name}`. Omit the note and the details line when there is no name.
 
 ## Privacy
 
